@@ -1,0 +1,124 @@
+import type { EquipmentDefinition, HeroDefinition, StageDefinition } from './types';
+
+export const HEROES: HeroDefinition[] = [
+  {
+    id: 'kael', name: 'Kael', title: 'Dawnblade Knight', role: 'knight', color: '#72c6ff', modelKey: 'knight', price: 0,
+    description: 'An exiled knight who carries the last ember of the fallen Dawn Citadel.',
+    baseHp: 1250, baseAttack: 92, baseDefense: 28, attackInterval: 1.45,
+    skills: [
+      { id: 'dawnstrike', name: 'Dawn Strike', icon: '⚔', description: 'Strike the nearest enemy for 290% ATK.', kind: 'strike', cooldown: 7, cost: 20, power: 2.9 },
+      { id: 'sunward', name: 'Sunward', icon: '◇', description: 'Protect every ally with a shield equal to 200% ATK.', kind: 'shieldAll', cooldown: 15, cost: 30, power: 2 },
+      { id: 'horizon', name: 'Horizon Break', icon: '✦', description: 'A radiant slash deals 210% ATK to all enemies.', kind: 'cleave', cooldown: 20, cost: 40, power: 2.1 },
+    ],
+    passive: { name: 'Oath of Dawn', description: 'Gains 25% extra DEF. Enemies prefer targeting frontline allies.' },
+  },
+  {
+    id: 'lyra', name: 'Lyra', title: 'Starlight Oracle', role: 'healer', color: '#f3b8fa', modelKey: 'healer', price: 0,
+    description: 'A wandering oracle whose starlight can mend the wounds of a fractured world.',
+    baseHp: 780, baseAttack: 78, baseDefense: 13, attackInterval: 1.8,
+    skills: [
+      { id: 'starlight', name: 'Starlight', icon: '✚', description: 'Heal the most wounded ally for 420% ATK.', kind: 'heal', cooldown: 7, cost: 18, power: 4.2 },
+      { id: 'sanctuary', name: 'Sanctuary', icon: '❋', description: 'Restore 240% ATK as HP to every ally.', kind: 'healAll', cooldown: 15, cost: 30, power: 2.4 },
+      { id: 'astral', name: 'Astral Bloom', icon: '✧', description: 'Heal all allies for 320% ATK and grant a small shield.', kind: 'renew', cooldown: 23, cost: 45, power: 3.2 },
+    ],
+    passive: { name: 'Gentle Light', description: 'Basic attacks also heal the most wounded ally for 35% ATK.' },
+  },
+  {
+    id: 'seraphina', name: 'Seraphina', title: 'Crimson Arcanist', role: 'mage', color: '#fe927f', modelKey: 'mage', price: 0, storyStage: 1,
+    description: 'A brilliant fire mage found defending the gates of the Whispering Grove.',
+    baseHp: 760, baseAttack: 116, baseDefense: 12, attackInterval: 1.85,
+    skills: [
+      { id: 'ember', name: 'Ember Spear', icon: '➶', description: 'Pierce the nearest enemy for 340% ATK.', kind: 'strike', cooldown: 8, cost: 20, power: 3.4 },
+      { id: 'inferno', name: 'Inferno', icon: '♨', description: 'Deal 230% ATK to every enemy.', kind: 'blast', cooldown: 15, cost: 32, power: 2.3 },
+      { id: 'phoenix', name: 'Phoenix Fall', icon: '✹', description: 'A fiery comet deals 350% ATK to every enemy.', kind: 'blast', cooldown: 25, cost: 48, power: 3.5 },
+    ],
+    passive: { name: 'Burning Heart', description: 'Deals 15% more damage while above half HP.' },
+  },
+  {
+    id: 'riven', name: 'Riven', title: 'Moonveil Assassin', role: 'rogue', color: '#b9a1ff', modelKey: 'rogue', price: 0, storyStage: 2,
+    description: 'A blade in the shadows, bound by a promise he refuses to speak aloud.',
+    baseHp: 840, baseAttack: 104, baseDefense: 17, attackInterval: 1.05,
+    skills: [
+      { id: 'mooncut', name: 'Moon Cut', icon: '☽', description: 'Strike the weakest enemy for 320% ATK.', kind: 'execute', cooldown: 7, cost: 20, power: 3.2 },
+      { id: 'bladedance', name: 'Blade Dance', icon: '⚔', description: 'Sweep through all enemies for 210% ATK.', kind: 'cleave', cooldown: 14, cost: 30, power: 2.1 },
+      { id: 'eclipse', name: 'Eclipse', icon: '◈', description: 'Execute the weakest enemy for 580% ATK.', kind: 'execute', cooldown: 23, cost: 45, power: 5.8 },
+    ],
+    passive: { name: 'Shadow Edge', description: 'Basic attacks have a 30% critical chance instead of 10%.' },
+  },
+  {
+    id: 'astrid', name: 'Astrid', title: 'Frostguard Sentinel', role: 'guardian', color: '#8ddff4', modelKey: 'knight', price: 1200,
+    description: 'The unbroken guardian of the northern gates, clad in glacial silver.',
+    baseHp: 1550, baseAttack: 78, baseDefense: 36, attackInterval: 1.65,
+    skills: [
+      { id: 'frostbite', name: 'Frostbite', icon: '❄', description: 'Deal 330% ATK to the nearest enemy.', kind: 'strike', cooldown: 8, cost: 20, power: 3.3 },
+      { id: 'icewall', name: 'Icewall', icon: '◇', description: 'Shield every ally for 350% ATK.', kind: 'shieldAll', cooldown: 15, cost: 28, power: 3.5 },
+      { id: 'winter', name: 'Winter Crown', icon: '✵', description: 'Deal 300% ATK to all enemies.', kind: 'blast', cooldown: 24, cost: 44, power: 3 },
+    ],
+    passive: { name: 'Unbroken', description: 'Takes 15% less damage while below half HP.' },
+  },
+  {
+    id: 'elias', name: 'Elias', title: 'Stormweaver', role: 'mage', color: '#b8a6ff', modelKey: 'mage', price: 1200,
+    description: 'An unruly scholar who hears the ancient language of thunder.',
+    baseHp: 820, baseAttack: 127, baseDefense: 13, attackInterval: 1.9,
+    skills: [
+      { id: 'bolt', name: 'Thunderbolt', icon: 'ϟ', description: 'Deal 350% ATK to the nearest enemy.', kind: 'strike', cooldown: 8, cost: 18, power: 3.5 },
+      { id: 'chain', name: 'Chain Lightning', icon: '⌁', description: 'Deal 240% ATK to every enemy.', kind: 'blast', cooldown: 14, cost: 30, power: 2.4 },
+      { id: 'tempest', name: 'Tempest', icon: '✺', description: 'Deal 360% ATK to every enemy.', kind: 'blast', cooldown: 24, cost: 44, power: 3.6 },
+    ],
+    passive: { name: 'Static Charge', description: 'Regenerates 2 extra energy per second.' },
+  },
+  {
+    id: 'nova', name: 'Nova', title: 'Wildwood Ranger', role: 'ranger', color: '#a8e5ae', modelKey: 'rogue', price: 1200,
+    description: 'A fearless hunter whose arrows always find a path through the forest.',
+    baseHp: 880, baseAttack: 110, baseDefense: 16, attackInterval: 1.25,
+    skills: [
+      { id: 'pierce', name: 'Piercing Arrow', icon: '➶', description: 'Deal 340% ATK to the weakest enemy.', kind: 'execute', cooldown: 8, cost: 18, power: 3.4 },
+      { id: 'volley', name: 'Arrow Rain', icon: '⋮', description: 'Deal 220% ATK to every enemy.', kind: 'cleave', cooldown: 14, cost: 28, power: 2.2 },
+      { id: 'hunt', name: 'Final Hunt', icon: '✧', description: 'Deal 620% ATK to the weakest enemy.', kind: 'execute', cooldown: 24, cost: 44, power: 6.2 },
+    ],
+    passive: { name: 'Keen Eye', description: 'Deals 20% extra damage against bosses.' },
+  },
+  {
+    id: 'lucien', name: 'Lucien', title: 'Golden Paladin', role: 'paladin', color: '#f2d38a', modelKey: 'knight', price: 1200,
+    description: 'A gentle warrior who believes every broken oath deserves a second dawn.',
+    baseHp: 1190, baseAttack: 94, baseDefense: 28, attackInterval: 1.5,
+    skills: [
+      { id: 'judgement', name: 'Judgement', icon: '⚔', description: 'Deal 310% ATK to the nearest enemy.', kind: 'strike', cooldown: 7, cost: 18, power: 3.1 },
+      { id: 'grace', name: 'Golden Grace', icon: '✚', description: 'Restore 230% ATK as HP to every ally.', kind: 'healAll', cooldown: 14, cost: 28, power: 2.3 },
+      { id: 'covenant', name: 'Covenant', icon: '◇', description: 'Heal every ally for 280% ATK and grant a small shield.', kind: 'renew', cooldown: 22, cost: 42, power: 2.8 },
+    ],
+    passive: { name: 'Blessed Steel', description: 'Recovers 15% of basic attack damage as HP.' },
+  },
+];
+
+export const HERO_BY_ID: Record<string, HeroDefinition> = Object.assign(Object.create(null) as Record<string, HeroDefinition>, Object.fromEntries(HEROES.map(hero => [hero.id, hero])));
+
+export const STAGES: StageDefinition[] = [
+  { id: 1, name: 'Whispering Grove', subtitle: 'The first ember', description: 'Follow a distant cry into the ancient woods. An unexpected ally is waiting.', location: 'Verdant Reach', boss: 'Thornborn Warden', color: '#85baa3', recommendedLevel: 1, rewardGems: 180, rewardGold: 160 },
+  { id: 2, name: 'Moonfall Ruins', subtitle: 'A promise in shadow', description: 'Cross the ruined moon temple and find the stranger watching from its towers.', location: 'Silvermoon Valley', boss: 'Moonstone Revenant', color: '#98a9df', recommendedLevel: 2, rewardGems: 220, rewardGold: 220 },
+  { id: 3, name: 'Ember Pass', subtitle: 'Through fire', description: 'The old mountain road burns with a fire that the rain cannot extinguish.', location: 'Ashen Highlands', boss: 'Cindermaw', color: '#dfad88', recommendedLevel: 3, rewardGems: 260, rewardGold: 300 },
+  { id: 4, name: 'Crystal Sanctum', subtitle: 'A shattered reflection', description: 'Discover what sleeps beneath the floating sanctuary of the first oracles.', location: 'Luminous Expanse', boss: 'Hollow Seraph', color: '#baaaec', recommendedLevel: 5, rewardGems: 320, rewardGold: 400 },
+  { id: 5, name: 'The Fallen Citadel', subtitle: 'A dawn worth fighting for', description: 'Return to the gates where everything began. Break the crown of the Eclipse King.', location: 'Crown of Aetheria', boss: 'Eclipse King', color: '#bfa0c3', recommendedLevel: 7, rewardGems: 420, rewardGold: 550 },
+];
+
+export const EQUIPMENT_POOL: EquipmentDefinition[] = [
+  { key: 'iron-blade', name: 'Dawnsteel Blade', slot: 'weapon', rarity: 'common', attack: 16, hp: 0, defense: 0 },
+  { key: 'woven-robe', name: 'Traveler’s Mantle', slot: 'armor', rarity: 'common', attack: 0, hp: 120, defense: 5 },
+  { key: 'copper-ring', name: 'Amber Band', slot: 'accessory', rarity: 'common', attack: 6, hp: 55, defense: 2 },
+  { key: 'silver-blade', name: 'Moonlit Edge', slot: 'weapon', rarity: 'rare', attack: 30, hp: 20, defense: 0 },
+  { key: 'silver-mail', name: 'Silvermoon Vestment', slot: 'armor', rarity: 'rare', attack: 0, hp: 230, defense: 10 },
+  { key: 'sapphire-charm', name: 'Azure Heart', slot: 'accessory', rarity: 'rare', attack: 12, hp: 110, defense: 4 },
+  { key: 'ember-blade', name: 'Phoenix Oath', slot: 'weapon', rarity: 'epic', attack: 52, hp: 60, defense: 2 },
+  { key: 'astral-coat', name: 'Astral Veil', slot: 'armor', rarity: 'epic', attack: 5, hp: 390, defense: 17 },
+  { key: 'star-pendant', name: 'Starseeker’s Tear', slot: 'accessory', rarity: 'epic', attack: 22, hp: 190, defense: 7 },
+  { key: 'dawnbringer', name: 'Dawnbringer', slot: 'weapon', rarity: 'legendary', attack: 88, hp: 120, defense: 5 },
+  { key: 'celestial-aegis', name: 'Celestial Aegis', slot: 'armor', rarity: 'legendary', attack: 10, hp: 650, defense: 28 },
+  { key: 'eternal-star', name: 'The Eternal Star', slot: 'accessory', rarity: 'legendary', attack: 38, hp: 320, defense: 12 },
+];
+
+export const SUMMON_COST = 160;
+export const SUMMON_TEN_COST = 1440;
+export const SUMMON_RATES = { common: 0.5, rare: 0.35, epic: 0.12, legendary: 0.03 } as const;
+export const LEGENDARY_PITY = 50;
+export const MAX_HERO_LEVEL = 20;
+export const SAVE_KEY = 'aetheria-chronicles-save-v1';

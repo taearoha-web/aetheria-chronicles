@@ -1,0 +1,7 @@
+{
+  "name": "Aetheria Chronicles",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:1-22-bookworm",
+  "postCreateCommand": "npm ci",
+  "forwardPorts": [5173],
+  "portsAttributes": { "5173": { "label": "Aetheria game preview", "onAutoForward": "notify" } }
+}

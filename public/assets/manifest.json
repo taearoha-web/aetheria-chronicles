@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "models": {
+    "knight": { "url": "assets/knight.glb", "portrait": "assets/knight-portrait.png", "forward": "+z", "height": 1.95, "clips": { "idle": "Idle", "attack": "Attack_01", "run": "Run", "hurt": "Hit", "death": "Death", "skill": "Skill_03" }, "source": "Seven Elements / water paladin", "license": "User-provided project asset; separate from code license" },
+    "healer": { "url": "assets/healer.glb", "portrait": "assets/healer-portrait.png", "forward": "+z", "height": 1.8, "clips": { "idle": "Idle", "attack": "Attack_01", "run": "Run", "hurt": "Hit", "death": "Death", "skill": "Skill_03" }, "source": "Seven Elements / light mermaid spirit", "license": "User-provided project asset; separate from code license" },
+    "mage": { "url": "assets/mage.glb", "portrait": "assets/mage-portrait.png", "forward": "+z", "height": 1.8, "clips": { "idle": "Idle", "attack": "Attack_01", "run": "Run", "hurt": "Hit", "death": "Death", "skill": "Skill_03" }, "source": "Seven Elements / fire mermaid spirit", "license": "User-provided project asset; separate from code license" },
+    "rogue": { "url": "assets/rogue.glb", "portrait": "assets/rogue-portrait.webp", "forward": "+z", "height": 1.82, "clips": { "idle": "idle", "attack": "punch_jab", "run": "jog_fwd_loop", "skill": "kick" }, "source": "https://www.autosprite.io/free-3d-models/hooded-blade", "license": "CC0-1.0" },
+    "enemy": { "url": "assets/enemy.glb", "portrait": "assets/enemy-portrait.webp", "forward": "+z", "height": 1.45, "clips": { "idle": "idle", "attack": "sword_attack", "run": "jog_fwd_loop", "skill": "sword_attack" }, "source": "https://www.autosprite.io/free-3d-models/goblin", "license": "CC0-1.0" }
+  }
+}

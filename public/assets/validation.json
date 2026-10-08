@@ -1,0 +1,151 @@
+{
+  "checkedAt": "2026-10-08T09:44:18.019Z",
+  "result": "PASS",
+  "totalBytes": 14065312,
+  "models": {
+    "knight": {
+      "file": "knight.glb",
+      "bytes": 2324860,
+      "sha256": "686939b5f215737c41c4f6624f174ba7b4ddb11b6f86334d7eceffa85a1ab81e",
+      "triangles": 18000,
+      "vertices": 16596,
+      "skins": 1,
+      "joints": [
+        27
+      ],
+      "meshes": 1,
+      "images": 3,
+      "animationNames": [
+        "Attack_01",
+        "Attack_02",
+        "Death",
+        "Hit",
+        "Idle",
+        "Run",
+        "Skill_03",
+        "Stun",
+        "Victory",
+        "Walk"
+      ],
+      "requiredExtensions": [],
+      "embedded": true,
+      "source": "Seven Elements / water paladin",
+      "license": "User-provided project asset; separate from code license"
+    },
+    "healer": {
+      "file": "healer.glb",
+      "bytes": 2151104,
+      "sha256": "9ea5c43ff4e247498deb40762a5482d6dae65dd7a7d23ccced922b6362d1c5fd",
+      "triangles": 17999,
+      "vertices": 16598,
+      "skins": 1,
+      "joints": [
+        21
+      ],
+      "meshes": 1,
+      "images": 3,
+      "animationNames": [
+        "Attack_01",
+        "Attack_02",
+        "Death",
+        "Hit",
+        "Idle",
+        "Run",
+        "Skill_03",
+        "Stun",
+        "Victory",
+        "Walk"
+      ],
+      "requiredExtensions": [],
+      "embedded": true,
+      "source": "Seven Elements / light mermaid spirit",
+      "license": "User-provided project asset; separate from code license"
+    },
+    "mage": {
+      "file": "mage.glb",
+      "bytes": 2230836,
+      "sha256": "9d329830c24eecf3fa115c64aea40c50643563d224e3de5c4b519cf8daa9a9a9",
+      "triangles": 18000,
+      "vertices": 15392,
+      "skins": 1,
+      "joints": [
+        21
+      ],
+      "meshes": 1,
+      "images": 3,
+      "animationNames": [
+        "Attack_01",
+        "Attack_02",
+        "Death",
+        "Hit",
+        "Idle",
+        "Run",
+        "Skill_03",
+        "Stun",
+        "Victory",
+        "Walk"
+      ],
+      "requiredExtensions": [],
+      "embedded": true,
+      "source": "Seven Elements / fire mermaid spirit",
+      "license": "User-provided project asset; separate from code license"
+    },
+    "rogue": {
+      "file": "rogue.glb",
+      "bytes": 2764140,
+      "sha256": "6294429db9db7b36c32e507df3775b21002aeeeec7057d73ed72dec4ff80933b",
+      "triangles": 24000,
+      "vertices": 24487,
+      "skins": 1,
+      "joints": [
+        22
+      ],
+      "meshes": 1,
+      "images": 1,
+      "animationNames": [
+        "idle",
+        "jog_fwd_loop",
+        "kick",
+        "punch_jab",
+        "sprint_loop",
+        "walk_loop"
+      ],
+      "requiredExtensions": [],
+      "embedded": true,
+      "source": "https://www.autosprite.io/free-3d-models/hooded-blade",
+      "license": "CC0-1.0"
+    },
+    "enemy": {
+      "file": "enemy.glb",
+      "bytes": 4594372,
+      "sha256": "ac93fe458e201a7d3fc19b9b38dbf9a2220bacba478c7fadd23a2417879318f5",
+      "triangles": 24824,
+      "vertices": 29920,
+      "skins": 1,
+      "joints": [
+        22
+      ],
+      "meshes": 1,
+      "images": 2,
+      "animationNames": [
+        "idle",
+        "jog_fwd_loop",
+        "jump_land",
+        "jump_loop",
+        "jump_start",
+        "roll",
+        "sprint_enter",
+        "sprint_exit",
+        "sprint_loop",
+        "sword_attack",
+        "sword_enter",
+        "sword_idle",
+        "walk_loop"
+      ],
+      "requiredExtensions": [],
+      "embedded": true,
+      "source": "https://www.autosprite.io/free-3d-models/goblin",
+      "license": "CC0-1.0"
+    }
+  }
+}
