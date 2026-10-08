@@ -1,7 +1,9 @@
 import './style.css';
+import './skill-vfx.css';
 import { GameEngine, HEROES, STAGES, SUMMON_COST, SUMMON_TEN_COST, LEGENDARY_PITY } from './simulation';
 import type { HeroDefinition, EquipmentInstance } from './simulation/types';
 import { WorldView } from './render/WorldView';
+import { SkillAudio } from './render/SkillAudio';
 
 type Page = 'home' | 'story' | 'heroes' | 'forge' | 'settings' | 'battle';
 const engine = new GameEngine();
@@ -17,7 +19,9 @@ let uiElapsed = 0;
 let muted = true;
 let battleSignature = '';
 let modalSignature = '';
-let audioContext: AudioContext | null = null;
+const spellAudio = new SkillAudio();
+let reducedEffects = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let skillCueTimer = 0;
 const $ = <T extends HTMLElement = HTMLElement>(selector: string) => document.querySelector<T>(selector)!;
 const escape = (s: string) => s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]!));
 const fmt = (n: number) => new Intl.NumberFormat('en-US').format(Math.round(n));
@@ -53,7 +57,7 @@ $('#app').innerHTML = `<div id="world" aria-label="ฉากเกมสาม�
   <div class="vignette"></div><div class="grain"></div>
   <header id="topbar"><button class="brand" data-action="nav" data-page="home" aria-label="กลับหน้าหลัก"><span class="brand-mark">A</span><span>AETHERIA<small>CHRONICLES</small></span></button><div class="top-right"><span class="chapter-label">THE AGE OF A NEW DAWN</span><div class="wallet gold">${icon('coin')}<b id="gold"></b></div><div class="wallet gems">${icon('crystal')}<b id="gems"></b></div><button class="round" data-action="nav" data-page="settings" aria-label="ตั้งค่า">${icon('settings')}</button></div></header>
   <main id="content"></main><nav id="nav" aria-label="เมนูหลัก"></nav>
-  <div id="battle-ui" hidden></div><div id="modal" hidden></div><div id="toast" role="status"></div>
+  <div id="battle-ui" hidden></div><div id="skill-cue" hidden aria-hidden="true"></div><div id="modal" hidden></div><div id="toast" role="status"></div>
   <div id="loading"><div class="loading-emblem">A</div><span class="eyebrow">AETHERIA CHRONICLES</span><h1>โลกใบใหม่กำลังตื่นขึ้น</h1><p id="load-message">กำลังเตรียมฉากสามมิติ...</p><div class="load-track"><span></span></div></div>
   <div id="character-loading" hidden role="status">กำลังเรียกสหาย…</div><div id="asset-warning" hidden role="alert"></div><input id="import-file" type="file" accept="application/json,.json" hidden/>`;
 
@@ -65,13 +69,22 @@ catch (error) {
 }
 const hero = () => HEROES.find(h=>h.id===selectedHero)!;
 const toast = (message: string) => { $('#toast').textContent=message; $('#toast').classList.add('show'); noticeTimer=4; };
+world.setReducedEffects(reducedEffects);
+world.onSkill = cue => {
+  if(page!=='battle')return;
+  const hero=HEROES.find(hero=>hero.id===cue.heroId), node=$('#skill-cue');
+  node.style.setProperty('--spell',cue.color);node.className=cue.slot===2?'ultimate':'';node.hidden=false;
+  node.innerHTML=`${hero?`<img src="${import.meta.env.BASE_URL}assets/${hero.modelKey}-portrait.png" alt=""/>`:''}<span><small>${cue.slot===2?'ULTIMATE · ':''}${hero?.name??'BOSS'}</small><b>${escape(cue.name)}</b></span>`;
+  skillCueTimer=cue.slot===2?1.25:.85;
+  spellAudio.playSkill(cue.heroId,cue.slot,engine.state.battle?.speed??1);
+};
 function sound(kind='click') {
-  if(muted)return;
-  try { audioContext ??= new AudioContext(); void audioContext.resume(); const osc=audioContext.createOscillator(); const gain=audioContext.createGain(); osc.type='sine'; osc.frequency.setValueAtTime(kind==='win'?700:440,audioContext.currentTime); osc.frequency.exponentialRampToValueAtTime(kind==='win'?1100:660,audioContext.currentTime+0.12); gain.gain.setValueAtTime(0.06,audioContext.currentTime); gain.gain.exponentialRampToValueAtTime(0.001,audioContext.currentTime+0.2); osc.connect(gain).connect(audioContext.destination);osc.start();osc.stop(audioContext.currentTime+0.2); }catch{}
+  if(!muted)spellAudio.playUi(kind==='win');
 }
 function changePage(next: Page) {
   if(engine.state.battle?.status==='fighting' && next!=='battle') { engine.setPaused(true); toast('การต่อสู้ถูกพักไว้ กลับไปที่การต่อสู้เพื่อเล่นต่อ'); }
   page=next; results=[];
+  $('#skill-cue').hidden=true;skillCueTimer=0;spellAudio.stop();
   world.setMode(next==='battle'?'battle':next==='heroes'?'heroes':'home');
   if(next==='heroes')world.preview(selectedHero);
   render();
@@ -104,7 +117,7 @@ function heroes() {
 }
 function equipmentCard(i: EquipmentInstance) { return `<div class="equipment-card rarity-${i.rarity}"><span class="item-rarity">${rarityName[i.rarity]}</span><div class="item-art">${icon(i.slot==='weapon'?'sword':i.slot==='armor'?'shield':'crystal')}</div><b>${escape(i.name)}</b><small>${slotName[i.slot]}</small><div class="item-stats">${i.attack?`ATK +${i.attack} `:''}${i.hp?`HP +${i.hp} `:''}${i.defense?`DEF +${i.defense}`:''}</div></div>`; }
 function forge() { return `<section class="panel forge-panel"><span class="eyebrow">THE CELESTIAL ARMORY</span><h1>Star Forge</h1><p>ปลุกพลังแห่งดวงดาว แล้วค้นพบอุปกรณ์สำหรับตำนานของคุณ</p><div class="forge-emblem">${icon('crystal')}<span class="orbit orbit-one"></span><span class="orbit orbit-two"></span><i></i></div><span class="forge-label">อาวุธ · ชุดเกราะ · เครื่องประดับ</span><div class="forge-actions">${button(`สุ่ม 1 ครั้ง ${icon('crystal')} ${SUMMON_COST}`,'summon','secondary','data-count="1"')}${button(`สุ่ม 10 ครั้ง ${icon('crystal')} ${fmt(SUMMON_TEN_COST)}`,'summon','primary','data-count="10"')}</div><p class="pity-note">รับอุปกรณ์ระดับตำนานภายในอีก <b>${LEGENDARY_PITY-engine.state.profile.legendaryPity}</b> ครั้ง</p><div class="rate-strip"><span>ทั่วไป <b>50%</b></span><span class="rarity-rare">หายาก <b>35%</b></span><span class="rarity-epic">มหากาพย์ <b>12%</b></span><span class="rarity-legendary">ตำนาน <b>3%</b></span></div><small class="forge-footnote">เพชรหาได้จากการเล่น · สุ่มเฉพาะอุปกรณ์ · ฮีโร่เลือกซื้อได้โดยตรง</small></section>`; }
-function settings() { return `<section class="panel settings-panel"><span class="eyebrow">YOUR ADVENTURE, YOUR WAY</span><h1>ตั้งค่า</h1><div class="setting-row"><div><b>เสียงเอฟเฟกต์</b><small>เสียงกดปุ่มและการรับรางวัล</small></div>${button(muted?'ปิด':'เปิด','sound','secondary')}</div><div class="setting-row"><div><b>สำรองเซฟ</b><small>ดาวน์โหลดความคืบหน้าเก็บไว้ในเครื่อง</small></div>${button(`${icon('download')} ส่งออก`,'export','secondary')}</div><div class="setting-row"><div><b>นำเข้าเซฟ</b><small>นำไฟล์สำรองมาเล่นต่อบนเครื่องนี้</small></div>${button(`${icon('upload')} นำเข้า`,'import','secondary')}</div><div class="save-explanation">ความคืบหน้าบันทึกอัตโนมัติในเบราว์เซอร์นี้ การล้างข้อมูลเว็บไซต์จะลบเซฟด้วย โปรดสำรองก่อนเปลี่ยนเครื่อง</div><div class="about-game"><span>AETHERIA CHRONICLES</span><small>Distinct hero roster · v0.2.0<br>Original world & characters · Inspired by classic party RPGs</small></div></section>`; }
+function settings() { return `<section class="panel settings-panel"><span class="eyebrow">YOUR ADVENTURE, YOUR WAY</span><h1>ตั้งค่า</h1><div class="setting-row"><div><b>เสียงเอฟเฟกต์</b><small>เสียงสกิล การกระแทก และการรับรางวัล</small></div>${button(muted?'ปิด':'เปิด','sound','secondary')}</div><div class="setting-row"><div><b>เอฟเฟกต์สกิล</b><small>โหมดเบาลดอนุภาคและหยุดการสั่นกล้อง</small></div>${button(reducedEffects?'เบา':'เต็ม','effects','secondary')}</div><div class="setting-row"><div><b>สำรองเซฟ</b><small>ดาวน์โหลดความคืบหน้าเก็บไว้ในเครื่อง</small></div>${button(`${icon('download')} ส่งออก`,'export','secondary')}</div><div class="setting-row"><div><b>นำเข้าเซฟ</b><small>นำไฟล์สำรองมาเล่นต่อบนเครื่องนี้</small></div>${button(`${icon('upload')} นำเข้า`,'import','secondary')}</div><div class="save-explanation">ความคืบหน้าบันทึกอัตโนมัติในเบราว์เซอร์นี้ การล้างข้อมูลเว็บไซต์จะลบเซฟด้วย โปรดสำรองก่อนเปลี่ยนเครื่อง</div><div class="about-game"><span>AETHERIA CHRONICLES</span><small>Signature skills · v0.3.0<br>Original world & characters · Inspired by classic party RPGs</small></div></section>`; }
 function renderBattle() {
  const b=engine.state.battle;
  if(!b){changePage('story');return;}
@@ -148,7 +161,7 @@ document.addEventListener('click', e=>{
   case 'cast':engine.castSkill(d.hero!,Number(d.slot));break;
   case 'auto':engine.setAuto(!engine.state.battle?.auto);renderBattle();break;
   case 'speed':engine.setSpeed(engine.state.battle?.speed===1?2:1);renderBattle();break;
-  case 'pause':engine.setPaused(!engine.state.battle?.paused);renderBattle();break;
+  case 'pause':engine.setPaused(!engine.state.battle?.paused);if(engine.state.battle?.paused)spellAudio.stop();renderBattle();break;
   case 'abandonBattle':engine.returnHome();changePage('story');toast('ถอนตัวแล้ว สามารถจัดทีมและอุปกรณ์ก่อนกลับมาสู้ใหม่');break;
   case 'buyHero':engine.buyHero(selectedHero);render();break;
   case 'party': {const ids=engine.state.profile.party;engine.setParty(ids.includes(selectedHero)?ids.filter(id=>id!==selectedHero):[...ids,selectedHero]);render();break;}
@@ -158,15 +171,16 @@ document.addEventListener('click', e=>{
   case 'closeResults':results=[];renderModal();break;
   case 'finishBattle':engine.returnHome();changePage('story');break;
   case 'retryBattle':{const stage=engine.state.battle!.stageId;engine.returnHome();if(engine.startBattle(stage))changePage('battle');break;}
-  case 'sound':muted=!muted;render();sound();break;
+  case 'sound':muted=!muted;spellAudio.setMuted(muted);render();sound();break;
+  case 'effects':reducedEffects=!reducedEffects;world.setReducedEffects(reducedEffects);render();break;
   case 'export': {const url=URL.createObjectURL(new Blob([engine.exportSave()],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download=`aetheria-save-${new Date().toISOString().slice(0,10)}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('ส่งออกไฟล์เซฟแล้ว');break;}
   case 'import':$('#import-file').click();break;
  }
  if(engine.state.notice&&engine.state.notice!==lastNotice){lastNotice=engine.state.notice;toast(lastNotice);}
 });
 $('#import-file').addEventListener('change',async e=>{const input=e.target as HTMLInputElement;const file=input.files?.[0];if(!file)return;if(file.size>2_000_000){toast('ไฟล์เซฟใหญ่เกินไป');return;}const raw=await file.text();if(engine.importSave(raw)){render();toast('นำเข้าเซฟสำเร็จ');}else toast(engine.state.notice||'ไฟล์เซฟไม่ถูกต้อง');input.value='';});
-document.addEventListener('visibilitychange',()=>{if(document.hidden&&engine.state.battle?.status==='fighting')engine.setPaused(true);engine.save();});
-window.addEventListener('pagehide',()=>engine.save());
+document.addEventListener('visibilitychange',()=>{if(document.hidden){spellAudio.stop();if(engine.state.battle?.status==='fighting')engine.setPaused(true);}engine.save();});
+window.addEventListener('pagehide',()=>{spellAudio.stop();engine.save();});
 window.addEventListener('resize',()=>world.resize());
 let previous=performance.now();let previousBattleStatus='';
 function loop(now:number){const dt=Math.min((now-previous)/1000,0.08);previous=now;const sceneReady=world.prepare(engine.state);if(sceneReady)engine.update(dt);world.render(engine.state,dt);uiElapsed+=dt;
@@ -175,6 +189,7 @@ function loop(now:number){const dt=Math.min((now-previous)/1000,0.08);previous=n
  if(uiElapsed>0.1){uiElapsed=0;if(page==='battle')renderBattle();else if(lastRevision!==engine.state.revision)render();$('#gold').textContent=fmt(engine.state.profile.gold);$('#gems').textContent=fmt(engine.state.profile.gems);}
  if(engine.state.battle?.status==='won'&&previousBattleStatus!=='won')sound('win');previousBattleStatus=engine.state.battle?.status||'';
  if(noticeTimer>0){noticeTimer-=dt;if(noticeTimer<=0)$('#toast').classList.remove('show');}
+ if(skillCueTimer>0&&!engine.state.battle?.paused){skillCueTimer-=dt;if(skillCueTimer<=0)$('#skill-cue').hidden=true;}
  requestAnimationFrame(loop);
 }
 render();
@@ -182,4 +197,4 @@ world.init(message=>{$('#load-message').textContent=message;}).then(()=>{$('#loa
  $('#loading').classList.add('loaded');$('#asset-warning').hidden=false;$('#asset-warning').innerHTML=`<b>ยังโหลดโมเดล 3D ไม่สำเร็จ</b><span>${escape(String(error instanceof Error?error.message:error))}</span><button onclick="location.reload()">ลองใหม่</button>`;requestAnimationFrame(loop);
 });
 // Expose a minimal read-only diagnostic snapshot, never a mutable game instance.
-Object.defineProperty(window,'aetheriaDiagnostics',{value:()=>({page,loaded:world.loaded,error:world.loadingError,models:world.modelDiagnostics,party:[...engine.state.profile.party],battle:engine.state.battle?{status:engine.state.battle.status,wave:engine.state.battle.wave,allies:engine.state.battle.allies.length}:null}),writable:false});
+Object.defineProperty(window,'aetheriaDiagnostics',{value:()=>({page,loaded:world.loaded,error:world.loadingError,models:world.modelDiagnostics,effects:world.effectDiagnostics,party:[...engine.state.profile.party],battle:engine.state.battle?{status:engine.state.battle.status,wave:engine.state.battle.wave,allies:engine.state.battle.allies.length}:null}),writable:false});

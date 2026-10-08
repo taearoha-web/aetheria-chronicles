@@ -5,6 +5,7 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { HEROES } from '../simulation/data';
 import type { Combatant, CombatEvent, GameState } from '../simulation/types';
 import { createEnvironment, type Environment } from './environment';
+import { SkillVfx, SKILL_IMPACT_DELAY, type SkillCue } from './SkillVfx';
 
 type Mode = 'home' | 'battle' | 'heroes';
 type ClipRole = 'idle' | 'attack' | 'run' | 'hurt' | 'death' | 'skill';
@@ -47,6 +48,11 @@ export class WorldView {
   private showcaseSignature = '';
   private actors = new Map<string, Actor>();
   private effects: SpellEffect[] = [];
+  private skillVfx: SkillVfx;
+  private delayedEvents: Array<{ event: CombatEvent; remaining: number }> = [];
+  private cameraZoom = 0;
+  private baseFov = 39;
+  onSkill?: (cue: SkillCue) => void;
   private mode: Mode = 'home';
   private selectedHero = 'kael';
   private time = 0;
@@ -96,6 +102,7 @@ export class WorldView {
     const rim = new THREE.DirectionalLight(0x75b5e5, 2.6); rim.position.set(2, 6, -9); this.scene.add(rim);
     const fill = new THREE.DirectionalLight(0xffcce8, .6); fill.position.set(7, 3, 5); this.scene.add(fill);
     this.environment = createEnvironment(this.scene);
+    this.skillVfx = new SkillVfx(this.scene);
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(container);
     this.canvasLostHandler = (event) => { event.preventDefault(); this.contextLost = true; this.container.dataset.webglStatus = 'context-lost'; };
@@ -181,6 +188,8 @@ export class WorldView {
   }
 
   get modelDiagnostics() { return { cached: [...this.models.keys()], actors: [...this.actors.values()].map(actor => ({ id: actor.id, modelKey: actor.modelKey })) }; }
+  get effectDiagnostics() { return { ...this.skillVfx.diagnostics, delayedEvents: this.delayedEvents.length, drawCalls: this.renderer.info.render.calls, geometries: this.renderer.info.memory.geometries, textures: this.renderer.info.memory.textures }; }
+  setReducedEffects(reduced: boolean): void { this.skillVfx.setReduced(reduced); this.cameraShake = 0; this.cameraZoom = 0; }
 
   setMode(mode: Mode): void {
     if (mode === this.mode) return;
@@ -307,7 +316,14 @@ export class WorldView {
         for(const[id,actor]of this.actors){if(!activeIds.has(id))this.removeActor(actor);}
         const simulationDt=battle.paused?0:safeDt*battle.speed;
         for(const combatant of combatants)this.updateCombatant(combatant,combatants,simulationDt);
-        for(const event of battle.effects){if(!this.seenEvents.has(event.id)){this.seenEvents.add(event.id);this.showEvent(event);}}
+        for(const event of battle.effects){
+          if(this.seenEvents.has(event.id))continue;
+          this.seenEvents.add(event.id);
+          // Pair hit feedback with the skill's release, instead of showing numbers before the spell.
+          const skill = battle.effects.find(cast => cast.type === 'skill' && cast.sourceId === event.sourceId && cast.createdAt === event.createdAt);
+          if(skill && ['damage','heal','shield'].includes(event.type))this.delayedEvents.push({event,remaining:SKILL_IMPACT_DELAY});
+          else this.showEvent(event);
+        }
         if(this.seenEvents.size>500){const liveIds=new Set(battle.effects.map(event=>event.id));this.seenEvents=liveIds;}
       }else{
         for(const actor of this.actors.values()){
@@ -319,8 +335,11 @@ export class WorldView {
         }
       }
     }
+    const effectDt=this.mode==='battle'&&state.battle ? (state.battle.paused?0:safeDt*state.battle.speed) : safeDt;
+    for(let i=this.delayedEvents.length-1;i>=0;i--){const pending=this.delayedEvents[i];pending.remaining-=effectDt;if(pending.remaining<=0){this.showEvent(pending.event);this.delayedEvents.splice(i,1);}}
+    this.skillVfx.update(effectDt);
     for(let i=this.effects.length-1;i>=0;i--){
-      const effect=this.effects[i]; effect.age+=safeDt;
+      const effect=this.effects[i]; effect.age+=effectDt;
       const t=Math.min(effect.age/effect.duration,1);effect.update(t);
       if(t>=1){this.scene.remove(effect.object);effect.dispose();this.effects.splice(i,1);}
     }
@@ -328,6 +347,9 @@ export class WorldView {
     this.camera.position.lerp(this.targetPosition,smoothing);
     this.lookAt.lerp(this.targetLookAt,smoothing);
     this.cameraShake=Math.max(0,this.cameraShake-safeDt*.9);
+    this.cameraZoom=Math.max(0,this.cameraZoom-safeDt*2.5);
+    const fov=this.baseFov-this.cameraZoom;
+    if(Math.abs(this.camera.fov-fov)>.01){this.camera.fov=fov;this.camera.updateProjectionMatrix();}
     this.camera.lookAt(this.lookAt.x+Math.sin(this.time*70)*this.cameraShake*.07,this.lookAt.y+Math.cos(this.time*53)*this.cameraShake*.04,this.lookAt.z);
     for(const actor of this.actors.values())actor.hp.quaternion.copy(actor.group.quaternion).invert().multiply(this.camera.quaternion);
     this.renderer.render(this.scene,this.camera);
@@ -350,9 +372,9 @@ export class WorldView {
       actor.seq=combatant.actionSeq;actor.actionTime=0;actor.action=combatant.action;
       const clip:ClipRole=combatant.action==='dead'?'death':combatant.action==='hit'?'hurt':combatant.action==='skill'?'skill':combatant.action==='attack'?'attack':'idle';
       this.play(actor,clip);
-      if(combatant.action==='attack'||combatant.action==='skill'){
+      if(combatant.action==='attack'){
         const target=combatants.find(other=>other.id===combatant.targetId);
-        if(target&&combatant.role!=='healer')this.spawnTrail(actor.base,new THREE.Vector3(target.x*1.55,1.1,target.z*1.25),actor.color,combatant.action==='skill');
+        if(target&&combatant.role!=='healer')this.spawnTrail(actor.base,new THREE.Vector3(target.x*1.55,1.1,target.z*1.25),actor.color,false);
       }
     }
     actor.actionTime+=dt;actor.mixer.update(dt);
@@ -383,18 +405,26 @@ export class WorldView {
 
   private showEvent(event:CombatEvent):void {
     if(event.type==='wave')return;
+    if(event.type==='skill'){
+      const caster=this.actors.get(event.sourceId??'');if(!caster)return;
+      const hero=heroById[event.sourceId??''];
+      const targets=(event.targetIds??(event.targetId?[event.targetId]:[])).map(id=>this.actors.get(id)?.base.clone()).filter((point):point is THREE.Vector3=>!!point);
+      // Boss sweeps have no hero definition and target the living opposing formation.
+      if(!hero&&!targets.length)for(const ally of this.lastState?.battle?.allies??[]){if(ally.alive){const actor=this.actors.get(ally.id);if(actor)targets.push(actor.base.clone());}}
+      const cue:SkillCue={heroId:hero?.id??'boss',skillId:event.skillId??'eclipse-burst',slot:event.skillSlot??2,name:event.label??'Eclipse Burst',color:hero?.color??'#dd4590',origin:caster.base.clone(),targets};
+      this.skillVfx.cast(cue);this.onSkill?.(cue);
+      if(!this.skillVfx.diagnostics.reduced){this.cameraShake=Math.max(this.cameraShake,cue.slot===2?.65:.22);if(cue.slot===2)this.cameraZoom=1.2;}
+      return;
+    }
     const target=this.actors.get(event.targetId??event.sourceId??'');if(!target)return;
     if(event.type==='damage'){
       this.spawnBurst(target.base.clone().add(new THREE.Vector3(0,1.0,0)),event.critical?0xffcc76:0xffe9b7,event.critical?20:8);
-      if(event.critical)this.cameraShake=.4;
+      if(event.critical&&!this.skillVfx.diagnostics.reduced)this.cameraShake=Math.max(this.cameraShake,.3);
       if(event.amount)this.spawnNumber(target,event.amount,event.critical?'#ffe0a0':'#fff3df',!!event.critical);
     }else if(event.type==='heal'){
       this.spawnRing(target.base,0x8effc5,false);
       if(event.amount)this.spawnNumber(target,event.amount,'#a1ffca',false,true);
     }else if(event.type==='shield')this.spawnRing(target.base,0x94cbff,true);
-    else if(event.type==='skill'){
-      this.spawnRing(target.base,target.color,true);this.spawnBurst(target.base.clone().add(new THREE.Vector3(0,.15,0)),target.color,24);
-    }
   }
 
   private spawnRing(position:THREE.Vector3,color:THREE.ColorRepresentation,tall:boolean):void {
@@ -430,6 +460,7 @@ export class WorldView {
     const width=Math.max(this.container.clientWidth,1),height=Math.max(this.container.clientHeight,1);
     this.renderer.setSize(width,height,false);this.camera.aspect=width/height;
     this.camera.fov=width/height<.85?52:39;
+    this.baseFov=this.camera.fov;
     this.camera.clearViewOffset();
     if(this.mode==='home')this.camera.setViewOffset(width,height,-width*(width>720?.16:.04),0,width,height);
     if(this.mode==='battle'){
@@ -453,7 +484,7 @@ export class WorldView {
     this.actors.delete(actor.id);
   }
   private clearActors():void {for(const actor of this.actors.values())this.removeActor(actor);}
-  private clearEffects():void {for(const effect of this.effects){this.scene.remove(effect.object);effect.dispose();}this.effects=[];}
+  private clearEffects():void {for(const effect of this.effects){this.scene.remove(effect.object);effect.dispose();}this.effects=[];this.delayedEvents=[];this.skillVfx.clear();this.cameraZoom=0;this.cameraShake=0;}
   dispose():void {
     if(this.disposed)return;this.disposed=true;this.resizeObserver.disconnect();this.clearActors();this.clearEffects();this.environment.dispose();
     const geometry=new Set<THREE.BufferGeometry>(),materials=new Set<THREE.Material>(),textures=new Set<THREE.Texture>();
@@ -461,5 +492,6 @@ export class WorldView {
     geometry.forEach(value=>value.dispose());materials.forEach(value=>value.dispose());textures.forEach(value=>value.dispose());
     this.renderer.domElement.removeEventListener('webglcontextlost',this.canvasLostHandler);this.renderer.domElement.removeEventListener('webglcontextrestored',this.canvasRestoredHandler);
     this.environmentTarget.dispose();this.renderer.dispose();this.renderer.domElement.remove();
+    this.skillVfx.dispose();
   }
 }

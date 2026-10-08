@@ -95,6 +95,18 @@ describe('roster, equipment and currency transactions', () => {
 });
 
 describe('real-time combat and progression', () => {
+  it('reports the actual support recipients and area targets for skill presentation', () => {
+    const game=engine();game.startBattle(1);
+    const battle=game.state.battle!;battle.allies[0].hp-=200;
+    expect(game.castSkill('lyra',0)).toBe(true);
+    const heal=battle.effects.find(effect=>effect.type==='skill'&&effect.sourceId==='lyra')!;
+    expect(heal).toMatchObject({skillId:'starlight',skillSlot:0,targetId:'kael',targetIds:['kael']});
+    expect(battle.effects.find(effect=>effect.type==='heal')?.targetId).toBe(heal.targetId);
+    const targets=battle.enemies.filter(enemy=>enemy.alive).map(enemy=>enemy.id);
+    expect(game.castSkill('kael',2)).toBe(true);
+    expect(battle.effects.find(effect=>effect.skillId==='horizon')?.targetIds).toEqual(targets);
+  });
+
   it('responds to a manual skill tap during an attack animation exactly once', () => {
     const game = engine();
     game.startBattle(1);

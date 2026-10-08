@@ -44,6 +44,7 @@ export interface CombatEvent {
   id: number; type: 'damage' | 'heal' | 'shield' | 'skill' | 'death' | 'wave';
   sourceId?: string; targetId?: string; amount?: number; critical?: boolean;
   label?: string; createdAt: number;
+  skillId?: string; skillSlot?: number; targetIds?: string[];
 }
 export interface BattleRewards {
   gems: number; gold: number; firstClear: boolean; hero?: string;

@@ -362,7 +362,13 @@ export class GameEngine {
     caster.energy -= skill.cost;
     const target = this.selectEnemy(skill.kind === 'execute');
     this.animate(caster, 'skill', target?.id);
-    this.event({ type: 'skill', sourceId: caster.id, targetId: target?.id, label: skill.name });
+    // Presentation receives the actual skill and targets, including support skills.
+    const targetIds = skill.kind === 'heal' ? [this.mostWounded()?.id].filter((id): id is string => !!id)
+      : ['healAll', 'renew', 'shieldAll'].includes(skill.kind) ? battle.allies.filter(ally => ally.alive).map(ally => ally.id)
+      : skill.kind === 'shield' ? [caster.id]
+      : ['cleave', 'blast'].includes(skill.kind) ? battle.enemies.filter(enemy => enemy.alive).map(enemy => enemy.id)
+      : target ? [target.id] : [];
+    this.event({ type: 'skill', sourceId: caster.id, targetId: targetIds[0], targetIds, skillId: skill.id, skillSlot: slot, label: skill.name });
     if (skill.kind === 'heal') {
       const wounded = this.mostWounded();
       if (wounded) this.heal(caster, wounded, caster.attack * skill.power);
