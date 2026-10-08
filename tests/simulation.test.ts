@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { GameEngine, HEROES, SAVE_KEY, SUMMON_COST, SUMMON_TEN_COST, parseSave } from '../src/simulation';
 import type { StorageLike } from '../src/simulation';
+import { combatDistance, contactRange } from '../src/simulation/movement';
 
 function storage(): StorageLike {
   const entries = new Map<string, string>();
@@ -95,6 +96,34 @@ describe('roster, equipment and currency transactions', () => {
 });
 
 describe('real-time combat and progression', () => {
+  it('closes the gap before a melee attack and applies one hit at its impact frame', () => {
+    const game=engine();game.setParty(['kael']);game.startBattle(1);const battle=game.state.battle!,kael=battle.allies[0];const start=kael.x;
+    game.update(.1);expect(kael.x).toBeGreaterThan(start);expect(kael.action).toBe('move');
+    expect(battle.effects.some(event=>event.type==='damage'&&event.sourceId==='kael')).toBe(false);
+    for(let i=0;i<180&&kael.action!=='attack';i++)game.update(1/30);
+    const target=battle.enemies.find(enemy=>enemy.id===kael.targetId)!;
+    expect(kael.action).toBe('attack');expect(combatDistance(kael,target)).toBeLessThanOrEqual(contactRange(kael,target)+.05);
+    const hp=target.hp;game.update(.1);expect(target.hp).toBe(hp);game.update(.1);expect(target.hp).toBeLessThan(hp);
+    expect(battle.effects.filter(event=>event.type==='damage'&&event.sourceId==='kael')).toHaveLength(1);
+  });
+
+  it('charges a melee skill once, approaches its recipient and freezes that intent on pause', () => {
+    const game=engine();game.setParty(['kael']);game.startBattle(1);const battle=game.state.battle!,kael=battle.allies[0];
+    expect(game.castSkill('kael',0)).toBe(true);expect(kael.energy).toBe(80);expect(kael.queuedSkill).toBe(0);
+    expect(battle.effects.some(event=>event.type==='skill')).toBe(false);
+    game.setPaused(true);const frozen=JSON.stringify(battle);game.update(.5);expect(JSON.stringify(battle)).toBe(frozen);game.setPaused(false);
+    for(let i=0;i<180&&!battle.effects.some(event=>event.skillId==='dawnstrike');i++)game.update(1/30);
+    expect(battle.effects.filter(event=>event.skillId==='dawnstrike')).toHaveLength(1);expect(kael.queuedSkill).toBeUndefined();
+    expect(kael.energy).toBeCloseTo(80+battle.elapsed*6,5);expect(game.castSkill('kael',0)).toBe(false);
+  });
+
+  it('keeps the ranged healer behind the engaged knight', () => {
+    const game=engine();game.startBattle(1);for(let i=0;i<45;i++)game.update(1/30);
+    const battle=game.state.battle!,kael=battle.allies[0],lyra=battle.allies[1];
+    expect(lyra.x).toBeLessThan(kael.x-1);expect(lyra.attackMode).toBe('ranged');
+    const enemy=battle.enemies.find(enemy=>enemy.alive)!;expect(combatDistance(lyra,enemy)).toBeGreaterThan(2);
+  });
+
   it('reports the actual support recipients and area targets for skill presentation', () => {
     const game=engine();game.startBattle(1);
     const battle=game.state.battle!;battle.allies[0].hp-=200;
@@ -104,15 +133,16 @@ describe('real-time combat and progression', () => {
     expect(battle.effects.find(effect=>effect.type==='heal')?.targetId).toBe(heal.targetId);
     const targets=battle.enemies.filter(enemy=>enemy.alive).map(enemy=>enemy.id);
     expect(game.castSkill('kael',2)).toBe(true);
+    for(let i=0;i<120&&!battle.effects.some(effect=>effect.skillId==='horizon');i++)game.update(1/30);
     expect(battle.effects.find(effect=>effect.skillId==='horizon')?.targetIds).toEqual(targets);
   });
 
   it('responds to a manual skill tap during an attack animation exactly once', () => {
     const game = engine();
     game.startBattle(1);
-    game.update(0.5);
     const battle = game.state.battle!;
     const kael = battle.allies.find(ally => ally.heroId === 'kael')!;
+    for(let i=0;i<120&&kael.action!=='attack';i++)game.update(1/30);
     expect(kael.action).toBe('attack');
     expect(kael.actionTimer).toBeGreaterThan(0.25);
     const remainingHp = () => battle.enemies.reduce((sum, enemy) => sum + enemy.hp, 0);

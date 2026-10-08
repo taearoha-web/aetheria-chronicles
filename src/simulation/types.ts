@@ -1,7 +1,7 @@
 export type HeroRole = 'knight' | 'healer' | 'mage' | 'rogue' | 'guardian' | 'ranger' | 'paladin';
 export type EquipmentSlot = 'weapon' | 'armor' | 'accessory';
 export type Rarity = 'common' | 'rare' | 'epic' | 'legendary';
-export type Action = 'idle' | 'attack' | 'skill' | 'hit' | 'dead';
+export type Action = 'idle' | 'move' | 'attack' | 'skill' | 'hit' | 'dead';
 export type SkillKind = 'strike' | 'cleave' | 'heal' | 'healAll' | 'shield' | 'shieldAll' | 'blast' | 'execute' | 'renew';
 
 export interface SkillDefinition {
@@ -11,6 +11,7 @@ export interface SkillDefinition {
 export interface HeroDefinition {
   id: string; name: string; title: string; description: string; role: HeroRole;
   color: string; modelKey: string; price: number; storyStage?: number;
+  attackMode: 'melee' | 'ranged';
   baseHp: number; baseAttack: number; baseDefense: number; attackInterval: number;
   skills: SkillDefinition[]; passive: { name: string; description: string };
 }
@@ -39,6 +40,8 @@ export interface Combatant {
   x: number; z: number; alive: boolean; action: Action; actionSeq: number;
   targetId?: string; cooldowns: number[]; shield: number; energy: number;
   attackTimer: number; attackInterval: number; actionTimer: number;
+  attackMode: 'melee' | 'ranged'; attackRange: number; radius: number; moveSpeed: number;
+  queuedSkill?: number;
 }
 export interface CombatEvent {
   id: number; type: 'damage' | 'heal' | 'shield' | 'skill' | 'death' | 'wave';

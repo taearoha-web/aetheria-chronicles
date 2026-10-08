@@ -40,3 +40,11 @@
 - Load characters on demand, with at most two downloads at once. Suspend combat simulation while its models load; show a retry on failure instead of substituting a different actor.
 - Preserve hero IDs, currency, purchases and saved progress when updating appearance.
 - See docs/ART-DIRECTION.md for exact mappings and future work.
+
+## Contact combat
+- The owner requires melee heroes to approach and fight at monster contact, following the original King's Raid staging.
+- Attack mode is explicit per hero. Nova uses a melee staff despite retaining the existing ranger role and saved ID.
+- Keep movement, range checks, body spacing and hit timing in the simulation. Rendering reads positions, turns toward targets and plays authored Run clips.
+- Never replace melee contact with a ranged energy trail. Healing and ranged heroes retain rear-line distance.
+- Offensive melee skills submitted out of range reserve their cost once and approach before release. Pause must freeze movement and pending hits.
+- See docs/CONTACT-COMBAT.md for inspected reference footage and implementation boundaries.

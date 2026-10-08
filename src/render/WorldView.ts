@@ -3,6 +3,7 @@ import { GLTFLoader, type GLTF } from 'three/addons/loaders/GLTFLoader.js';
 import { clone } from 'three/addons/utils/SkeletonUtils.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { HEROES } from '../simulation/data';
+import { FIELD_X, FIELD_Z } from '../simulation/movement';
 import type { Combatant, CombatEvent, GameState } from '../simulation/types';
 import { createEnvironment, type Environment } from './environment';
 import { SkillVfx, SKILL_IMPACT_DELAY, type SkillCue } from './SkillVfx';
@@ -187,7 +188,7 @@ export class WorldView {
     return ready;
   }
 
-  get modelDiagnostics() { return { cached: [...this.models.keys()], actors: [...this.actors.values()].map(actor => ({ id: actor.id, modelKey: actor.modelKey })) }; }
+  get modelDiagnostics() { return { cached: [...this.models.keys()], actors: [...this.actors.values()].map(actor => ({ id: actor.id, modelKey: actor.modelKey, x:actor.group.position.x, z:actor.group.position.z, facing:actor.group.rotation.y, clip:actor.current?.getClip().name })) }; }
   get effectDiagnostics() { return { ...this.skillVfx.diagnostics, delayedEvents: this.delayedEvents.length, drawCalls: this.renderer.info.render.calls, geometries: this.renderer.info.memory.geometries, textures: this.renderer.info.memory.textures }; }
   setReducedEffects(reduced: boolean): void { this.skillVfx.setReduced(reduced); this.cameraShake = 0; this.cameraZoom = 0; }
 
@@ -370,11 +371,15 @@ export class WorldView {
     actor.ring.visible=combatant.alive;actor.ring.material.opacity=combatant.shield>0?.65:.22;
     if(actor.seq!==combatant.actionSeq){
       actor.seq=combatant.actionSeq;actor.actionTime=0;actor.action=combatant.action;
-      const clip:ClipRole=combatant.action==='dead'?'death':combatant.action==='hit'?'hurt':combatant.action==='skill'?'skill':combatant.action==='attack'?'attack':'idle';
+      const clip:ClipRole=combatant.action==='dead'?'death':combatant.action==='move'?'run':combatant.action==='hit'?'hurt':combatant.action==='skill'?'skill':combatant.action==='attack'?'attack':'idle';
       this.play(actor,clip);
       if(combatant.action==='attack'){
         const target=combatants.find(other=>other.id===combatant.targetId);
-        if(target&&combatant.role!=='healer')this.spawnTrail(actor.base,new THREE.Vector3(target.x*1.55,1.1,target.z*1.25),actor.color,false);
+        if(target){
+          const end=new THREE.Vector3(target.x*FIELD_X,1.1,target.z*FIELD_Z);
+          if(combatant.attackMode==='melee')this.spawnSwing(actor.base,end,actor.color);
+          else this.spawnTrail(actor.base,end,actor.color,false);
+        }
       }
     }
     actor.actionTime+=dt;actor.mixer.update(dt);
@@ -385,13 +390,22 @@ export class WorldView {
       return;
     }
     actor.group.visible=true;actor.deadTime=0;
+    const target=combatants.find(other=>other.id===combatant.targetId&&other.alive);
+    if(target){const facing=Math.atan2((target.x-combatant.x)*FIELD_X,(target.z-combatant.z)*FIELD_Z);actor.group.rotation.y=facing;}
     const attack=(actor.action==='attack'||actor.action==='skill')&&actor.actionTime<.55;
-    const lunge=attack?Math.sin(Math.min(1,actor.actionTime/.55)*Math.PI)*(actor.action==='skill'?.43:.23):0;
-    actor.group.position.copy(actor.base);
-    actor.group.position.x+=(combatant.side==='ally'?1:-1)*lunge;
+    const lunge=attack&&combatant.attackMode==='melee'?Math.sin(Math.min(1,actor.actionTime/.55)*Math.PI)*(actor.action==='skill'?.13:.08):0;
+    if(combatant.action==='move')actor.group.position.lerp(actor.base,Math.min(1,dt*24));else actor.group.position.copy(actor.base);
+    actor.group.position.x+=Math.sin(actor.group.rotation.y)*lunge;actor.group.position.z+=Math.cos(actor.group.rotation.y)*lunge;
     actor.body.position.y=actor.actions.idle?0:Math.sin(this.time*1.9+combatant.x)*.009;
     if(actor.action==='hit'&&actor.actionTime<.22)actor.group.position.x-=(combatant.side==='ally'?1:-1)*Math.sin(actor.actionTime/.22*Math.PI)*.12;
-    if(actor.actionTime>.65&&actor.action!=='idle'){this.play(actor,'idle');actor.action='idle';}
+    if(actor.actionTime>.65&&actor.action!=='idle'&&actor.action!=='move'){this.play(actor,'idle');actor.action='idle';}
+  }
+
+  private spawnSwing(start:THREE.Vector3,end:THREE.Vector3,color:THREE.Color):void {
+    const geometry=new THREE.RingGeometry(.48,.54,24,1,-Math.PI*.6,Math.PI*1.05);
+    const material=new THREE.MeshBasicMaterial({color,transparent:true,opacity:.65,depthWrite:false,side:THREE.DoubleSide,blending:THREE.AdditiveBlending,toneMapped:false});
+    const arc=new THREE.Mesh(geometry,material);arc.position.copy(start).lerp(end,.6);arc.position.y=1.05;arc.rotation.z=.4;this.scene.add(arc);
+    this.effects.push({object:arc,duration:.26,age:0,update:t=>{arc.rotation.z=.4+t*.8;arc.scale.setScalar(.65+t*.6);material.opacity=(1-t)*.65;},dispose:()=>{geometry.dispose();material.dispose();}});
   }
 
   private spawnTrail(start:THREE.Vector3,end:THREE.Vector3,color:THREE.Color,strong:boolean):void {

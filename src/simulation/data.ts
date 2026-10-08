@@ -2,7 +2,7 @@ import type { EquipmentDefinition, HeroDefinition, StageDefinition } from './typ
 
 export const HEROES: HeroDefinition[] = [
   {
-    id: 'kael', name: 'Kael', title: 'Dawnblade Knight', role: 'knight', color: '#72c6ff', modelKey: 'knight', price: 0,
+    id: 'kael', name: 'Kael', title: 'Dawnblade Knight', role: 'knight', attackMode: 'melee', color: '#72c6ff', modelKey: 'knight', price: 0,
     description: 'An exiled knight who carries the last ember of the fallen Dawn Citadel.',
     baseHp: 1250, baseAttack: 92, baseDefense: 28, attackInterval: 1.45,
     skills: [
@@ -13,7 +13,7 @@ export const HEROES: HeroDefinition[] = [
     passive: { name: 'Oath of Dawn', description: 'Gains 25% extra DEF. Enemies prefer targeting frontline allies.' },
   },
   {
-    id: 'lyra', name: 'Lyra', title: 'Starlight Oracle', role: 'healer', color: '#f3b8fa', modelKey: 'healer', price: 0,
+    id: 'lyra', name: 'Lyra', title: 'Starlight Oracle', role: 'healer', attackMode: 'ranged', color: '#f3b8fa', modelKey: 'healer', price: 0,
     description: 'A wandering oracle whose starlight can mend the wounds of a fractured world.',
     baseHp: 780, baseAttack: 78, baseDefense: 13, attackInterval: 1.8,
     skills: [
@@ -24,7 +24,7 @@ export const HEROES: HeroDefinition[] = [
     passive: { name: 'Gentle Light', description: 'Basic attacks also heal the most wounded ally for 35% ATK.' },
   },
   {
-    id: 'seraphina', name: 'Seraphina', title: 'Crimson Phoenix', role: 'mage', color: '#fe927f', modelKey: 'seraphina', price: 0, storyStage: 1,
+    id: 'seraphina', name: 'Seraphina', title: 'Crimson Phoenix', role: 'mage', attackMode: 'ranged', color: '#fe927f', modelKey: 'seraphina', price: 0, storyStage: 1,
     description: 'An immortal phoenix whose crimson feathers carry the fire of a forgotten citadel.',
     baseHp: 760, baseAttack: 116, baseDefense: 12, attackInterval: 1.85,
     skills: [
@@ -35,7 +35,7 @@ export const HEROES: HeroDefinition[] = [
     passive: { name: 'Burning Heart', description: 'Deals 15% more damage while above half HP.' },
   },
   {
-    id: 'riven', name: 'Riven', title: 'Abyssal Blademaster', role: 'rogue', color: '#b9a1ff', modelKey: 'riven', price: 0, storyStage: 2,
+    id: 'riven', name: 'Riven', title: 'Abyssal Blademaster', role: 'rogue', attackMode: 'melee', color: '#b9a1ff', modelKey: 'riven', price: 0, storyStage: 2,
     description: 'A winged warrior of the abyss who turns his dark blades against the Eclipse King.',
     baseHp: 840, baseAttack: 104, baseDefense: 17, attackInterval: 1.05,
     skills: [
@@ -46,7 +46,7 @@ export const HEROES: HeroDefinition[] = [
     passive: { name: 'Shadow Edge', description: 'Basic attacks have a 30% critical chance instead of 10%.' },
   },
   {
-    id: 'astrid', name: 'Astrid', title: 'Crystal Titan', role: 'guardian', color: '#8ddff4', modelKey: 'astrid', price: 1200,
+    id: 'astrid', name: 'Astrid', title: 'Crystal Titan', role: 'guardian', attackMode: 'melee', color: '#8ddff4', modelKey: 'astrid', price: 1200,
     description: 'A living crystal titan who protects her companions behind an unbreakable stone guard.',
     baseHp: 1550, baseAttack: 78, baseDefense: 36, attackInterval: 1.65,
     skills: [
@@ -57,7 +57,7 @@ export const HEROES: HeroDefinition[] = [
     passive: { name: 'Unbroken', description: 'Takes 15% less damage while below half HP.' },
   },
   {
-    id: 'elias', name: 'Elias', title: 'Thunderfang Spirit', role: 'mage', color: '#b8a6ff', modelKey: 'elias', price: 1200,
+    id: 'elias', name: 'Elias', title: 'Thunderfang Spirit', role: 'mage', attackMode: 'ranged', color: '#b8a6ff', modelKey: 'elias', price: 1200,
     description: 'A legendary wolf whose fangs and mane crackle with the ancient power of thunder.',
     baseHp: 820, baseAttack: 127, baseDefense: 13, attackInterval: 1.9,
     skills: [
@@ -68,7 +68,7 @@ export const HEROES: HeroDefinition[] = [
     passive: { name: 'Static Charge', description: 'Regenerates 2 extra energy per second.' },
   },
   {
-    id: 'nova', name: 'Nova', title: 'Wind Monkey King', role: 'ranger', color: '#a8e5ae', modelKey: 'nova', price: 1200,
+    id: 'nova', name: 'Nova', title: 'Wind Monkey King', role: 'ranger', attackMode: 'melee', color: '#a8e5ae', modelKey: 'nova', price: 1200,
     description: 'A fearless monkey king whose enchanted staff commands the winds of the wildwood.',
     baseHp: 880, baseAttack: 110, baseDefense: 16, attackInterval: 1.25,
     skills: [
@@ -79,7 +79,7 @@ export const HEROES: HeroDefinition[] = [
     passive: { name: 'Keen Eye', description: 'Deals 20% extra damage against bosses.' },
   },
   {
-    id: 'lucien', name: 'Lucien', title: 'Radiant Lion Guardian', role: 'paladin', color: '#f2d38a', modelKey: 'lucien', price: 1200,
+    id: 'lucien', name: 'Lucien', title: 'Radiant Lion Guardian', role: 'paladin', attackMode: 'melee', color: '#f2d38a', modelKey: 'lucien', price: 1200,
     description: 'A golden lion spirit whose radiant mane restores courage and shields his companions.',
     baseHp: 1190, baseAttack: 94, baseDefense: 28, attackInterval: 1.5,
     skills: [

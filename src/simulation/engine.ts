@@ -1,5 +1,6 @@
 import { BOSS_MODELS, ENEMY_MODELS, EQUIPMENT_POOL, HERO_BY_ID, HEROES, LEGENDARY_PITY, MAX_HERO_LEVEL, SAVE_KEY, STAGES, SUMMON_COST, SUMMON_TEN_COST } from './data';
 import { createProfile, parseSave } from './storage';
+import { approach, combatDistance, inAttackRange, nearest } from './movement';
 import type { BattleRewards, Combatant, CombatEvent, EngineOptions, EquipmentInstance, EquipmentSlot, GameState, HeroDefinition, Rarity, SkillDefinition, StorageLike } from './types';
 
 const STEP = 1 / 30;
@@ -17,6 +18,8 @@ export class GameEngine {
   private accumulator = 0;
   private autoDefault = false;
   private speedDefault: 1 | 2 = 1;
+  private pendingHits: Array<{ sourceId: string; targetId: string; dueAt: number; sequence: number }> = [];
+  private pendingSkills = new Map<string, { skill: SkillDefinition; slot: number; targetId: string }>();
 
   constructor(options: EngineOptions = {}) {
     this.random = options.random ?? Math.random;
@@ -208,6 +211,7 @@ export class GameEngine {
     if (!this.state.profile.party.length) return this.notify('Add a hero to your party first.');
     const allies = this.state.profile.party.map((heroId, index) => this.makeAlly(heroId, index));
     this.accumulator = 0;
+    this.pendingHits = [];this.pendingSkills.clear();
     this.state.battle = {
       id: this.uid('battle'), stageId, wave: 1, status: 'fighting', elapsed: 0,
       speed: this.speedDefault, paused: false, auto: this.autoDefault,
@@ -225,10 +229,12 @@ export class GameEngine {
     return {
       id: heroId, heroId, modelKey: hero.modelKey, name: hero.name, side: 'ally', role: hero.role,
       hp: stats.hp, maxHp: stats.hp, attack: stats.attack, defense: stats.defense,
-      x: FRONTLINE.has(hero.role) ? -1 : hero.role === 'rogue' ? -1.55 : -2.4,
+      x: FRONTLINE.has(hero.role) ? -1 : hero.attackMode === 'melee' ? -1.55 : -2.4,
       z: (index - (this.state.profile.party.length - 1) / 2) * 1.0,
       alive: true, action: 'idle', actionSeq: 0, cooldowns: [0, 0, 0], shield: 0, energy: 100,
       attackTimer: 0.4 + index * 0.12, attackInterval: hero.attackInterval, actionTimer: 0,
+      attackMode: hero.attackMode, attackRange: hero.attackMode === 'melee' ? .24 : 3.45,
+      radius: hero.id==='astrid'?.67:hero.id==='lucien'?.72:hero.id==='elias'?.55:.55,moveSpeed:hero.role==='rogue'?3.15:2.5,
     };
   }
 
@@ -248,6 +254,7 @@ export class GameEngine {
         z: count === 1 ? 0 : (index - (count - 1) / 2) * 1.2,
         alive: true, action: 'idle' as const, actionSeq: 0, cooldowns: [], shield: 0, energy: 0,
         attackTimer: 1 + index * 0.3, attackInterval: boss ? 1.7 : 2.15 + index * 0.12, actionTimer: 0,
+        attackMode:'melee' as const,attackRange:boss?.34:.23,radius:boss?.86:.64,moveSpeed:boss?1.8:2.15,
       };
     });
   }
@@ -265,8 +272,8 @@ export class GameEngine {
     const skill = hero.skills[slot];
     // Manual taps interrupt a basic attack animation immediately. Damage and
     // resource costs still occur once; the automatic policy retains its gate.
-    if (caster.cooldowns[slot] > 0 || caster.energy < skill.cost || !battle.enemies.some(enemy => enemy.alive)) return false;
-    this.useSkill(caster, skill, slot);
+    if (caster.queuedSkill!==undefined || caster.cooldowns[slot] > 0 || caster.energy < skill.cost || !battle.enemies.some(enemy => enemy.alive)) return false;
+    this.requestSkill(caster, skill, slot);
     this.state.revision += 1;
     this.checkOutcome();
     return true;
@@ -290,7 +297,7 @@ export class GameEngine {
     battle.effects = battle.effects.filter(effect => battle.elapsed - effect.createdAt < 3.5);
     for (const actor of [...battle.allies, ...battle.enemies]) {
       actor.actionTimer = Math.max(0, actor.actionTimer - dt);
-      if (actor.alive && actor.actionTimer === 0) actor.action = 'idle';
+      if (actor.alive && actor.actionTimer === 0 && actor.action!=='move') actor.action = 'idle';
       if (actor.alive && actor.side === 'ally') {
         actor.energy = Math.min(100, actor.energy + dt * (actor.heroId === 'elias' ? 8 : 6));
         actor.cooldowns = actor.cooldowns.map(cooldown => Math.max(0, cooldown - dt));
@@ -306,17 +313,30 @@ export class GameEngine {
       }
       return;
     }
+    this.resolveHits();
+    this.checkOutcome();
+    if(battle.status!=='fighting'||battle.waveTransition>0)return;
     for (const ally of battle.allies.filter(item => item.alive)) {
+      const queued=this.pendingSkills.get(ally.id);
+      if(queued){
+        const target=battle.enemies.find(enemy=>enemy.id===queued.targetId&&enemy.alive)??this.selectEnemy(queued.skill.kind==='execute');
+        if(target){
+          if(inAttackRange(ally,target)){this.pendingSkills.delete(ally.id);delete ally.queuedSkill;this.useSkill(ally,queued.skill,queued.slot,true,target);}
+          else this.advance(ally,target,dt,true);
+        }
+        continue;
+      }
       if (battle.auto && ally.actionTimer <= 0.25) this.autoSkill(ally);
       if (!battle.enemies.some(enemy => enemy.alive)) break;
+      if(this.pendingSkills.has(ally.id))continue;
       ally.attackTimer -= dt;
+      const target=this.combatTarget(ally);
+      if(target && ally.actionTimer<=.1 && !inAttackRange(ally,target)){this.advance(ally,target,dt);continue;}
+      if(ally.action==='move')this.stopMoving(ally);
       if (ally.attackTimer <= 0 && ally.actionTimer <= 0.1) {
-        const target = this.selectEnemy(ally.role === 'rogue' || ally.role === 'ranger');
         if (target) {
           this.animate(ally, 'attack', target.id);
-          const damage = this.damage(ally, target, 1, false);
-          if (ally.heroId === 'lyra') { const wounded = this.mostWounded(); if (wounded) this.heal(ally, wounded, ally.attack * 0.35); }
-          if (ally.heroId === 'lucien') this.heal(ally, ally, damage * 0.15);
+          this.queueHit(ally,target);
           ally.attackTimer = ally.attackInterval;
         }
       }
@@ -325,8 +345,10 @@ export class GameEngine {
     if (battle.status !== 'fighting' || battle.waveTransition > 0) return;
     for (const enemy of battle.enemies.filter(item => item.alive)) {
       enemy.attackTimer -= dt;
+      const target=this.combatTarget(enemy);
+      if(target && enemy.actionTimer<=.1 && !inAttackRange(enemy,target)){this.advance(enemy,target,dt);continue;}
+      if(enemy.action==='move')this.stopMoving(enemy);
       if (enemy.attackTimer <= 0 && enemy.actionTimer <= 0.1) {
-        const target = this.selectAlly();
         if (target) {
           const sweep = enemy.role === 'boss' && enemy.energy >= 3;
           this.animate(enemy, sweep ? 'skill' : 'attack', target.id);
@@ -334,7 +356,7 @@ export class GameEngine {
             enemy.energy = 0;
             this.event({ type: 'skill', sourceId: enemy.id, label: 'Eclipse Burst' });
             for (const ally of battle.allies.filter(item => item.alive)) this.damage(enemy, ally, 0.8, true);
-          } else { this.damage(enemy, target, 1, false); enemy.energy += 1; }
+          } else { this.queueHit(enemy,target); enemy.energy += 1; }
           enemy.attackTimer = enemy.attackInterval;
         }
       }
@@ -343,6 +365,7 @@ export class GameEngine {
   }
 
   private autoSkill(caster: Combatant): void {
+    if(this.pendingSkills.has(caster.id))return;
     const hero = HERO_BY_ID[caster.heroId!];
     const living = this.state.battle!.allies.filter(ally => ally.alive);
     for (const slot of [2, 1, 0]) {
@@ -351,16 +374,25 @@ export class GameEngine {
       if (skill.kind === 'heal' && !living.some(ally => ally.hp / ally.maxHp < 0.73)) continue;
       if ((skill.kind === 'healAll' || skill.kind === 'renew') && !living.some(ally => ally.hp / ally.maxHp < 0.63)) continue;
       if ((skill.kind === 'shieldAll' || skill.kind === 'shield') && living.every(ally => ally.shield > caster.attack)) continue;
-      this.useSkill(caster, skill, slot);
+      this.requestSkill(caster, skill, slot);
       break;
     }
   }
 
-  private useSkill(caster: Combatant, skill: SkillDefinition, slot: number): void {
+  private requestSkill(caster:Combatant,skill:SkillDefinition,slot:number):void {
+    const target=this.selectEnemy(skill.kind==='execute');
+    const offensive=['strike','cleave','blast','execute'].includes(skill.kind);
+    if(caster.attackMode==='melee'&&offensive&&target&&!inAttackRange(caster,target)){
+      caster.cooldowns[slot]=skill.cooldown;caster.energy-=skill.cost;caster.queuedSkill=slot;
+      this.pendingSkills.set(caster.id,{skill,slot,targetId:target.id});
+      caster.actionTimer=0;this.startMoving(caster,target);return;
+    }
+    this.useSkill(caster,skill,slot);
+  }
+  private useSkill(caster: Combatant, skill: SkillDefinition, slot: number, paid=false, lockedTarget?:Combatant): void {
     const battle = this.state.battle!;
-    caster.cooldowns[slot] = skill.cooldown;
-    caster.energy -= skill.cost;
-    const target = this.selectEnemy(skill.kind === 'execute');
+    if(!paid){caster.cooldowns[slot] = skill.cooldown;caster.energy -= skill.cost;}
+    const target = lockedTarget??this.selectEnemy(skill.kind === 'execute');
     this.animate(caster, 'skill', target?.id);
     // Presentation receives the actual skill and targets, including support skills.
     const targetIds = skill.kind === 'heal' ? [this.mostWounded()?.id].filter((id): id is string => !!id)
@@ -387,6 +419,39 @@ export class GameEngine {
   private selectEnemy(weakest = false): Combatant | undefined {
     const enemies = this.state.battle!.enemies.filter(enemy => enemy.alive);
     return enemies.sort((a, b) => weakest ? a.hp - b.hp : a.x - b.x)[0];
+  }
+  private combatTarget(actor:Combatant):Combatant|undefined {
+    const battle=this.state.battle!,opponents=(actor.side==='ally'?battle.enemies:battle.allies).filter(other=>other.alive);
+    const retained=opponents.find(other=>other.id===actor.targetId);
+    if(retained)return retained;
+    const front=actor.side==='enemy'?opponents.filter(other=>FRONTLINE.has(other.role)):[];
+    const target=nearest(actor,front.length?front:opponents);if(target)actor.targetId=target.id;return target;
+  }
+  private startMoving(actor:Combatant,target:Combatant):void {
+    actor.targetId=target.id;
+    if(actor.action!=='move'){actor.action='move';actor.actionSeq++;}
+  }
+  private stopMoving(actor:Combatant):void {actor.action='idle';actor.actionSeq++;}
+  private advance(actor:Combatant,target:Combatant,dt:number,dash=false):void {
+    this.startMoving(actor,target);
+    approach(actor,target,[...this.state.battle!.allies,...this.state.battle!.enemies],dt,dash);
+  }
+  private queueHit(source:Combatant,target:Combatant):void {
+    const flight=source.attackMode==='melee'?.18:Math.min(.34,.16+combatDistance(source,target)/25);
+    this.pendingHits.push({sourceId:source.id,targetId:target.id,dueAt:this.state.battle!.elapsed+flight,sequence:source.actionSeq});
+  }
+  private resolveHits():void {
+    const battle=this.state.battle!,actors=[...battle.allies,...battle.enemies];
+    this.pendingHits=this.pendingHits.filter(hit=>{
+      const source=actors.find(actor=>actor.id===hit.sourceId),target=actors.find(actor=>actor.id===hit.targetId);
+      if(!source?.alive||!target?.alive||source.actionSeq!==hit.sequence)return false;
+      if(battle.elapsed<hit.dueAt)return true;
+      if(!inAttackRange(source,target))return false;
+      const damage=this.damage(source,target,1,false);
+      if(source.heroId==='lyra'){const wounded=this.mostWounded();if(wounded)this.heal(source,wounded,source.attack*.35);}
+      if(source.heroId==='lucien')this.heal(source,source,damage*.15);
+      return false;
+    });
   }
   private selectAlly(): Combatant | undefined {
     const allies = this.state.battle!.allies.filter(ally => ally.alive);
@@ -503,6 +568,7 @@ export class GameEngine {
     if (!this.state.battle) return false;
     this.state.battle = null;
     this.accumulator = 0;
+    this.pendingHits=[];this.pendingSkills.clear();
     this.state.revision += 1;
     this.save();
     return true;

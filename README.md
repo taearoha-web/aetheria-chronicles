@@ -55,6 +55,8 @@ Play privately at [Aetheria Chronicles](https://aetheria-chronicles.taemongkichi
 
 ## Project map
 
+Combat now uses real approach and attack range: melee heroes move into body/weapon contact, monsters advance to the frontline, and ranged/support heroes retain distance. Ordinary damage follows the attack wind-up; queued melee skills spend their cost once. See [CONTACT-COMBAT.md](docs/CONTACT-COMBAT.md) for the original King's Raid footage reviewed and [SKILL-ART.md](docs/SKILL-ART.md) for elemental presentation.
+
 | Location | Purpose |
 | --- | --- |
 | `src/simulation` | Combat, hero/equipment data, progression and persistence |
