@@ -127,11 +127,18 @@ try {
     try { reports[key] = validateModel(key, model); }
     catch (error) { throw new Error(key + ': ' + error.message); }
   }
+  const heroSource = fs.readFileSync(path.join(projectRoot, 'src/simulation/data.ts'), 'utf8').split('export const HERO_BY_ID')[0];
+  const heroModels = [...heroSource.matchAll(/modelKey: '([^']+)'/g)].map(match => match[1]);
+  assert(heroModels.length === 8, 'expected eight hero model assignments');
+  assert(new Set(heroModels).size === heroModels.length, 'heroes must never share a model key');
+  assert(heroModels.every(key => reports[key]), 'hero model is missing from the manifest');
+  assert(new Set(heroModels.map(key => reports[key].sha256)).size === heroModels.length, 'heroes must never share a GLB payload');
   const totalBytes = Object.values(reports).reduce((total, model) => total + model.bytes, 0);
   if (args.has('--write-report')) {
     fs.writeFileSync(path.join(assetRoot, 'validation.json'), JSON.stringify({ checkedAt: new Date().toISOString(), result: 'PASS', totalBytes, models: reports }, null, 2) + '\n');
   }
   console.log('Asset validation PASS: ' + Object.keys(reports).length + ' embedded, textured, rigged GLBs; ' + (totalBytes / 1024 / 1024).toFixed(2) + ' MiB total.');
+  console.log('  Hero roster: eight distinct model keys and GLB payloads.');
   for (const [key, report] of Object.entries(reports)) console.log('  ' + key + ': ' + report.triangles + ' triangles, ' + report.animationNames.length + ' clips');
 } catch (error) {
   console.error('Asset validation FAILED: ' + error.message);

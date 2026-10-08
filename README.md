@@ -47,9 +47,11 @@ For development while the computer is asleep, the repository must be connected t
 
 ## Models and current scope
 
-The runtime loads **five actual rigged, textured GLB models**, approximately 14.1 MB combined. It never creates primitive placeholder characters. The first three models reuse the owner's Seven Elements assets, and two are CC0 AutoSprite assets. Provenance is recorded in [ATTRIBUTION.md](public/assets/ATTRIBUTION.md).
+The runtime uses **16 distinct, rigged, textured user-provided GLB models**: eight individual heroes, three normal enemy species and five bosses. Heroes never share model keys or GLB payloads. Character selection shows matching model portraits. Models load on demand with two concurrent downloads; combat waits for its actors to finish loading.
 
-This is a playable foundation, not a complete commercial RPG. The healer and mage currently have mermaid-spirit bodies; the rogue uses unarmed attack animations; shop heroes reuse visual archetypes, and all enemy/boss encounters currently reuse one model. The desired dedicated anime human heroes, varied bosses, environments, music and expanded story are further art/content work. See [ART-DIRECTION.md](docs/ART-DIRECTION.md).
+The eight heroes include a knight, mermaid spirit, phoenix, abyss warrior, crystal titan, lightning wolf, monkey king and radiant lion. The owner approved playable beasts and spirits. Existing hero IDs, purchases and saves are preserved. See [ART-DIRECTION.md](docs/ART-DIRECTION.md) and [ATTRIBUTION.md](public/assets/ATTRIBUTION.md).
+
+Play privately at [Aetheria Chronicles](https://aetheria-chronicles.taemongkichi.chatgpt.site), signed in with the owner's ChatGPT account. The Site uses project ID appgprj_6ac77409fc0c8191be01432cf67726ae; reuse that Site when publishing updates.
 
 ## Project map
 

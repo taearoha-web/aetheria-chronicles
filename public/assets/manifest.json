@@ -1,10 +1,253 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "models": {
-    "knight": { "url": "assets/knight.glb", "portrait": "assets/knight-portrait.png", "forward": "+z", "height": 1.95, "clips": { "idle": "Idle", "attack": "Attack_01", "run": "Run", "hurt": "Hit", "death": "Death", "skill": "Skill_03" }, "source": "Seven Elements / water paladin", "license": "User-provided project asset; separate from code license" },
-    "healer": { "url": "assets/healer.glb", "portrait": "assets/healer-portrait.png", "forward": "+z", "height": 1.8, "clips": { "idle": "Idle", "attack": "Attack_01", "run": "Run", "hurt": "Hit", "death": "Death", "skill": "Skill_03" }, "source": "Seven Elements / light mermaid spirit", "license": "User-provided project asset; separate from code license" },
-    "mage": { "url": "assets/mage.glb", "portrait": "assets/mage-portrait.png", "forward": "+z", "height": 1.8, "clips": { "idle": "Idle", "attack": "Attack_01", "run": "Run", "hurt": "Hit", "death": "Death", "skill": "Skill_03" }, "source": "Seven Elements / fire mermaid spirit", "license": "User-provided project asset; separate from code license" },
-    "rogue": { "url": "assets/rogue.glb", "portrait": "assets/rogue-portrait.webp", "forward": "+z", "height": 1.82, "clips": { "idle": "idle", "attack": "punch_jab", "run": "jog_fwd_loop", "skill": "kick" }, "source": "https://www.autosprite.io/free-3d-models/hooded-blade", "license": "CC0-1.0" },
-    "enemy": { "url": "assets/enemy.glb", "portrait": "assets/enemy-portrait.webp", "forward": "+z", "height": 1.45, "clips": { "idle": "idle", "attack": "sword_attack", "run": "jog_fwd_loop", "skill": "sword_attack" }, "source": "https://www.autosprite.io/free-3d-models/goblin", "license": "CC0-1.0" }
+    "knight": {
+      "url": "assets/knight.glb",
+      "portrait": "assets/knight-portrait.png",
+      "forward": "+z",
+      "height": 1.95,
+      "clips": {
+        "idle": "Idle",
+        "attack": "Attack_01",
+        "run": "Run",
+        "hurt": "Hit",
+        "death": "Death",
+        "skill": "Skill_03"
+      },
+      "source": "User project / assets/paladins_v1_r6/water_paladin.glb",
+      "license": "User-provided proprietary project asset; used only in this game"
+    },
+    "healer": {
+      "url": "assets/healer.glb",
+      "portrait": "assets/healer-portrait.png",
+      "forward": "+z",
+      "height": 1.8,
+      "clips": {
+        "idle": "Idle",
+        "attack": "Attack_01",
+        "run": "Run",
+        "hurt": "Hit",
+        "death": "Death",
+        "skill": "Skill_03"
+      },
+      "source": "User project / assets/scroll_monsters_v3/light_mermaid.glb",
+      "license": "User-provided proprietary project asset; used only in this game"
+    },
+    "seraphina": {
+      "url": "assets/seraphina.glb",
+      "portrait": "assets/seraphina-portrait.png",
+      "forward": "+z",
+      "height": 1.8,
+      "clips": {
+        "idle": "Idle",
+        "attack": "Attack_01",
+        "run": "Run",
+        "hurt": "Hit",
+        "death": "Death",
+        "skill": "Skill_03"
+      },
+      "source": "User project / assets/scroll_monsters_v3/fire_phoenix.glb",
+      "license": "User-provided proprietary project asset; used only in this game"
+    },
+    "riven": {
+      "url": "assets/riven.glb",
+      "portrait": "assets/riven-portrait.png",
+      "forward": "+z",
+      "height": 1.95,
+      "clips": {
+        "idle": "Idle",
+        "attack": "Attack",
+        "run": "Run",
+        "hurt": "Hit",
+        "death": "Death",
+        "skill": "Skill_3"
+      },
+      "source": "User project / assets/web_monsters/abyss_king_web.glb",
+      "license": "User-provided proprietary project asset; used only in this game"
+    },
+    "astrid": {
+      "url": "assets/astrid.glb",
+      "portrait": "assets/astrid-portrait.png",
+      "forward": "+z",
+      "height": 1.95,
+      "clips": {
+        "idle": "Idle",
+        "attack": "Attack",
+        "run": "Run",
+        "hurt": "Hit",
+        "death": "Death",
+        "skill": "Skill_3"
+      },
+      "source": "User project / assets/web_monsters/earth_titan_web.glb",
+      "license": "User-provided proprietary project asset; used only in this game"
+    },
+    "elias": {
+      "url": "assets/elias.glb",
+      "portrait": "assets/elias-portrait.png",
+      "forward": "+z",
+      "height": 1.7,
+      "clips": {
+        "idle": "Idle",
+        "attack": "Attack",
+        "run": "Run",
+        "hurt": "Hit",
+        "death": "Death",
+        "skill": "Skill_3"
+      },
+      "source": "User project / assets/web_monsters/lightning_wolf_web.glb",
+      "license": "User-provided proprietary project asset; used only in this game"
+    },
+    "nova": {
+      "url": "assets/nova.glb",
+      "portrait": "assets/nova-portrait.png",
+      "forward": "+z",
+      "height": 1.9,
+      "clips": {
+        "idle": "Idle",
+        "attack": "Attack_01",
+        "run": "Run",
+        "hurt": "Hit",
+        "death": "Death",
+        "skill": "Skill_03"
+      },
+      "source": "User project / assets/legendary_v3_r4/wind_monkey.glb",
+      "license": "User-provided proprietary project asset; used only in this game"
+    },
+    "lucien": {
+      "url": "assets/lucien.glb",
+      "portrait": "assets/lucien-portrait.png",
+      "forward": "+z",
+      "height": 1.8,
+      "clips": {
+        "idle": "Idle",
+        "attack": "Attack_01",
+        "run": "Run",
+        "hurt": "Hit",
+        "death": "Death",
+        "skill": "Skill_03"
+      },
+      "source": "User project / assets/web_monsters/light_guardian_new.glb",
+      "license": "User-provided proprietary project asset; used only in this game"
+    },
+    "tiger": {
+      "url": "assets/tiger.glb",
+      "forward": "+z",
+      "height": 1.3,
+      "clips": {
+        "idle": "Idle",
+        "attack": "Attack_01",
+        "run": "Run",
+        "hurt": "Hit",
+        "death": "Death",
+        "skill": "Skill_03"
+      },
+      "source": "User project / assets/scroll_monsters_v3/earth_tiger.glb",
+      "license": "User-provided proprietary project asset; used only in this game"
+    },
+    "pegasus": {
+      "url": "assets/pegasus.glb",
+      "forward": "+z",
+      "height": 1.35,
+      "clips": {
+        "idle": "Idle",
+        "attack": "Attack_01",
+        "run": "Run",
+        "hurt": "Hit",
+        "death": "Death",
+        "skill": "Skill_03"
+      },
+      "source": "User project / assets/scroll_monsters_v3/light_pegasus.glb",
+      "license": "User-provided proprietary project asset; used only in this game"
+    },
+    "peacock": {
+      "url": "assets/peacock.glb",
+      "forward": "+z",
+      "height": 1.35,
+      "clips": {
+        "idle": "Idle",
+        "attack": "Attack_01",
+        "run": "Run",
+        "hurt": "Hit",
+        "death": "Death",
+        "skill": "Skill_03"
+      },
+      "source": "User project / assets/scroll_monsters_v3/wind_peacock.glb",
+      "license": "User-provided proprietary project asset; used only in this game"
+    },
+    "boss-earth": {
+      "url": "assets/boss-earth.glb",
+      "forward": "+z",
+      "height": 1.9,
+      "clips": {
+        "idle": "Idle",
+        "attack": "Attack_01",
+        "run": "Run",
+        "hurt": "Hit",
+        "death": "Death",
+        "skill": "Skill_03"
+      },
+      "source": "User project / assets/paladins_v1_r6/earth_paladin.glb",
+      "license": "User-provided proprietary project asset; used only in this game"
+    },
+    "boss-dark": {
+      "url": "assets/boss-dark.glb",
+      "forward": "+z",
+      "height": 1.95,
+      "clips": {
+        "idle": "Idle",
+        "attack": "Attack_01",
+        "run": "Run",
+        "hurt": "Hit",
+        "death": "Death",
+        "skill": "Skill_03"
+      },
+      "source": "User project / assets/paladins_v1_r6/dark_paladin.glb",
+      "license": "User-provided proprietary project asset; used only in this game"
+    },
+    "boss-firelion": {
+      "url": "assets/boss-firelion.glb",
+      "forward": "+z",
+      "height": 1.85,
+      "clips": {
+        "idle": "Idle",
+        "attack": "Attack",
+        "run": "Run",
+        "hurt": "Hit",
+        "death": "Death",
+        "skill": "Skill_3"
+      },
+      "source": "User project / assets/web_monsters/fire_lion_web.glb",
+      "license": "User-provided proprietary project asset; used only in this game"
+    },
+    "boss-seadragon": {
+      "url": "assets/boss-seadragon.glb",
+      "forward": "+z",
+      "height": 1.9,
+      "clips": {
+        "idle": "Idle",
+        "attack": "Attack_01",
+        "run": "Run",
+        "hurt": "Hit",
+        "death": "Death",
+        "skill": "Skill_03"
+      },
+      "source": "User project / assets/legendary_v3_r4/sea_dragon.glb",
+      "license": "User-provided proprietary project asset; used only in this game"
+    },
+    "boss-paladin": {
+      "url": "assets/boss-paladin.glb",
+      "forward": "+z",
+      "height": 2,
+      "clips": {
+        "idle": "Idle",
+        "attack": "Attack_01",
+        "run": "Run",
+        "hurt": "Hit",
+        "death": "Death",
+        "skill": "Skill_03"
+      },
+      "source": "User project / assets/paladins_v1_r6/fire_paladin.glb",
+      "license": "User-provided proprietary project asset; used only in this game"
+    }
   }
 }

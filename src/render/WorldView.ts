@@ -39,6 +39,12 @@ export class WorldView {
   private environmentTarget: THREE.WebGLRenderTarget;
   private resizeObserver: ResizeObserver;
   private models = new Map<string, ModelAsset>();
+  private definitions: Record<string, ModelDefinition> = {};
+  private loader = new GLTFLoader();
+  private assetRequests = new Map<string, Promise<void>>();
+  private assetQueue: Array<() => void> = [];
+  private activeDownloads = 0;
+  private showcaseSignature = '';
   private actors = new Map<string, Actor>();
   private effects: SpellEffect[] = [];
   private mode: Mode = 'home';
@@ -105,25 +111,12 @@ export class WorldView {
       const response = await fetch(`${import.meta.env.BASE_URL}assets/manifest.json`);
       if (!response.ok) throw new Error(`Cannot load character manifest (${response.status}).`);
       const manifest = await response.json();
-      const definitions: Record<string, ModelDefinition> = manifest.models ?? manifest;
-      const entries = Object.entries(definitions).filter(([,value]) => typeof value === 'object' && value !== null && 'url' in value);
+      this.definitions = manifest.models ?? manifest;
+      const entries = Object.entries(this.definitions).filter(([,value]) => typeof value === 'object' && value !== null && 'url' in value);
       if (!entries.length) throw new Error('Character manifest contains no GLB models.');
-      const loader = new GLTFLoader();
-      let completed = 0;
-      // Keep downloads bounded so a mobile browser can breathe between large GLBs.
-      for (let start = 0; start < entries.length; start += 2) {
-        await Promise.all(entries.slice(start, start + 2).map(async ([key, definition]) => {
-          const url = /^(https?:|data:|blob:)/.test(definition.url) ? definition.url : `${import.meta.env.BASE_URL}${definition.url.replace(/^\//, '')}`;
-          const gltf = await loader.loadAsync(url);
-          gltf.scene.updateMatrixWorld(true);
-          const box = new THREE.Box3().setFromObject(gltf.scene);
-          const size = box.getSize(new THREE.Vector3());
-          if (!Number.isFinite(size.y) || size.y < .001) throw new Error(`${key} has no visible character geometry.`);
-          this.models.set(key, { gltf, definition, scale: (definition.height ?? 1.95) / size.y, floor: box.min.y, center: box.getCenter(new THREE.Vector3()) });
-          completed++;
-          onProgress?.(`Loading 3D heroes · ${completed} / ${entries.length}`);
-        }));
-      }
+      onProgress?.('กำลังเรียกสหายแห่งรุ่งอรุณ…');
+      // Only the starting duo is downloaded at boot. Other actors load when needed.
+      await Promise.all(['knight', 'healer'].map(key => this.loadModel(key)));
       if (!this.models.has('knight')) throw new Error('The knight character model is missing.');
       this.loaded = true;
       this.container.dataset.webglStatus = 'ready';
@@ -138,9 +131,61 @@ export class WorldView {
 
   loadAssets(onProgress?: (message: string) => void): Promise<void> { return this.init(onProgress); }
 
+  private loadModel(key: string): Promise<void> {
+    if (this.models.has(key)) return Promise.resolve();
+    const existing = this.assetRequests.get(key);
+    if (existing) return existing;
+    const definition = this.definitions[key];
+    if (!definition) return Promise.reject(new Error(`Missing character definition: ${key}`));
+    const request = new Promise<void>((resolve, reject) => {
+      this.assetQueue.push(() => {
+        this.activeDownloads++;
+        const url = `${import.meta.env.BASE_URL}${definition.url.replace(/^\//, '')}`;
+        this.loader.loadAsync(url).then(gltf => {
+          gltf.scene.updateMatrixWorld(true);
+          const box = new THREE.Box3().setFromObject(gltf.scene);
+          const size = box.getSize(new THREE.Vector3());
+          if (!Number.isFinite(size.y) || size.y < .001) throw new Error(`${key} has no visible geometry.`);
+          this.models.set(key, { gltf, definition, scale: (definition.height ?? 1.95) / size.y, floor: box.min.y, center: box.getCenter(new THREE.Vector3()) });
+          resolve();
+        }).catch(reject).finally(() => { this.activeDownloads--; this.drainAssets(); });
+      });
+    });
+    this.assetRequests.set(key, request);
+    this.drainAssets();
+    return request;
+  }
+
+  private drainAssets(): void {
+    while (this.activeDownloads < 2 && this.assetQueue.length) this.assetQueue.shift()!();
+  }
+
+  /** The simulation waits for actual combat models; it never substitutes another actor. */
+  prepare(state: GameState): boolean {
+    this.lastState = state;
+    if (!this.loaded || this.loadingError) return false;
+    const keys = this.mode === 'battle' && state.battle
+      ? [...state.battle.allies, ...state.battle.enemies].map(actor => actor.modelKey)
+      : [heroById[this.selectedHero].modelKey, ...(this.mode === 'home' ? state.profile.party.map(id => heroById[id].modelKey) : [])];
+    for (const key of new Set(keys)) {
+      if (!this.models.has(key) && !this.assetRequests.has(key)) {
+        void this.loadModel(key).catch(error => { this.loadingError = String(error instanceof Error ? error.message : error); });
+      }
+    }
+    const ready = keys.every(key => this.models.has(key));
+    const signature = `${this.mode}:${this.selectedHero}:${state.profile.party.join(',')}`;
+    if (ready && this.mode !== 'battle' && signature !== this.showcaseSignature) {
+      this.clearActors(); this.syncShowcase(); this.showcaseSignature = signature;
+    }
+    return ready;
+  }
+
+  get modelDiagnostics() { return { cached: [...this.models.keys()], actors: [...this.actors.values()].map(actor => ({ id: actor.id, modelKey: actor.modelKey })) }; }
+
   setMode(mode: Mode): void {
     if (mode === this.mode) return;
     this.mode = mode;
+    this.showcaseSignature = '';
     this.clearActors();
     this.clearEffects();
     if (mode === 'battle') {
@@ -157,6 +202,7 @@ export class WorldView {
   preview(heroId: string): void {
     if (!heroById[heroId]) return;
     this.selectedHero = heroId;
+    this.showcaseSignature = '';
     if (this.loaded && this.mode !== 'battle') { this.clearActors(); this.syncShowcase(); }
   }
 
@@ -229,6 +275,7 @@ export class WorldView {
 
   private syncShowcase(): void {
     const hero=heroById[this.selectedHero] ?? HEROES[0];
+    if (!this.models.has(hero.modelKey)) return;
     const actor=this.createActor('showcase',hero.modelKey,hero.color);
     actor.group.position.set(.8,0,.6); actor.base.copy(actor.group.position);
     actor.group.rotation.y=.4;
@@ -287,6 +334,7 @@ export class WorldView {
   }
 
   private updateCombatant(combatant:Combatant,combatants:Combatant[],dt:number):void {
+    if (!this.models.has(combatant.modelKey)) return;
     let actor=this.actors.get(combatant.id);
     if(!actor){
       actor=this.createActor(combatant.id,combatant.modelKey,combatant.side==='ally'?(heroById[combatant.heroId??'']?.color??'#86c7e7'):'#d78c9b');

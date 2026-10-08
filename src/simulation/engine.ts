@@ -1,4 +1,4 @@
-import { EQUIPMENT_POOL, HERO_BY_ID, HEROES, LEGENDARY_PITY, MAX_HERO_LEVEL, SAVE_KEY, STAGES, SUMMON_COST, SUMMON_TEN_COST } from './data';
+import { BOSS_MODELS, ENEMY_MODELS, EQUIPMENT_POOL, HERO_BY_ID, HEROES, LEGENDARY_PITY, MAX_HERO_LEVEL, SAVE_KEY, STAGES, SUMMON_COST, SUMMON_TEN_COST } from './data';
 import { createProfile, parseSave } from './storage';
 import type { BattleRewards, Combatant, CombatEvent, EngineOptions, EquipmentInstance, EquipmentSlot, GameState, HeroDefinition, Rarity, SkillDefinition, StorageLike } from './types';
 
@@ -238,9 +238,10 @@ export class GameEngine {
     const count = wave === 3 ? (stageId >= 3 ? 3 : 1) : stageId === 1 ? 2 : 3;
     return Array.from({ length: count }, (_, index) => {
       const boss = wave === 3 && index === 0;
+      const creature = ENEMY_MODELS[(stageId + wave + index - 2) % ENEMY_MODELS.length];
       const hp = Math.round((boss ? 1000 : 230 + wave * 35) * scaling);
       return {
-        id: `enemy-${wave}-${index}`, modelKey: 'enemy', name: boss ? stage.boss : ['Hollow Knight', 'Veil Stalker', 'Twilight Shade'][index % 3],
+        id: `enemy-${wave}-${index}`, modelKey: boss ? BOSS_MODELS[stageId - 1] : creature.modelKey, name: boss ? stage.boss : creature.name,
         side: 'enemy' as const, role: boss ? 'boss' as const : 'monster' as const,
         hp, maxHp: hp, attack: Math.round((boss ? 55 : 25 + wave * 4) * scaling), defense: 7 + stageId * 3 + (boss ? 5 : 0),
         x: boss ? 1.7 : 1.25 + (index % 2) * 0.5,

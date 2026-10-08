@@ -33,5 +33,10 @@
 - Keep simulation tests meaningful, and run TypeScript + production build after code changes.
 - Never claim GitHub upload, Pages deployment, or Codex Cloud setup succeeded without verifying the remote result.
 
-## Current art limitations
-See `docs/ART-DIRECTION.md`. The first delivery reuses three owner-authored fantasy models and two CC0 models. Two women are mermaid spirits and the rogue is unarmed. Shop heroes currently reuse four model archetypes. Replace these with dedicated human anime fantasy heroes in a subsequent approved art pass; do not describe this set as final King's Raid-quality art.
+## Current character roster
+- The owner approved playable beasts and spirits, provided each hero has a distinct model.
+- All eight heroes must have separate GLB files and model keys. Never reuse one hero model for another hero.
+- There are 16 active user-provided models: eight heroes, three normal enemy species and five bosses.
+- Load characters on demand, with at most two downloads at once. Suspend combat simulation while its models load; show a retry on failure instead of substituting a different actor.
+- Preserve hero IDs, currency, purchases and saved progress when updating appearance.
+- See docs/ART-DIRECTION.md for exact mappings and future work.
