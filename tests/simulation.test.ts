@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { GameEngine, HEROES, SAVE_KEY, SUMMON_COST, SUMMON_TEN_COST, parseSave } from '../src/simulation';
+import { GameEngine, HEROES, SAVE_KEY, SUMMON_COST, SUMMON_TEN_COST, getActionTiming, parseSave } from '../src/simulation';
 import type { StorageLike } from '../src/simulation';
 import { combatDistance, contactRange } from '../src/simulation/movement';
 
@@ -103,7 +103,7 @@ describe('real-time combat and progression', () => {
     for(let i=0;i<180&&kael.action!=='attack';i++)game.update(1/30);
     const target=battle.enemies.find(enemy=>enemy.id===kael.targetId)!;
     expect(kael.action).toBe('attack');expect(combatDistance(kael,target)).toBeLessThanOrEqual(contactRange(kael,target)+.05);
-    const hp=target.hp;game.update(.1);expect(target.hp).toBe(hp);game.update(.1);expect(target.hp).toBeLessThan(hp);
+    const hp=target.hp;game.update(.3);expect(target.hp).toBe(hp);game.update(.15);expect(target.hp).toBeLessThan(hp);
     expect(battle.effects.filter(event=>event.type==='damage'&&event.sourceId==='kael')).toHaveLength(1);
   });
 
@@ -129,7 +129,9 @@ describe('real-time combat and progression', () => {
     const battle=game.state.battle!;battle.allies[0].hp-=200;
     expect(game.castSkill('lyra',0)).toBe(true);
     const heal=battle.effects.find(effect=>effect.type==='skill'&&effect.sourceId==='lyra')!;
-    expect(heal).toMatchObject({skillId:'starlight',skillSlot:0,targetId:'kael',targetIds:['kael']});
+    expect(heal).toMatchObject({skillId:'starlight',skillSlot:0,targetId:'kael',targetIds:['kael','lyra'],phase:'cast'});
+    expect(battle.effects.some(effect=>effect.type==='heal')).toBe(false);
+    game.update(.5);game.update(.1);
     expect(battle.effects.find(effect=>effect.type==='heal')?.targetId).toBe(heal.targetId);
     const targets=battle.enemies.filter(enemy=>enemy.alive).map(enemy=>enemy.id);
     expect(game.castSkill('kael',2)).toBe(true);
@@ -139,6 +141,7 @@ describe('real-time combat and progression', () => {
 
   it('responds to a manual skill tap during an attack animation exactly once', () => {
     const game = engine();
+    game.setParty(['kael']);
     game.startBattle(1);
     const battle = game.state.battle!;
     const kael = battle.allies.find(ally => ally.heroId === 'kael')!;
@@ -149,13 +152,18 @@ describe('real-time combat and progression', () => {
     const before = remainingHp();
     expect(game.castSkill('kael', 0)).toBe(true);
     const after = remainingHp();
-    expect(after).toBeLessThan(before);
+    expect(after).toBe(before);
     expect(kael.action).toBe('skill');
     expect(kael.energy).toBe(80);
     expect(game.castSkill('kael', 0)).toBe(false);
     expect(remainingHp()).toBe(after);
     expect(kael.energy).toBe(80);
     expect(battle.effects.filter(effect => effect.type === 'skill' && effect.sourceId === 'kael')).toHaveLength(1);
+    game.update(.5);
+    expect(remainingHp()).toBeLessThan(before);
+    expect(battle.effects.filter(effect=>effect.type==='skillImpact'&&effect.sourceId==='kael')).toHaveLength(1);
+    // The interrupted basic hit never resolves in addition to the skill.
+    expect(battle.effects.filter(effect=>effect.type==='damage'&&effect.sourceId==='kael')).toHaveLength(battle.effects.find(effect=>effect.type==='skillImpact'&&effect.sourceId==='kael')!.targetIds!.length);
   });
 
   it('applies skill energy and cooldown rules; pause freezes simulation and speed scales time', () => {

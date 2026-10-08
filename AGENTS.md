@@ -34,6 +34,10 @@
 - Never claim GitHub upload, Pages deployment, or Codex Cloud setup succeeded without verifying the remote result.
 
 ## Current character roster
+- The two starting heroes now use the owner's specified human knight (`model_20261008_195253`) and staff priestess (`model_20261008_204527`). These replace the former water-paladin/mermaid appearances while preserving `kael`/`lyra` IDs and all existing saves.
+- Their rig and original animation clips are authored locally in Blender. Never substitute an existing beast rig/model or claim the original King's Raid animations were imported.
+- Keep each starter's three skill clips and impact timing aligned across Blender, simulation, sound and VFX. Preserve full recovery and pause/speed behavior.
+- The heroes page offers a motion/skill preview which must never spend MP, modify combat state or change saves.
 - The owner approved playable beasts and spirits, provided each hero has a distinct model.
 - All eight heroes must have separate GLB files and model keys. Never reuse one hero model for another hero.
 - There are 16 active user-provided models: eight heroes, three normal enemy species and five bosses.

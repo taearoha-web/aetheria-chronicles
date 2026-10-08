@@ -7,6 +7,8 @@ export type SkillKind = 'strike' | 'cleave' | 'heal' | 'healAll' | 'shield' | 's
 export interface SkillDefinition {
   id: string; name: string; description: string; icon: string; kind: SkillKind;
   cooldown: number; cost: number; power: number;
+  timing?: { duration: number; impact: number };
+  targetShape?: 'frontArc' | 'targetArea'; radius?: number;
 }
 export interface HeroDefinition {
   id: string; name: string; title: string; description: string; role: HeroRole;
@@ -40,14 +42,16 @@ export interface Combatant {
   x: number; z: number; alive: boolean; action: Action; actionSeq: number;
   targetId?: string; cooldowns: number[]; shield: number; energy: number;
   attackTimer: number; attackInterval: number; actionTimer: number;
+  actionStartedAt: number; actionDuration: number; actionImpactAt?: number; activeSkillSlot?: number;
   attackMode: 'melee' | 'ranged'; attackRange: number; radius: number; moveSpeed: number;
   queuedSkill?: number;
 }
 export interface CombatEvent {
-  id: number; type: 'damage' | 'heal' | 'shield' | 'skill' | 'death' | 'wave';
+  id: number; type: 'damage' | 'heal' | 'shield' | 'skill' | 'skillImpact' | 'death' | 'wave';
   sourceId?: string; targetId?: string; amount?: number; critical?: boolean;
   label?: string; createdAt: number;
   skillId?: string; skillSlot?: number; targetIds?: string[];
+  phase?: 'cast' | 'impact'; actionSeq?: number; duration?: number; impactAt?: number;
 }
 export interface BattleRewards {
   gems: number; gold: number; firstClear: boolean; hero?: string;

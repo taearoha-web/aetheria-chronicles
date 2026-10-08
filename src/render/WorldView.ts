@@ -3,18 +3,21 @@ import { GLTFLoader, type GLTF } from 'three/addons/loaders/GLTFLoader.js';
 import { clone } from 'three/addons/utils/SkeletonUtils.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { HEROES } from '../simulation/data';
+import { getActionTiming } from '../simulation';
 import { FIELD_X, FIELD_Z } from '../simulation/movement';
 import type { Combatant, CombatEvent, GameState } from '../simulation/types';
 import { createEnvironment, type Environment } from './environment';
-import { SkillVfx, SKILL_IMPACT_DELAY, type SkillCue } from './SkillVfx';
+import { SkillVfx, type SkillCue } from './SkillVfx';
 
 type Mode = 'home' | 'battle' | 'heroes';
-type ClipRole = 'idle' | 'attack' | 'run' | 'hurt' | 'death' | 'skill';
+type ClipRole = 'idle' | 'attack' | 'attack2' | 'run' | 'hurt' | 'death' | 'skill' | 'skill1' | 'skill2' | 'skill3' | 'victory';
 export interface ModelDefinition {
   url: string;
   forward?: '+z' | '-z' | '+x' | '-x';
   height?: number;
+  originNode?:string;
   clips?: Partial<Record<ClipRole, string>>;
+  sockets?: { weaponTip?: string; weaponBase?: string; cast?: string };
 }
 interface ModelAsset { gltf: GLTF; definition: ModelDefinition; scale: number; floor: number; center: THREE.Vector3 }
 interface Actor {
@@ -25,6 +28,10 @@ interface Actor {
   ring: THREE.Mesh<THREE.RingGeometry, THREE.MeshBasicMaterial>;
   hp: THREE.Group; hpFill: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
   deadTime: number;
+  model: THREE.Object3D; clips: Map<string,THREE.AnimationAction>; jointCount: number;
+  sockets: Partial<Record<'weaponTip'|'weaponBase'|'cast',THREE.Object3D>>;
+  skillSlot?: number; actionDuration: number;
+  victoryAt?:number; victoryFinished?:boolean;
 }
 interface SpellEffect { object: THREE.Object3D; duration: number; age: number; update: (t:number)=>void; dispose:()=>void }
 const heroById = Object.fromEntries(HEROES.map(hero => [hero.id, hero]));
@@ -50,10 +57,14 @@ export class WorldView {
   private actors = new Map<string, Actor>();
   private effects: SpellEffect[] = [];
   private skillVfx: SkillVfx;
-  private delayedEvents: Array<{ event: CombatEvent; remaining: number }> = [];
+  private skillCues = new Map<string,SkillCue>();
+  private presentationBattleTime = 0;
+  private restoreActiveCasts=false;
+  private showcaseMotion: { actorId:string; clip:string; age:number; duration:number; loop:boolean; cue?:SkillCue; impacted:boolean } | null = null;
   private cameraZoom = 0;
   private baseFov = 39;
   onSkill?: (cue: SkillCue) => void;
+  onSkillImpact?: (cue: SkillCue) => void;
   private mode: Mode = 'home';
   private selectedHero = 'kael';
   private time = 0;
@@ -154,7 +165,10 @@ export class WorldView {
           const box = new THREE.Box3().setFromObject(gltf.scene);
           const size = box.getSize(new THREE.Vector3());
           if (!Number.isFinite(size.y) || size.y < .001) throw new Error(`${key} has no visible geometry.`);
-          this.models.set(key, { gltf, definition, scale: (definition.height ?? 1.95) / size.y, floor: box.min.y, center: box.getCenter(new THREE.Vector3()) });
+          const center=box.getCenter(new THREE.Vector3());
+          const origin=definition.originNode?gltf.scene.getObjectByName(definition.originNode)??gltf.scene.getObjectByName(THREE.PropertyBinding.sanitizeNodeName(definition.originNode)):undefined;
+          if(origin){const point=origin.getWorldPosition(new THREE.Vector3());center.x=point.x;center.z=point.z;}
+          this.models.set(key, { gltf, definition, scale: (definition.height ?? 1.95) / size.y, floor: box.min.y, center });
           resolve();
         }).catch(reject).finally(() => { this.activeDownloads--; this.drainAssets(); });
       });
@@ -188,8 +202,8 @@ export class WorldView {
     return ready;
   }
 
-  get modelDiagnostics() { return { cached: [...this.models.keys()], actors: [...this.actors.values()].map(actor => ({ id: actor.id, modelKey: actor.modelKey, x:actor.group.position.x, z:actor.group.position.z, facing:actor.group.rotation.y, clip:actor.current?.getClip().name })) }; }
-  get effectDiagnostics() { return { ...this.skillVfx.diagnostics, delayedEvents: this.delayedEvents.length, drawCalls: this.renderer.info.render.calls, geometries: this.renderer.info.memory.geometries, textures: this.renderer.info.memory.textures }; }
+  get modelDiagnostics() { return { cached: [...this.models.keys()], preview:this.showcaseMotion?{clip:this.showcaseMotion.clip,age:this.showcaseMotion.age,duration:this.showcaseMotion.duration}:null, actors: [...this.actors.values()].map(actor => ({ id: actor.id, modelKey: actor.modelKey, x:actor.group.position.x, z:actor.group.position.z, facing:actor.group.rotation.y, clip:actor.current?.getClip().name,currentTime:actor.current?.time,clipDuration:actor.current?.getClip().duration,jointCount:actor.jointCount,action:actor.action,skillSlot:actor.skillSlot,weaponTip:this.socketPosition(actor,'weaponTip').toArray(),weaponHand:this.socketPosition(actor,'weaponBase').toArray() })) }; }
+  get effectDiagnostics() { return { ...this.skillVfx.diagnostics, simulationTime:this.presentationBattleTime, delayedEvents: 0, drawCalls: this.renderer.info.render.calls, geometries: this.renderer.info.memory.geometries, textures: this.renderer.info.memory.textures }; }
   setReducedEffects(reduced: boolean): void { this.skillVfx.setReduced(reduced); this.cameraShake = 0; this.cameraZoom = 0; }
 
   setMode(mode: Mode): void {
@@ -199,6 +213,7 @@ export class WorldView {
     this.clearActors();
     this.clearEffects();
     if (mode === 'battle') {
+      this.restoreActiveCasts=true;
       this.targetPosition.set(1.6, 4.8, 10.7);
       this.targetLookAt.set(0, .95, -.15);
     } else {
@@ -211,9 +226,46 @@ export class WorldView {
 
   preview(heroId: string): void {
     if (!heroById[heroId]) return;
+    this.clearEffects();
     this.selectedHero = heroId;
     this.showcaseSignature = '';
     if (this.loaded && this.mode !== 'battle') { this.clearActors(); this.syncShowcase(); }
+  }
+
+  availableAnimations(heroId:string):string[] {
+    const hero=heroById[heroId];return hero ? this.models.get(hero.modelKey)?.gltf.animations.map(clip=>clip.name)??[] : [];
+  }
+
+  /** Inspect an authored clip without spending mana or mutating the player's save. */
+  previewAnimation(heroId:string,clipOrSlot:string|number):boolean {
+    if(this.mode==='battle'||!heroById[heroId])return false;
+    if(typeof clipOrSlot==='number'&&(!Number.isInteger(clipOrSlot)||clipOrSlot<0||clipOrSlot>2))return false;
+    if(this.selectedHero!==heroId)this.preview(heroId);
+    const actor=this.actors.get('showcase');if(!actor)return false;
+    const skillSlot=typeof clipOrSlot==='number'?clipOrSlot:/^Skill_0?[123]$/i.test(clipOrSlot)?Number(clipOrSlot.slice(-1))-1:undefined;
+    const role=skillSlot!==undefined?(`skill${skillSlot+1}` as ClipRole):undefined;
+    const action=role?actor.actions[role]:actor.clips.get(String(clipOrSlot));if(!action)return false;
+    this.clearEffects();
+    const timing=skillSlot!==undefined?getActionTiming(heroId,'skill',skillSlot):undefined;
+    const duration=timing?.duration??action.getClip().duration;
+    const loop=/idle|run|walk/i.test(action.getClip().name);
+    this.playAction(actor,action,loop,true,duration);
+    actor.action=skillSlot!==undefined?'skill':'preview';actor.skillSlot=skillSlot;actor.actionTime=0;actor.actionDuration=duration;
+    let cue:SkillCue|undefined;
+    if(skillSlot!==undefined){
+      const hero=heroById[heroId],support=heroId==='kael'?skillSlot===1:heroId==='lyra'?skillSlot<2:false;
+      const origin=actor.group.position.clone();
+      cue={heroId,skillId:hero.skills[skillSlot].id,slot:skillSlot,name:hero.skills[skillSlot].name,color:hero.color,origin,targets:support?[origin.clone()]:[origin.clone().add(new THREE.Vector3(1.3,0,-1.4))],impactDelay:timing!.impact,duration,facing:actor.group.rotation.y,weaponTip:()=>this.socketPosition(actor,'weaponTip'),weaponBase:()=>this.socketPosition(actor,'weaponBase')};
+      this.skillVfx.cast(cue);this.onSkill?.(cue);
+    }
+    this.showcaseMotion={actorId:actor.id,clip:action.getClip().name,age:0,duration,loop,cue,impacted:false};
+    return true;
+  }
+
+  private socketPosition(actor:Actor,role:'weaponTip'|'weaponBase'|'cast'):THREE.Vector3 {
+    actor.group.updateMatrixWorld(true);
+    const socket=actor.sockets[role];
+    return socket?socket.getWorldPosition(new THREE.Vector3()):actor.group.localToWorld(new THREE.Vector3(0,role==='weaponTip'?1.65:1.0,role==='weaponTip'?.25:0));
   }
 
   private createActor(id: string, modelKey: string, color: THREE.ColorRepresentation): Actor {
@@ -244,9 +296,11 @@ export class WorldView {
     body.rotation.y = forwardRotation[asset.definition.forward ?? '+z'];
     const mixer = new THREE.AnimationMixer(model);
     const actions: Partial<Record<ClipRole, THREE.AnimationAction>> = {};
+    const clips=new Map(asset.gltf.animations.map(clip=>[clip.name,mixer.clipAction(clip)]));
     const patterns: Record<ClipRole, RegExp> = {
       idle: /idle|standing|breath/i, attack: /attack|slash|sword|punch|fight/i,
-      run: /run|walk/i, hurt: /hit|hurt|damage/i, death: /death|dead|die|fall/i, skill: /cast|magic|spell|skill|special/i,
+      attack2:/attack[_ ]?0?2/i,run: /run|walk/i, hurt: /hit|hurt|damage/i, death: /death|dead|die|fall/i, skill: /cast|magic|spell|skill|special/i,
+      skill1:/skill[_ ]?0?1$/i,skill2:/skill[_ ]?0?2$/i,skill3:/skill[_ ]?0?3$/i,victory:/victory|celebrate/i,
     };
     for (const role of Object.keys(patterns) as ClipRole[]) {
       const explicit = asset.definition.clips?.[role];
@@ -265,21 +319,33 @@ export class WorldView {
     hpFill.renderOrder=11;
     hpFill.position.z=.006; hp.add(hpFill);
     this.scene.add(group);
-    const actor:Actor = { id, modelKey, group, body, mixer, actions, seq:-1, actionTime:0, action:'idle', base:new THREE.Vector3(), color:new THREE.Color(color), modelMaterials, ring, hp, hpFill, deadTime:0 };
+    let jointCount=0;model.traverse(node=>{if(node instanceof THREE.Bone)jointCount++;});
+    const sockets:Actor['sockets']={};
+    for(const role of ['weaponTip','weaponBase','cast'] as const){
+      const name=asset.definition.sockets?.[role];if(!name)continue;
+      sockets[role]=model.getObjectByName(name)??model.getObjectByName(THREE.PropertyBinding.sanitizeNodeName(name));
+      if(!sockets[role])model.traverse(node=>{if(node.userData.name===name)sockets[role]=node;});
+    }
+    const actor:Actor = { id, modelKey, group, body, model, clips, jointCount, sockets, mixer, actions, seq:-1, actionTime:0, action:'idle',actionDuration:0, base:new THREE.Vector3(), color:new THREE.Color(color), modelMaterials, ring, hp, hpFill, deadTime:0 };
     this.actors.set(id, actor);
     this.play(actor, 'idle');
     return actor;
   }
 
-  private play(actor: Actor, role: ClipRole): void {
+  private play(actor: Actor, role: ClipRole, restart=false, duration?:number): void {
     const next = actor.actions[role] ?? actor.actions.idle;
-    if (!next || next === actor.current) return;
+    if(!next)return;
+    const loop=role==='idle'||role==='run'||next===actor.actions.idle;
+    this.playAction(actor,next,loop,restart,loop?undefined:duration);
+  }
+  private playAction(actor:Actor,next:THREE.AnimationAction,loop:boolean,restart=false,duration?:number):void {
+    if (next === actor.current&&!restart) return;
     const previous=actor.current;
-    next.reset(); next.enabled=true; next.setEffectiveWeight(1);
-    if (role !== 'idle' && role !== 'run' && next !== actor.actions.idle) { next.setLoop(THREE.LoopOnce,1); next.clampWhenFinished=true; }
-    else { next.setLoop(THREE.LoopRepeat,Infinity);next.clampWhenFinished=false; }
+    next.reset(); next.enabled=true;next.paused=false; next.setEffectiveWeight(1);
+    next.setEffectiveTimeScale(duration?next.getClip().duration/Math.max(.05,duration):1);
+    next.setLoop(loop?THREE.LoopRepeat:THREE.LoopOnce,loop?Infinity:1);next.clampWhenFinished=!loop;
     next.play();
-    if(previous)next.crossFadeFrom(previous,.14,true);
+    if(previous&&previous!==next)next.crossFadeFrom(previous,.08,false);
     actor.current=next;
   }
 
@@ -301,29 +367,57 @@ export class WorldView {
         companion.group.rotation.y=.5; companion.ring.material.opacity=.18;
       });
     }
+    this.arrangeShowcase();
+  }
+
+  private arrangeShowcase():void {
+    if(this.mode==='battle')return;
+    const portrait=this.container.clientWidth<this.container.clientHeight;
+    const starterLead=this.selectedHero==='kael'||this.selectedHero==='lyra';
+    const lead=this.actors.get('showcase');
+    if(lead){
+      lead.group.position.set(portrait&&this.mode==='home'?1.05:.8,0,portrait&&this.mode==='home'?-.19:.6);
+      lead.group.scale.setScalar(this.mode==='heroes'?1.25:portrait||starterLead?1.4:1.65);
+      lead.base.copy(lead.group.position);
+    }
+    let index=0;
+    for(const actor of this.actors.values())if(actor.id.startsWith('companion-')){
+      const starterPair=starterLead&&(actor.id==='companion-kael'||actor.id==='companion-lyra');
+      actor.group.position.set(portrait?-.79-index*.8:starterPair?-.8:-1.35-index*1.1,0,portrait?1.15-index*.6:starterPair?1.7:-.25-index*.8);
+      actor.group.scale.setScalar(portrait||starterPair?1.4:1);actor.base.copy(actor.group.position);index++;
+    }
   }
 
   render(state: GameState, dt: number): void {
     if(this.disposed||this.contextLost)return;
     const safeDt=Math.min(Math.max(dt,0),.08);
+    let effectDt=safeDt;
     this.time+=safeDt; this.lastState=state;
     this.environment.animate(this.time,this.mode==='battle');
     if(this.loaded){
       if(this.mode==='battle'&&state.battle){
         const battle=state.battle;
-        if(this.battleId!==battle.id){this.battleId=battle.id;this.seenEvents.clear();this.clearActors();this.clearEffects();}
+        if(this.battleId!==battle.id){this.battleId=battle.id;this.presentationBattleTime=battle.elapsed;this.seenEvents.clear();this.clearActors();this.clearEffects();}
         const combatants=[...battle.allies,...battle.enemies];
         const activeIds=new Set(combatants.map(actor=>actor.id));
         for(const[id,actor]of this.actors){if(!activeIds.has(id))this.removeActor(actor);}
-        const simulationDt=battle.paused?0:safeDt*battle.speed;
+        const previousBattleTime=this.presentationBattleTime;
+        this.presentationBattleTime=battle.status==='fighting'?battle.elapsed:this.presentationBattleTime+(battle.paused?0:safeDt*battle.speed);
+        const simulationDt=Math.max(0,this.presentationBattleTime-previousBattleTime);effectDt=simulationDt;
         for(const combatant of combatants)this.updateCombatant(combatant,combatants,simulationDt);
+        if(this.restoreActiveCasts){
+          this.restoreActiveCasts=false;
+          for(const actor of combatants){
+            if(!actor.alive||actor.action!=='skill'||battle.elapsed>=actor.actionStartedAt+actor.actionDuration)continue;
+            const cast=battle.effects.find(event=>event.type==='skill'&&event.sourceId===actor.id&&event.actionSeq===actor.actionSeq);
+            if(cast&&this.seenEvents.has(cast.id))this.showEvent(cast,true);
+          }
+        }
         for(const event of battle.effects){
           if(this.seenEvents.has(event.id))continue;
           this.seenEvents.add(event.id);
-          // Pair hit feedback with the skill's release, instead of showing numbers before the spell.
-          const skill = battle.effects.find(cast => cast.type === 'skill' && cast.sourceId === event.sourceId && cast.createdAt === event.createdAt);
-          if(skill && ['damage','heal','shield'].includes(event.type))this.delayedEvents.push({event,remaining:SKILL_IMPACT_DELAY});
-          else this.showEvent(event);
+          // Simulation emits impacts at the authored frame. Never add a second visual delay.
+          this.showEvent(event);
         }
         if(this.seenEvents.size>500){const liveIds=new Set(battle.effects.map(event=>event.id));this.seenEvents=liveIds;}
       }else{
@@ -331,13 +425,16 @@ export class WorldView {
           actor.mixer.update(safeDt);
           // Static GLBs retain their authored pose; a subtle breathe adds life without pretending to be skeletal animation.
           if(!actor.actions.idle)actor.body.position.y=Math.sin(this.time*1.9)*.009;
-          if(actor.id==='showcase')actor.group.rotation.y=.4+Math.sin(this.time*.15)*.09;
+          if(actor.id==='showcase'&&!this.showcaseMotion)actor.group.rotation.y=.4+Math.sin(this.time*.15)*.09;
           actor.ring.material.opacity=actor.id==='showcase'?.36+Math.sin(this.time*1.7)*.08:.16;
+        }
+        if(this.showcaseMotion){
+          const motion=this.showcaseMotion;motion.age+=safeDt;
+          if(motion.cue&&!motion.impacted&&motion.age>=motion.cue.impactDelay){motion.impacted=true;this.onSkillImpact?.(motion.cue);}
+          if(!motion.loop&&motion.age>=motion.duration){const actor=this.actors.get(motion.actorId);if(actor){this.play(actor,'idle');actor.action='idle';actor.skillSlot=undefined;}this.showcaseMotion=null;}
         }
       }
     }
-    const effectDt=this.mode==='battle'&&state.battle ? (state.battle.paused?0:safeDt*state.battle.speed) : safeDt;
-    for(let i=this.delayedEvents.length-1;i>=0;i--){const pending=this.delayedEvents[i];pending.remaining-=effectDt;if(pending.remaining<=0){this.showEvent(pending.event);this.delayedEvents.splice(i,1);}}
     this.skillVfx.update(effectDt);
     for(let i=this.effects.length-1;i>=0;i--){
       const effect=this.effects[i]; effect.age+=effectDt;
@@ -347,11 +444,12 @@ export class WorldView {
     const smoothing=1-Math.exp(-safeDt*3);
     this.camera.position.lerp(this.targetPosition,smoothing);
     this.lookAt.lerp(this.targetLookAt,smoothing);
-    this.cameraShake=Math.max(0,this.cameraShake-safeDt*.9);
-    this.cameraZoom=Math.max(0,this.cameraZoom-safeDt*2.5);
+    this.cameraShake=Math.max(0,this.cameraShake-effectDt*.9);
+    this.cameraZoom=Math.max(0,this.cameraZoom-effectDt*2.5);
     const fov=this.baseFov-this.cameraZoom;
     if(Math.abs(this.camera.fov-fov)>.01){this.camera.fov=fov;this.camera.updateProjectionMatrix();}
-    this.camera.lookAt(this.lookAt.x+Math.sin(this.time*70)*this.cameraShake*.07,this.lookAt.y+Math.cos(this.time*53)*this.cameraShake*.04,this.lookAt.z);
+    const cameraTime=this.mode==='battle'?this.presentationBattleTime:this.time;
+    this.camera.lookAt(this.lookAt.x+Math.sin(cameraTime*70)*this.cameraShake*.07,this.lookAt.y+Math.cos(cameraTime*53)*this.cameraShake*.04,this.lookAt.z);
     for(const actor of this.actors.values())actor.hp.quaternion.copy(actor.group.quaternion).invert().multiply(this.camera.quaternion);
     this.renderer.render(this.scene,this.camera);
   }
@@ -361,19 +459,39 @@ export class WorldView {
     let actor=this.actors.get(combatant.id);
     if(!actor){
       actor=this.createActor(combatant.id,combatant.modelKey,combatant.side==='ally'?(heroById[combatant.heroId??'']?.color??'#86c7e7'):'#d78c9b');
-      actor.base.set(combatant.x*1.55,.015,combatant.z*1.25);
+      actor.base.set(combatant.x*FIELD_X,.015,combatant.z*FIELD_Z);
       actor.group.position.copy(actor.base); actor.group.rotation.y=combatant.side==='ally'?Math.PI/2:-Math.PI/2;
       if(combatant.role==='boss')actor.group.scale.setScalar(1.4);
     }
-    actor.base.set(combatant.x*1.55,.015,combatant.z*1.25);
+    actor.base.set(combatant.x*FIELD_X,.015,combatant.z*FIELD_Z);
     actor.hp.visible=combatant.alive;
     const ratio=Math.max(0,Math.min(1,combatant.hp/combatant.maxHp));actor.hpFill.scale.x=ratio;actor.hpFill.position.x=-(1-ratio)*.36;
     actor.ring.visible=combatant.alive;actor.ring.material.opacity=combatant.shield>0?.65:.22;
-    if(actor.seq!==combatant.actionSeq){
+    const elapsed=Math.max(0,this.presentationBattleTime-combatant.actionStartedAt);
+    if(combatant.alive&&this.lastState?.battle?.status==='won'&&actor.actions.victory&&elapsed>=combatant.actionDuration){
+      if(actor.victoryAt===undefined){actor.victoryAt=this.presentationBattleTime;actor.action='victory';this.play(actor,'victory',true);}
+      actor.mixer.update(dt);actor.group.position.copy(actor.base);
+      const faceCamera=Math.atan2(this.camera.position.x-actor.base.x,this.camera.position.z-actor.base.z);
+      actor.group.rotation.y+=Math.atan2(Math.sin(faceCamera-actor.group.rotation.y),Math.cos(faceCamera-actor.group.rotation.y))*Math.min(1,dt*4);
+      if(!actor.victoryFinished&&this.presentationBattleTime-actor.victoryAt>=actor.actions.victory.getClip().duration){actor.victoryFinished=true;actor.action='idle';this.play(actor,'idle');}
+      return;
+    }
+    const stateAction=combatant.action;
+    if(actor.seq!==combatant.actionSeq||(actor.action!==stateAction&&actor.action!=='complete')){
       actor.seq=combatant.actionSeq;actor.actionTime=0;actor.action=combatant.action;
-      const clip:ClipRole=combatant.action==='dead'?'death':combatant.action==='move'?'run':combatant.action==='hit'?'hurt':combatant.action==='skill'?'skill':combatant.action==='attack'?'attack':'idle';
-      this.play(actor,clip);
-      if(combatant.action==='attack'){
+      actor.skillSlot=combatant.activeSkillSlot;actor.actionDuration=combatant.actionDuration;
+      const skillRole=combatant.activeSkillSlot!==undefined?`skill${combatant.activeSkillSlot+1}` as ClipRole:'skill';
+      const clip:ClipRole=combatant.action==='dead'?'death':combatant.action==='move'?'run':combatant.action==='hit'?'hurt':combatant.action==='skill'?(actor.actions[skillRole]?skillRole:'skill'):combatant.action==='attack'?'attack':'idle';
+      this.play(actor,clip,true,combatant.actionDuration||undefined);
+      if(combatant.action==='attack'&&(combatant.heroId==='kael'||combatant.heroId==='lyra')){
+        const target=combatants.find(other=>other.id===combatant.targetId);
+        if(target){
+          const timing=getActionTiming(combatant.heroId,'attack'),source=actor,seq=combatant.actionSeq;
+          const startedAt=combatant.actionStartedAt;
+          this.skillVfx.cast({heroId:combatant.heroId,skillId:'basic-attack',slot:-1,name:'Attack',color:heroById[combatant.heroId].color,origin:actor.base.clone(),targets:[new THREE.Vector3(target.x*FIELD_X,0,target.z*FIELD_Z)],impactDelay:timing.impact,duration:timing.duration,facing:actor.group.rotation.y,elapsed,clock:()=>Math.max(0,this.presentationBattleTime-startedAt),weaponTip:()=>this.socketPosition(source,'weaponTip'),weaponBase:()=>this.socketPosition(source,'weaponBase'),targetPositions:()=>[this.actors.get(target.id)?.base.clone()??new THREE.Vector3(target.x*FIELD_X,0,target.z*FIELD_Z)],valid:()=>combatant.alive&&combatant.actionSeq===seq},false);
+        }
+      }
+      if(combatant.action==='attack'&&combatant.heroId!=='kael'&&combatant.heroId!=='lyra'){
         const target=combatants.find(other=>other.id===combatant.targetId);
         if(target){
           const end=new THREE.Vector3(target.x*FIELD_X,1.1,target.z*FIELD_Z);
@@ -382,7 +500,11 @@ export class WorldView {
         }
       }
     }
-    actor.actionTime+=dt;actor.mixer.update(dt);
+    actor.actionTime=elapsed;actor.mixer.update(dt);
+    if(actor.current&&['attack','skill','hit','dead'].includes(actor.action)&&actor.actionDuration>0){
+      actor.current.time=Math.min(actor.current.getClip().duration-.00001,elapsed/actor.actionDuration*actor.current.getClip().duration);
+      actor.mixer.update(0);
+    }
     if(!combatant.alive){
       actor.deadTime+=dt;
       if(!actor.actions.death){actor.body.rotation.z=THREE.MathUtils.lerp(actor.body.rotation.z,combatant.side==='ally'?1.45:-1.45,Math.min(1,dt*4));actor.body.position.y=-Math.min(.45,actor.deadTime*.28);}
@@ -392,13 +514,14 @@ export class WorldView {
     actor.group.visible=true;actor.deadTime=0;
     const target=combatants.find(other=>other.id===combatant.targetId&&other.alive);
     if(target){const facing=Math.atan2((target.x-combatant.x)*FIELD_X,(target.z-combatant.z)*FIELD_Z);actor.group.rotation.y=facing;}
-    const attack=(actor.action==='attack'||actor.action==='skill')&&actor.actionTime<.55;
-    const lunge=attack&&combatant.attackMode==='melee'?Math.sin(Math.min(1,actor.actionTime/.55)*Math.PI)*(actor.action==='skill'?.13:.08):0;
+    const attack=(actor.action==='attack'||actor.action==='skill')&&actor.actionTime<actor.actionDuration;
+    const authoredStarter=combatant.heroId==='kael'||combatant.heroId==='lyra';
+    const lunge=attack&&!authoredStarter&&combatant.attackMode==='melee'?Math.sin(Math.min(1,actor.actionTime/Math.max(.1,actor.actionDuration))*Math.PI)*.06:0;
     if(combatant.action==='move')actor.group.position.lerp(actor.base,Math.min(1,dt*24));else actor.group.position.copy(actor.base);
     actor.group.position.x+=Math.sin(actor.group.rotation.y)*lunge;actor.group.position.z+=Math.cos(actor.group.rotation.y)*lunge;
     actor.body.position.y=actor.actions.idle?0:Math.sin(this.time*1.9+combatant.x)*.009;
     if(actor.action==='hit'&&actor.actionTime<.22)actor.group.position.x-=(combatant.side==='ally'?1:-1)*Math.sin(actor.actionTime/.22*Math.PI)*.12;
-    if(actor.actionTime>.65&&actor.action!=='idle'&&actor.action!=='move'){this.play(actor,'idle');actor.action='idle';}
+    if(actor.actionDuration>0&&elapsed>=actor.actionDuration&&actor.action!=='idle'&&actor.action!=='move'&&actor.action!=='complete'){this.play(actor,'idle');actor.action='complete';}
   }
 
   private spawnSwing(start:THREE.Vector3,end:THREE.Vector3,color:THREE.Color):void {
@@ -417,17 +540,36 @@ export class WorldView {
     this.effects.push({object:trail,duration:.4,age:0,update:t=>{material.opacity=(1-t)*(strong?.75:.42);},dispose:()=>{geometry.dispose();material.dispose();}});
   }
 
-  private showEvent(event:CombatEvent):void {
+  private showEvent(event:CombatEvent,restoring=false):void {
     if(event.type==='wave')return;
+    if(event.type==='skillImpact'){
+      const key=`${event.sourceId}:${event.actionSeq}`;
+      const cue=this.skillCues.get(key);if(!cue)return;
+      cue.impactConfirmed=true;cue.impactTargets=event.targetIds??(event.targetId?[event.targetId]:[]);
+      this.skillVfx.resolveImpact(cue);
+      this.onSkillImpact?.(cue);this.skillCues.delete(key);
+      if(!this.skillVfx.diagnostics.reduced){this.cameraShake=Math.max(this.cameraShake,cue.slot===2?.46:.13);if(cue.slot===2)this.cameraZoom=.65;}
+      return;
+    }
     if(event.type==='skill'){
       const caster=this.actors.get(event.sourceId??'');if(!caster)return;
-      const hero=heroById[event.sourceId??''];
-      const targets=(event.targetIds??(event.targetId?[event.targetId]:[])).map(id=>this.actors.get(id)?.base.clone()).filter((point):point is THREE.Vector3=>!!point);
+      const combatant=[...this.lastState?.battle?.allies??[],...this.lastState?.battle?.enemies??[]].find(actor=>actor.id===event.sourceId);
+      const hero=heroById[combatant?.heroId??event.sourceId??''];
+      const targetIds=event.targetIds??(event.targetId?[event.targetId]:[]);
+      const targets=targetIds.map(id=>this.actors.get(id)?.base.clone()).filter((point):point is THREE.Vector3=>!!point);
       // Boss sweeps have no hero definition and target the living opposing formation.
       if(!hero&&!targets.length)for(const ally of this.lastState?.battle?.allies??[]){if(ally.alive){const actor=this.actors.get(ally.id);if(actor)targets.push(actor.base.clone());}}
-      const cue:SkillCue={heroId:hero?.id??'boss',skillId:event.skillId??'eclipse-burst',slot:event.skillSlot??2,name:event.label??'Eclipse Burst',color:hero?.color??'#dd4590',origin:caster.base.clone(),targets};
-      this.skillVfx.cast(cue);this.onSkill?.(cue);
-      if(!this.skillVfx.diagnostics.reduced){this.cameraShake=Math.max(this.cameraShake,cue.slot===2?.65:.22);if(cue.slot===2)this.cameraZoom=1.2;}
+      const timing=getActionTiming(hero?.id??'boss','skill',event.skillSlot??2);
+      const battle=this.lastState!.battle!,battleId=battle.id,wave=battle.wave;
+      const previousImpact=restoring?battle.effects.find(hit=>hit.type==='skillImpact'&&hit.sourceId===event.sourceId&&hit.actionSeq===event.actionSeq):undefined;
+      const cue:SkillCue={heroId:hero?.id??'boss',skillId:event.skillId??'eclipse-burst',slot:event.skillSlot??2,name:event.label??'Eclipse Burst',color:hero?.color??'#dd4590',origin:caster.base.clone(),targets,targetIds,impactDelay:event.impactAt!==undefined?Math.max(0,event.impactAt-event.createdAt):timing.impact,duration:event.duration??timing.duration,facing:caster.group.rotation.y,elapsed:Math.max(0,this.presentationBattleTime-event.createdAt),clock:()=>Math.max(0,this.presentationBattleTime-event.createdAt),restored:restoring,impactConfirmed:!!previousImpact,impactTargets:previousImpact?.targetIds,weaponTip:()=>this.socketPosition(caster,'weaponTip'),weaponBase:()=>this.socketPosition(caster,'weaponBase'),targetPositions:()=>targetIds.map((id,index)=>this.actors.get(id)?.base.clone()??targets[index]),valid:()=>{
+        if(cue.impactConfirmed)return true;
+        const current=this.lastState?.battle;
+        return !!current&&current.id===battleId&&current.wave===wave&&current.waveTransition===0&&!!combatant?.alive&&combatant.actionSeq===event.actionSeq&&targetIds.some(id=>[...current.allies,...current.enemies].some(actor=>actor.id===id&&actor.alive));
+      }};
+      this.skillCues.set(`${event.sourceId}:${event.actionSeq}`,cue);
+      if(this.skillCues.size>32)this.skillCues.delete(this.skillCues.keys().next().value!);
+      this.skillVfx.cast(cue);if(!restoring)this.onSkill?.(cue);
       return;
     }
     const target=this.actors.get(event.targetId??event.sourceId??'');if(!target)return;
@@ -476,14 +618,17 @@ export class WorldView {
     this.camera.fov=width/height<.85?52:39;
     this.baseFov=this.camera.fov;
     this.camera.clearViewOffset();
-    if(this.mode==='home')this.camera.setViewOffset(width,height,-width*(width>720?.16:.04),0,width,height);
+    const portrait=width<height;
+    if(this.mode==='home')this.camera.setViewOffset(width,height,-width*(width>720?.16:.04),portrait?-height*.13:0,width,height);
+    if(this.mode==='heroes'&&portrait)this.camera.setViewOffset(width,height,0,height*.09,width,height);
+    this.arrangeShowcase();
     if(this.mode==='battle'){
       const offset=new THREE.Vector3(1.6,3.85,10.85);
       if(width<height){
         // Vertical FOV alone cuts both teams off on a portrait phone. Fit the
         // complete formation into its narrow horizontal frustum, with room for weapons.
         const horizontalHalfFov=Math.atan(Math.tan(THREE.MathUtils.degToRad(this.camera.fov)/2)*this.camera.aspect);
-        const requiredDistance=5.4/Math.tan(horizontalHalfFov);
+        const requiredDistance=6.0/Math.tan(horizontalHalfFov);
         offset.multiplyScalar(Math.max(1,requiredDistance/offset.length()));
       }
       this.targetPosition.copy(this.targetLookAt).add(offset);
@@ -497,8 +642,8 @@ export class WorldView {
     actor.hp.traverse(node=>{if(node instanceof THREE.Mesh){node.geometry.dispose();const materials=Array.isArray(node.material)?node.material:[node.material];materials.forEach(material=>material.dispose());}});
     this.actors.delete(actor.id);
   }
-  private clearActors():void {for(const actor of this.actors.values())this.removeActor(actor);}
-  private clearEffects():void {for(const effect of this.effects){this.scene.remove(effect.object);effect.dispose();}this.effects=[];this.delayedEvents=[];this.skillVfx.clear();this.cameraZoom=0;this.cameraShake=0;}
+  private clearActors():void {for(const actor of this.actors.values())this.removeActor(actor);this.showcaseMotion=null;}
+  private clearEffects():void {for(const effect of this.effects){this.scene.remove(effect.object);effect.dispose();}this.effects=[];this.skillCues.clear();this.skillVfx.clear();this.cameraZoom=0;this.cameraShake=0;}
   dispose():void {
     if(this.disposed)return;this.disposed=true;this.resizeObserver.disconnect();this.clearActors();this.clearEffects();this.environment.dispose();
     const geometry=new Set<THREE.BufferGeometry>(),materials=new Set<THREE.Material>(),textures=new Set<THREE.Texture>();

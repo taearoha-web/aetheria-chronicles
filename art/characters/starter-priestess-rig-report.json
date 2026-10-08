@@ -1,0 +1,150 @@
+{
+  "role": "priestess",
+  "source_basename": "model_20261008_204527.glb",
+  "source_sha256": "fb1bde07ef76d603692706e50700c834843bbd86c8d6528d5a106df44bd86af8",
+  "model_sha256": "822c07b4647e9a055a84a5e5db15cc4e97b54af785ab9dfa7ef9ca784fe6dc90",
+  "bytes": 6809068,
+  "forward": "+z",
+  "standingHeight": 1.95,
+  "bones": [
+    "root",
+    "pelvis",
+    "spine",
+    "chest",
+    "neck",
+    "head",
+    "clavicle.R",
+    "upper_arm.R",
+    "forearm.R",
+    "hand.R",
+    "thigh.R",
+    "shin.R",
+    "foot.R",
+    "robe.R",
+    "robe_tip.R",
+    "clavicle.L",
+    "upper_arm.L",
+    "forearm.L",
+    "hand.L",
+    "thigh.L",
+    "shin.L",
+    "foot.L",
+    "robe.L",
+    "robe_tip.L",
+    "cape",
+    "cape_tip",
+    "hair",
+    "hair_tip",
+    "weapon",
+    "staff_tip"
+  ],
+  "weights": {
+    "vertex_count": 96620,
+    "regions": {
+      "body": 30053,
+      "legs": 16353,
+      "robe": 8071,
+      "arm.R": 7000,
+      "arm.L": 10211,
+      "cape": 5155,
+      "hair": 1538,
+      "head": 12545,
+      "weapon": 5694
+    },
+    "weighted_bones": {
+      "root": 0,
+      "pelvis": 24377,
+      "spine": 24828,
+      "chest": 42365,
+      "neck": 27166,
+      "head": 18228,
+      "clavicle.R": 25964,
+      "upper_arm.R": 11544,
+      "forearm.R": 9988,
+      "hand.R": 2949,
+      "thigh.R": 20367,
+      "shin.R": 11098,
+      "foot.R": 5083,
+      "robe.R": 6521,
+      "robe_tip.R": 4216,
+      "clavicle.L": 19438,
+      "upper_arm.L": 14431,
+      "forearm.L": 10313,
+      "hand.L": 5200,
+      "thigh.L": 19902,
+      "shin.L": 10825,
+      "foot.L": 4035,
+      "robe.L": 5964,
+      "robe_tip.L": 4135,
+      "cape": 1955,
+      "cape_tip": 3051,
+      "hair": 3710,
+      "hair_tip": 5594,
+      "weapon": 5694,
+      "staff_tip": 0
+    },
+    "unweighted_vertices": 0,
+    "max_influences": 4,
+    "weights_normalized": true
+  },
+  "sockets": {
+    "weaponTip": "staff_tip",
+    "weaponBase": "hand.R"
+  },
+  "clips": {
+    "Idle": {
+      "duration": 2.4,
+      "impact": null,
+      "loop": true
+    },
+    "Run": {
+      "duration": 0.84,
+      "impact": null,
+      "loop": true
+    },
+    "Attack_01": {
+      "duration": 1.1,
+      "impact": 0.52,
+      "loop": false
+    },
+    "Attack_02": {
+      "duration": 1.2,
+      "impact": 0.58,
+      "loop": false
+    },
+    "Skill_01": {
+      "duration": 1.3,
+      "impact": 0.58,
+      "loop": false
+    },
+    "Skill_02": {
+      "duration": 1.5,
+      "impact": 0.7,
+      "loop": false
+    },
+    "Skill_03": {
+      "duration": 1.8,
+      "impact": 0.95,
+      "loop": false
+    },
+    "Hit": {
+      "duration": 0.45,
+      "impact": 0.08,
+      "loop": false
+    },
+    "Death": {
+      "duration": 1.4,
+      "impact": 0.75,
+      "loop": false
+    },
+    "Victory": {
+      "duration": 2.0,
+      "impact": null,
+      "loop": false
+    }
+  },
+  "limitations": [
+    "Authored from a relaxed AI-generated static mesh; source fingers and cloth contacts are not production retopology.",
+    "No facial blendshape or individual finger rig; secondary cloth uses bones, not physical simulation."
+  ]
+}

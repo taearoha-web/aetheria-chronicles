@@ -25,12 +25,15 @@ export class SkillAudio {
     this.tone(win ? 660 : 760, win ? 990 : 840, now, win ? .25 : .07, .025, 'sine');
     if (win) this.tone(1320, 1320, now + .1, .4, .02, 'sine');
   }
-  playSkill(hero: string, slot: number, speed: number): void {
+  playSkill(hero: string, slot: number, speed: number, impactDelay=.24, phase:'all'|'cast'|'impact'='all'): void {
     if (!this.ready() || this.voices.size > 24) return;
-    const now = this.context!.currentTime, hit = now + .24 / speed, ultimate = slot === 2;
-    const support = hero === 'lyra' || hero === 'lucien';
-    this.tone(support ? 660 : 240, support ? 1320 : 520, now, .2 / speed, .026, 'triangle');
-    this.wind(now, .23 / speed, hero === 'seraphina' ? 650 : hero === 'elias' ? 3200 : 1400, .04);
+    const now = this.context!.currentTime, hit = now + Math.max(0,impactDelay) / speed, ultimate = slot === 2;
+    const support = (hero === 'lyra'&&slot<2) || hero === 'lucien' || (hero==='kael'&&slot===1);
+    if(phase!=='impact'){
+      this.tone(support ? 660 : 240, support ? 1320 : 520, now, Math.max(.12,impactDelay*.82) / speed, .026, 'triangle');
+      this.wind(now, Math.max(.12,impactDelay*.86) / speed, hero === 'seraphina' ? 650 : hero === 'elias' ? 3200 : 1400, .025);
+    }
+    if(phase==='cast')return;
     if (support) {
       for (const [i, note] of [880, 1108, 1320].entries()) this.tone(note, note, hit + i * .045, ultimate ? .7 : .45, .025, 'sine');
     } else {

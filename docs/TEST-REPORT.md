@@ -1,4 +1,19 @@
-# First playable verification — 8 October 2026
+# Starter heroes v0.5.0 — 8 October 2026
+
+Final local checks passed on the locked knight and priestess exports:
+
+- 41 gameplay/persistence tests (28 existing and 13 starter-specific tests).
+- Strict TypeScript check and Vite production build.
+- Asset validation: 16 embedded, textured, rigged models; eight unique hero models. Each starter has 80,000 triangles, 30 bones and ten distinct animation clips. Active model payloads total 32.28 MiB and load on demand.
+- Opening each packed file in Blender 5.2.2 verified all ten actions, packed textures, 30 bones and Idle at frame 1. Exporting the packed files without the original PC GLBs reproduced the runtime models byte-for-byte.
+- Final Edge touch emulation at 844×390 and 390×844: 20 animation selections through actual UI; six exact combat skills; authored impact/recovery timing; shared skeletal/VFX clock; paused bones and effects; paused camp return without duplicate casts; 1×/2× playback; preview leaves the saved profile unchanged; no JavaScript, shader, asset or network errors.
+- Visually inspected both starter models, representative Run/Attack/Skill/Death poses, full-body portrait framing and landscape staging. Fonts are bundled locally with their OFL notices.
+
+The final browser evidence is [starter-browser.json](validation/starter-browser.json). Editable-file evidence is [editable-blender-validation.json](../art/characters/editable-blender-validation.json). Reproduce the starter flow with `node tests/e2e/starter-heroes.mjs` after starting the development server. Set `QA_URL`, `QA_ARTIFACTS` and `EDGE_PATH` when needed.
+
+These are local results, not a claim that GitHub Actions or physical iPhone/iPad testing passed. An initial final-browser attempt hit a navigation timeout while Blender and the production build were running; the completed retry ran on the same locked GLB hashes with a 90-second navigation timeout and unchanged gameplay assertions. No mobile hardware frame-rate claim is made. The source mesh still limits extreme cloth/finger deformation; facial animation, separate finger controls and physical cloth simulation are outside this rig.
+
+## Earlier first-playable verification (historical)
 
 ## Automated rules and build
 

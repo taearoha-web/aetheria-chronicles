@@ -1,0 +1,240 @@
+{
+  "device": "Edge touch/viewport emulation, not physical iPhone or iPad",
+  "errors": [],
+  "failedRequests": [],
+  "checks": [
+    "Paused mid-cast survives camp visit and resumes with effects, without replaying a cast",
+    "Two free starter heroes;20 real UI clips; previews leave save unchanged; six exact combat skills with authored impacts and complete recovery; 1x/2x; skeleton and effects freeze; landscape and portrait; no browser/shader/asset/network errors"
+  ],
+  "animations": [
+    {
+      "hero": "kael",
+      "clip": "Idle",
+      "joints": 30,
+      "firstTime": 0.3465000000000001,
+      "lastTime": 0.05,
+      "socketTravel": 0.004305677281526522
+    },
+    {
+      "hero": "kael",
+      "clip": "Run",
+      "joints": 30,
+      "firstTime": 0.014800000000000181,
+      "lastTime": 0.04789999999999964,
+      "socketTravel": 0.04755573126723587
+    },
+    {
+      "hero": "kael",
+      "clip": "Attack_01",
+      "joints": 30,
+      "firstTime": 0.0165,
+      "lastTime": 0.0665,
+      "socketTravel": 0.15325261669141593
+    },
+    {
+      "hero": "kael",
+      "clip": "Attack_02",
+      "joints": 30,
+      "firstTime": 0.016800000000001092,
+      "lastTime": 0.067,
+      "socketTravel": 0.1964629547211322
+    },
+    {
+      "hero": "kael",
+      "clip": "Hit",
+      "joints": 30,
+      "firstTime": 0.020399999999999637,
+      "lastTime": 0.13359999999999855,
+      "socketTravel": 0.6125204700704845
+    },
+    {
+      "hero": "kael",
+      "clip": "Death",
+      "joints": 30,
+      "firstTime": 0.01669999999999891,
+      "lastTime": 0.05,
+      "socketTravel": 0.008510438564514508
+    },
+    {
+      "hero": "kael",
+      "clip": "Victory",
+      "joints": 30,
+      "firstTime": 0.01669999999999891,
+      "lastTime": 0.05,
+      "socketTravel": 0.0649952724067573
+    },
+    {
+      "hero": "kael",
+      "clip": "Skill_01",
+      "joints": 30,
+      "firstTime": 0.01684057913655857,
+      "lastTime": 0.10144927190697713,
+      "socketTravel": 0.6198874578164086
+    },
+    {
+      "hero": "kael",
+      "clip": "Skill_02",
+      "joints": 30,
+      "firstTime": 0.017101189996514637,
+      "lastTime": 0.05120237951619322,
+      "socketTravel": 0.03353901635556047
+    },
+    {
+      "hero": "kael",
+      "clip": "Skill_03",
+      "joints": 30,
+      "firstTime": 0.01685045052219155,
+      "lastTime": 0.05055135156657281,
+      "socketTravel": 0.016317563759801375
+    },
+    {
+      "hero": "lyra",
+      "clip": "Idle",
+      "joints": 30,
+      "firstTime": 0.2764000000000051,
+      "lastTime": 0.0165,
+      "socketTravel": 0.00468097326316595
+    },
+    {
+      "hero": "lyra",
+      "clip": "Run",
+      "joints": 30,
+      "firstTime": 0.01669999999999709,
+      "lastTime": 0.04989999999999782,
+      "socketTravel": 0.028492738552309306
+    },
+    {
+      "hero": "lyra",
+      "clip": "Attack_01",
+      "joints": 30,
+      "firstTime": 0.016599999999998546,
+      "lastTime": 0.05,
+      "socketTravel": 0.01830593144860178
+    },
+    {
+      "hero": "lyra",
+      "clip": "Attack_02",
+      "joints": 30,
+      "firstTime": 0.016700000000000728,
+      "lastTime": 0.05,
+      "socketTravel": 0.022011316015931464
+    },
+    {
+      "hero": "lyra",
+      "clip": "Hit",
+      "joints": 30,
+      "firstTime": 0.016700000000000728,
+      "lastTime": 0.050100000000002184,
+      "socketTravel": 0.04275890592794391
+    },
+    {
+      "hero": "lyra",
+      "clip": "Death",
+      "joints": 30,
+      "firstTime": 0.016700000000000728,
+      "lastTime": 0.05,
+      "socketTravel": 0.04420818154812903
+    },
+    {
+      "hero": "lyra",
+      "clip": "Victory",
+      "joints": 30,
+      "firstTime": 0.016900000000001456,
+      "lastTime": 0.050100000000002184,
+      "socketTravel": 0.017459529501427293
+    },
+    {
+      "hero": "lyra",
+      "clip": "Skill_01",
+      "joints": 30,
+      "firstTime": 0.01691410327874771,
+      "lastTime": 0.05074230983623945,
+      "socketTravel": 0.023294135133896565
+    },
+    {
+      "hero": "lyra",
+      "clip": "Skill_02",
+      "joints": 30,
+      "firstTime": 0.01648111093838936,
+      "lastTime": 0.051263332796097544,
+      "socketTravel": 0.0036065316269327983
+    },
+    {
+      "hero": "lyra",
+      "clip": "Skill_03",
+      "joints": 30,
+      "firstTime": 0.016753704216743697,
+      "lastTime": 0.050362038579249827,
+      "socketTravel": 0.003939876837359273
+    }
+  ],
+  "skills": [
+    {
+      "hero": "kael",
+      "slot": 0,
+      "speed": 1,
+      "skillId": "dawnstrike",
+      "impactDelay": 0.48,
+      "confirmedImpactAge": 0.49999999999999994,
+      "duration": 1.15,
+      "lastSkillAge": 1.1000000000000016,
+      "samples": 81
+    },
+    {
+      "hero": "kael",
+      "slot": 1,
+      "speed": 1,
+      "skillId": "sunward",
+      "impactDelay": 0.65,
+      "confirmedImpactAge": 0.6666666666666666,
+      "duration": 1.4,
+      "lastSkillAge": 1.2333333333333345,
+      "samples": 93
+    },
+    {
+      "hero": "kael",
+      "slot": 2,
+      "speed": 2,
+      "skillId": "horizon",
+      "impactDelay": 1,
+      "confirmedImpactAge": 1.0000000000000022,
+      "duration": 1.85,
+      "lastSkillAge": 1.6999999999999997,
+      "samples": 59
+    },
+    {
+      "hero": "lyra",
+      "slot": 0,
+      "speed": 1,
+      "skillId": "starlight",
+      "impactDelay": 0.58,
+      "confirmedImpactAge": 0.5999999999999999,
+      "duration": 1.3,
+      "lastSkillAge": 1.2000000000000013,
+      "samples": 85
+    },
+    {
+      "hero": "lyra",
+      "slot": 1,
+      "speed": 1,
+      "skillId": "sanctuary",
+      "impactDelay": 0.7,
+      "confirmedImpactAge": 0.7,
+      "duration": 1.5,
+      "lastSkillAge": 1.3333333333333348,
+      "samples": 91
+    },
+    {
+      "hero": "lyra",
+      "slot": 2,
+      "speed": 1,
+      "skillId": "astral",
+      "impactDelay": 0.95,
+      "confirmedImpactAge": 0.9666666666666672,
+      "duration": 1.8,
+      "lastSkillAge": 1.633333333333336,
+      "samples": 121
+    }
+  ],
+  "status": "PASS"
+}

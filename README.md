@@ -6,7 +6,7 @@ A playable 3D fantasy party RPG foundation built for mobile browsers. Thai contr
 
 Sanctuary → choose a story chapter → automatic basic attacks / manual or automatic skills → defeat three waves → receive equipment and currency → recruit story companions → improve the party → save and continue.
 
-- Start with **Kael** and **Lyra**.
+- Start with **Kael**, a sword knight, and **Lyra**, a staff priestess. Both use the owner's new human models, rigged and animated in Blender. Their hero page includes skill and motion previews.
 - Clearing chapters 1 and 2 recruits **Seraphina** and **Riven**.
 - Five chapters, each with three waves and a boss encounter.
 - Three active skills and one passive per hero; pause and 2× speed.
@@ -49,7 +49,7 @@ For development while the computer is asleep, the repository must be connected t
 
 The runtime uses **16 distinct, rigged, textured user-provided GLB models**: eight individual heroes, three normal enemy species and five bosses. Heroes never share model keys or GLB payloads. Character selection shows matching model portraits. Models load on demand with two concurrent downloads; combat waits for its actors to finish loading.
 
-The eight heroes include a knight, mermaid spirit, phoenix, abyss warrior, crystal titan, lightning wolf, monkey king and radiant lion. The owner approved playable beasts and spirits. Existing hero IDs, purchases and saves are preserved. See [ART-DIRECTION.md](docs/ART-DIRECTION.md) and [ATTRIBUTION.md](public/assets/ATTRIBUTION.md).
+The eight heroes include a human knight, human priestess, phoenix, abyss warrior, crystal titan, lightning wolf, monkey king and radiant lion. The owner approved playable beasts and spirits. Existing hero IDs, purchases and saves are preserved. See [STARTER-HEROES.md](docs/STARTER-HEROES.md), [ART-DIRECTION.md](docs/ART-DIRECTION.md) and [ATTRIBUTION.md](public/assets/ATTRIBUTION.md).
 
 Play privately at [Aetheria Chronicles](https://aetheria-chronicles.taemongkichi.chatgpt.site), signed in with the owner's ChatGPT account. The Site uses project ID appgprj_6ac77409fc0c8191be01432cf67726ae; reuse that Site when publishing updates.
 

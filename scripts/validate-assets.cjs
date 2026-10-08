@@ -36,6 +36,7 @@ function readGlb(filename) {
   let offset = 12;
   let document;
   let binaryLength = 0;
+  let binary;
   let chunkIndex = 0;
   while (offset < bytes.length) {
     assert(offset + 8 <= bytes.length, 'truncated GLB chunk header');
@@ -52,6 +53,7 @@ function readGlb(filename) {
     } else if (type === 0x004e4942) {
       assert(binaryLength === 0, 'GLB has duplicate binary chunks');
       binaryLength = length;
+      binary = bytes.subarray(start,end);
     }
     offset = end;
     chunkIndex += 1;
@@ -63,7 +65,71 @@ function readGlb(filename) {
       assert(Number.isInteger(buffer.byteLength) && buffer.byteLength > 0 && buffer.byteLength <= binaryLength, 'embedded buffer exceeds the GLB binary chunk');
     }
   }
-  return { bytes, document };
+  return { bytes, document, binary };
+}
+
+function accessorValues(doc,binary,index) {
+  const accessor=doc.accessors?.[index],view=doc.bufferViews?.[accessor?.bufferView];
+  assert(accessor&&view&&!accessor.sparse,'starter animation/skin accessor must be embedded and non-sparse');
+  const sizes={SCALAR:1,VEC2:2,VEC3:3,VEC4:4,MAT4:16},components=sizes[accessor.type];
+  const readers={5120:[1,'readInt8'],5121:[1,'readUInt8'],5122:[2,'readInt16LE'],5123:[2,'readUInt16LE'],5125:[4,'readUInt32LE'],5126:[4,'readFloatLE']};
+  const reader=readers[accessor.componentType];assert(reader&&components,'unsupported starter accessor layout');
+  const [size,method]=reader,stride=view.byteStride||components*size,start=(view.byteOffset||0)+(accessor.byteOffset||0);
+  assert(start+(accessor.count-1)*stride+components*size<=binary.length,'starter accessor exceeds embedded binary');
+  const values=new Float64Array(accessor.count*components);
+  const denominator=accessor.normalized?(accessor.componentType===5121?255:accessor.componentType===5123?65535:1):1;
+  for(let item=0;item<accessor.count;item++)for(let component=0;component<components;component++)values[item*components+component]=binary[method](start+item*stride+component*size)/denominator;
+  return {values,components,count:accessor.count};
+}
+
+function validateStarter(doc,binary,model) {
+  const required=['Idle','Run','Attack_01','Attack_02','Skill_01','Skill_02','Skill_03','Hit','Death','Victory'];
+  const animations=doc.animations||[],names=animations.map(animation=>animation.name);
+  assert(names.length===10&&new Set(names).size===10&&required.every(name=>names.includes(name)),'starter must contain exactly the ten authored motion clips');
+  assert(doc.skins.some(skin=>skin.joints.length>=20),'starter requires a articulated skeleton of at least twenty joints');
+  const jointCount=Math.max(...doc.skins.map(skin=>skin.joints.length)),influenced=new Set();
+  for(const primitive of doc.meshes.flatMap(mesh=>mesh.primitives)) {
+    const attributes=primitive.attributes;
+    assert(attributes.TEXCOORD_0!==undefined&&attributes.JOINTS_0!==undefined&&attributes.WEIGHTS_0!==undefined,'starter mesh must retain UV coordinates and skinning attributes');
+    const joints=accessorValues(doc,binary,attributes.JOINTS_0),weights=accessorValues(doc,binary,attributes.WEIGHTS_0);
+    assert(joints.components===4&&weights.components===4&&joints.count===weights.count,'starter skinning attributes must be matching VEC4 accessors');
+    const more=attributes.WEIGHTS_1!==undefined?accessorValues(doc,binary,attributes.WEIGHTS_1):null;
+    for(let vertex=0;vertex<weights.count;vertex++){
+      let sum=0;
+      for(let lane=0;lane<4;lane++){
+        const weight=weights.values[vertex*4+lane],joint=joints.values[vertex*4+lane];
+        assert(Number.isFinite(weight)&&weight>=0&&weight<=1.001,'starter has invalid bone weights');
+        assert(Number.isInteger(joint)&&joint>=0&&joint<jointCount,'starter references a missing bone');
+        sum+=weight;if(weight>.005)influenced.add(joint);
+        if(more)sum+=more.values[vertex*4+lane];
+      }
+      assert(Math.abs(sum-1)<.025,'starter bone weights are zero or not normalized');
+    }
+    const material=doc.materials?.[primitive.material];
+    assert(material?.pbrMetallicRoughness?.baseColorTexture,'starter mesh must retain its embedded base-color texture');
+  }
+  assert(influenced.size>=12,'starter vertices must actually be influenced by an articulated body, not one rigid root');
+  const clipFingerprints=new Set(),durationByClip={};
+  for(const animation of animations){
+    let changingChannels=0,duration=0;const signature=[];
+    for(const channel of animation.channels||[]){
+      const sampler=animation.samplers[channel.sampler],input=accessorValues(doc,binary,sampler.input),output=accessorValues(doc,binary,sampler.output);
+      assert(input.count>=2,'starter clip has no timed keys');duration=Math.max(duration,input.values[input.values.length-1]);
+      let varies=false;for(let i=output.components;i<output.values.length;i++)if(Math.abs(output.values[i]-output.values[i%output.components])>1e-5){varies=true;break;}
+      if(varies)changingChannels++;
+      signature.push(channel.target.node+':'+channel.target.path+':'+crypto.createHash('sha256').update(Buffer.from(output.values.buffer)).digest('hex'));
+    }
+    assert(duration>0&&changingChannels>=3,'starter '+animation.name+' has insufficient meaningful joint animation');
+    durationByClip[animation.name]=duration;clipFingerprints.add(signature.join('|'));
+  }
+  assert(clipFingerprints.size===required.length,'starter motion clips must contain distinct keyed animation');
+  for(const socket of Object.values(model.sockets||{}))assert(doc.nodes.some(node=>node.name===socket),'missing authored weapon socket: '+socket);
+  for(const[clip,timing]of Object.entries(model.clipTimings||{})){
+    assert(durationByClip[clip]!==undefined,'timing metadata references a missing clip: '+clip);
+    assert(Number.isFinite(timing.duration)&&Math.abs(timing.duration-durationByClip[clip])<.04,'timing duration differs from authored clip: '+clip);
+    if(timing.impact!==undefined&&timing.impact!==null)assert(Number.isFinite(timing.impact)&&timing.impact>=0&&timing.impact<=timing.duration,'impact lies outside authored clip: '+clip);
+  }
+  return {weightedJoints:influenced.size,durationByClip};
 }
 
 function validateModel(key, model) {
@@ -76,7 +142,7 @@ function validateModel(key, model) {
   assert(fs.existsSync(filename), 'missing GLB: ' + model.url);
   assert(fs.statSync(filename).isFile(), 'model path is not a file');
   assert(inside(fs.realpathSync(assetRoot), fs.realpathSync(filename)), 'model resolves outside public/assets');
-  const { bytes, document: doc } = readGlb(filename);
+  const { bytes, document: doc, binary } = readGlb(filename);
   for (const field of ['meshes', 'skins', 'images']) {
     assert(Array.isArray(doc[field]) && doc[field].length > 0, 'missing ' + field);
   }
@@ -99,6 +165,7 @@ function validateModel(key, model) {
     assert(Number.isInteger(count) && count > 0, 'mesh has no valid index or vertex count');
     if (primitive.mode === undefined || primitive.mode === 4) triangles += count / 3;
   }
+  const starter=/starter-(knight|priestess)\.glb$/.test(model.url)?validateStarter(doc,binary,model):undefined;
   return {
     file: path.relative(assetRoot, filename).split(path.sep).join('/'),
     bytes: bytes.length,
@@ -114,6 +181,7 @@ function validateModel(key, model) {
     embedded: true,
     source: model.source,
     license: model.license,
+    ...(starter?{starter}:{}),
   };
 }
 

@@ -1,27 +1,28 @@
 import type { EquipmentDefinition, HeroDefinition, StageDefinition } from './types';
+import { ACTION_TIMINGS } from './timing';
 
 export const HEROES: HeroDefinition[] = [
   {
     id: 'kael', name: 'Kael', title: 'Dawnblade Knight', role: 'knight', attackMode: 'melee', color: '#72c6ff', modelKey: 'knight', price: 0,
-    description: 'An exiled knight who carries the last ember of the fallen Dawn Citadel.',
+    description: 'อัศวินหนุ่มแห่งรุ่งอรุณ สวมเกราะขาวน้ำเงินและต่อสู้ด้วยดาบ เขายืนแนวหน้าเพื่อปกป้องคำสัญญาที่ให้ไว้กับสหาย',
     baseHp: 1250, baseAttack: 92, baseDefense: 28, attackInterval: 1.45,
     skills: [
-      { id: 'dawnstrike', name: 'Dawn Strike', icon: '⚔', description: 'Strike the nearest enemy for 290% ATK.', kind: 'strike', cooldown: 7, cost: 20, power: 2.9 },
-      { id: 'sunward', name: 'Sunward', icon: '◇', description: 'Protect every ally with a shield equal to 200% ATK.', kind: 'shieldAll', cooldown: 15, cost: 30, power: 2 },
-      { id: 'horizon', name: 'Horizon Break', icon: '✦', description: 'A radiant slash deals 210% ATK to all enemies.', kind: 'cleave', cooldown: 20, cost: 40, power: 2.1 },
+      { id: 'dawnstrike', name: 'คมดาบรุ่งอรุณ', icon: '⚔', description: 'เข้าประชิดแล้วฟันกวาดศัตรูด้านหน้า สร้างความเสียหาย 250% ATK เมื่อคมดาบปะทะ', kind: 'cleave', cooldown: 7, cost: 20, power: 2.5, targetShape: 'frontArc', radius: 2.8, timing: ACTION_TIMINGS.kael.skills[0] },
+      { id: 'sunward', name: 'คำสัตย์พิทักษ์', icon: '◇', description: 'ยกดาบสร้างเกราะให้เพื่อนร่วมทีมที่ยังมีชีวิตทุกคน ดูดซับความเสียหายเท่ากับ 210% ATK', kind: 'shieldAll', cooldown: 15, cost: 28, power: 2.1, timing: ACTION_TIMINGS.kael.skills[1] },
+      { id: 'horizon', name: 'พิพากษารุ่งอรุณ', icon: '✦', description: 'เข้าประชิด กระโดดยกดาบแล้วฟาดลงพื้น สร้างความเสียหาย 320% ATK รอบจุดปะทะ 1 ครั้ง', kind: 'cleave', cooldown: 22, cost: 42, power: 3.2, targetShape: 'targetArea', radius: 2.8, timing: ACTION_TIMINGS.kael.skills[2] },
     ],
-    passive: { name: 'Oath of Dawn', description: 'Gains 25% extra DEF. Enemies prefer targeting frontline allies.' },
+    passive: { name: 'ผู้รักษาคำสัตย์', description: 'DEF เพิ่ม 25% และยืนแนวหน้าเพื่อดึงการโจมตีให้ห่างจากผู้เยียวยา' },
   },
   {
-    id: 'lyra', name: 'Lyra', title: 'Starlight Oracle', role: 'healer', attackMode: 'ranged', color: '#f3b8fa', modelKey: 'healer', price: 0,
-    description: 'A wandering oracle whose starlight can mend the wounds of a fractured world.',
+    id: 'lyra', name: 'Lyra', title: 'Crystal Priestess', role: 'healer', attackMode: 'ranged', color: '#f3b8fa', modelKey: 'healer', price: 0,
+    description: 'นักบวชสาวผู้ถือคทาคริสตัล เธออยู่แนวหลังเพื่อเยียวยาสหาย สร้างม่านคุ้มครอง และใช้แสงพิพากษาศัตรู',
     baseHp: 780, baseAttack: 78, baseDefense: 13, attackInterval: 1.8,
     skills: [
-      { id: 'starlight', name: 'Starlight', icon: '✚', description: 'Heal the most wounded ally for 420% ATK.', kind: 'heal', cooldown: 7, cost: 18, power: 4.2 },
-      { id: 'sanctuary', name: 'Sanctuary', icon: '❋', description: 'Restore 240% ATK as HP to every ally.', kind: 'healAll', cooldown: 15, cost: 30, power: 2.4 },
-      { id: 'astral', name: 'Astral Bloom', icon: '✧', description: 'Heal all allies for 320% ATK and grant a small shield.', kind: 'renew', cooldown: 23, cost: 45, power: 3.2 },
+      { id: 'starlight', name: 'คำภาวนาเยียวยา', icon: '✚', description: 'ประสานคำภาวนากับคทา ฟื้นฟู HP ให้เพื่อนร่วมทีมที่ยังมีชีวิตทุกคนเท่ากับ 290% ATK', kind: 'healAll', cooldown: 9, cost: 22, power: 2.9, timing: ACTION_TIMINGS.lyra.skills[0] },
+      { id: 'sanctuary', name: 'ม่านคริสตัล', icon: '❋', description: 'ยกคทาให้คริสตัลผลิบาน สร้างเกราะให้ทุกคน ดูดซับความเสียหายเท่ากับ 260% ATK', kind: 'shieldAll', cooldown: 15, cost: 30, power: 2.6, timing: ACTION_TIMINGS.lyra.skills[1] },
+      { id: 'astral', name: 'แสงพิพากษา', icon: '✧', description: 'รวบรวมแสงที่ปลายคทาแล้วปล่อยเสาแสง สร้างความเสียหาย 300% ATK แก่ศัตรูทุกตัว 1 ครั้ง', kind: 'blast', cooldown: 23, cost: 42, power: 3, timing: ACTION_TIMINGS.lyra.skills[2] },
     ],
-    passive: { name: 'Gentle Light', description: 'Basic attacks also heal the most wounded ally for 35% ATK.' },
+    passive: { name: 'แสงแห่งความเมตตา', description: 'เมื่อการโจมตีปกติโดนเป้าหมาย ฟื้นฟู HP ให้สหายที่บาดเจ็บมากที่สุดเท่ากับ 35% ATK' },
   },
   {
     id: 'seraphina', name: 'Seraphina', title: 'Crimson Phoenix', role: 'mage', attackMode: 'ranged', color: '#fe927f', modelKey: 'seraphina', price: 0, storyStage: 1,

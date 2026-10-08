@@ -1,0 +1,44 @@
+{
+  "status": "PASS",
+  "blender": "5.2.2 LTS",
+  "files": [
+    {
+      "file": "starter-knight.blend",
+      "bones": 30,
+      "actions": [
+        "Attack_01",
+        "Attack_02",
+        "Death",
+        "Hit",
+        "Idle",
+        "Run",
+        "Skill_01",
+        "Skill_02",
+        "Skill_03",
+        "Victory"
+      ],
+      "packedTextures": 2,
+      "openingAction": "Idle",
+      "openingFrame": 1
+    },
+    {
+      "file": "starter-priestess.blend",
+      "bones": 30,
+      "actions": [
+        "Attack_01",
+        "Attack_02",
+        "Death",
+        "Hit",
+        "Idle",
+        "Run",
+        "Skill_01",
+        "Skill_02",
+        "Skill_03",
+        "Victory"
+      ],
+      "packedTextures": 2,
+      "openingAction": "Idle",
+      "openingFrame": 1
+    }
+  ]
+}

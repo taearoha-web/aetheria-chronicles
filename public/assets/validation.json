@@ -1,20 +1,20 @@
 {
-  "checkedAt": "2026-10-08T11:13:43.509Z",
+  "checkedAt": "2026-10-08T15:18:35.011Z",
   "result": "PASS",
-  "totalBytes": 24299520,
+  "totalBytes": 33844688,
   "models": {
     "knight": {
-      "file": "knight.glb",
-      "bytes": 2324860,
-      "sha256": "686939b5f215737c41c4f6624f174ba7b4ddb11b6f86334d7eceffa85a1ab81e",
-      "triangles": 18000,
-      "vertices": 16596,
+      "file": "models/starter-knight.glb",
+      "bytes": 7212064,
+      "sha256": "a62195686910cd35424aef2cb10d7e82d3e4514fe8006c83d7b4af5a16068b6c",
+      "triangles": 80000,
+      "vertices": 106819,
       "skins": 1,
       "joints": [
-        27
+        30
       ],
       "meshes": 1,
-      "images": 3,
+      "images": 2,
       "animationNames": [
         "Attack_01",
         "Attack_02",
@@ -22,28 +22,43 @@
         "Hit",
         "Idle",
         "Run",
+        "Skill_01",
+        "Skill_02",
         "Skill_03",
-        "Stun",
-        "Victory",
-        "Walk"
+        "Victory"
       ],
       "requiredExtensions": [],
       "embedded": true,
-      "source": "User project / assets/paladins_v1_r6/water_paladin.glb",
-      "license": "User-provided proprietary project asset; used only in this game"
+      "source": "User-provided model_20261008_195253.glb; original Blender rig and ten authored animations in scripts/characters/build_starters.py",
+      "license": "User-provided source model with original project rig and animation; see assets/ATTRIBUTION.md",
+      "starter": {
+        "weightedJoints": 26,
+        "durationByClip": {
+          "Attack_01": 0.9333333373069763,
+          "Attack_02": 1.0666667222976685,
+          "Death": 1.4166666269302368,
+          "Hit": 0.46666666865348816,
+          "Idle": 2.4166667461395264,
+          "Run": 0.7333333492279053,
+          "Skill_01": 1.1666666269302368,
+          "Skill_02": 1.4166666269302368,
+          "Skill_03": 1.8666666746139526,
+          "Victory": 2.0166666507720947
+        }
+      }
     },
     "healer": {
-      "file": "healer.glb",
-      "bytes": 2151104,
-      "sha256": "9ea5c43ff4e247498deb40762a5482d6dae65dd7a7d23ccced922b6362d1c5fd",
-      "triangles": 17999,
-      "vertices": 16598,
+      "file": "models/starter-priestess.glb",
+      "bytes": 6809068,
+      "sha256": "822c07b4647e9a055a84a5e5db15cc4e97b54af785ab9dfa7ef9ca784fe6dc90",
+      "triangles": 80000,
+      "vertices": 98243,
       "skins": 1,
       "joints": [
-        21
+        30
       ],
       "meshes": 1,
-      "images": 3,
+      "images": 2,
       "animationNames": [
         "Attack_01",
         "Attack_02",
@@ -51,15 +66,30 @@
         "Hit",
         "Idle",
         "Run",
+        "Skill_01",
+        "Skill_02",
         "Skill_03",
-        "Stun",
-        "Victory",
-        "Walk"
+        "Victory"
       ],
       "requiredExtensions": [],
       "embedded": true,
-      "source": "User project / assets/scroll_monsters_v3/light_mermaid.glb",
-      "license": "User-provided proprietary project asset; used only in this game"
+      "source": "User-provided model_20261008_204527.glb; original Blender rig and ten authored animations in scripts/characters/build_starters.py",
+      "license": "User-provided source model with original project rig and animation; see assets/ATTRIBUTION.md",
+      "starter": {
+        "weightedJoints": 28,
+        "durationByClip": {
+          "Attack_01": 1.1166666746139526,
+          "Attack_02": 1.2166666984558105,
+          "Death": 1.4166666269302368,
+          "Hit": 0.46666666865348816,
+          "Idle": 2.4166667461395264,
+          "Run": 0.8500000238418579,
+          "Skill_01": 1.3166667222976685,
+          "Skill_02": 1.5166666507720947,
+          "Skill_03": 1.8166667222976685,
+          "Victory": 2.0166666507720947
+        }
+      }
     },
     "seraphina": {
       "file": "seraphina.glb",

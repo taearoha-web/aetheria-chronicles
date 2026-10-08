@@ -1,13 +1,19 @@
 import * as THREE from 'three';
+import { addStarterEffects } from './StarterEffects';
 
 export interface SkillCue {
   heroId: string; skillId: string; slot: number; name: string;
   color: string; origin: THREE.Vector3; targets: THREE.Vector3[];
+  impactDelay:number; duration:number; facing:number; elapsed?:number;
+  weaponTip?:()=>THREE.Vector3; weaponBase?:()=>THREE.Vector3;
+  targetPositions?:()=>THREE.Vector3[];
+  valid?:()=>boolean;
+  clock?:()=>number; restored?:boolean;
+  targetIds?:string[]; impactConfirmed?:boolean; impactTargets?:string[];
 }
-interface Cast { group: THREE.Group; age: number; duration: number; update: (age: number) => void }
+interface Cast { group: THREE.Group; age: number; duration: number; update: (age: number) => void; record:boolean; valid?:()=>boolean; clock?:()=>number; cue:SkillCue }
 type Updater = (age: number) => void;
 const TAU = Math.PI * 2;
-export const SKILL_IMPACT_DELAY = .24;
 const palettes: Record<string, [number, number]> = {
   kael: [0x58cbff, 0xe9fbff], lyra: [0xdc98ff, 0xffeafc],
   seraphina: [0xff6326, 0xffe5a1], riven: [0x9764ff, 0xe4c5ff],
@@ -23,15 +29,23 @@ export class SkillVfx {
   private glow: THREE.CanvasTexture;
   private reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   private history: string[] = [];
+  private impacts: {heroId:string;skillId:string;slot:number;age:number;impactDelay:number;targetCount:number}[] = [];
+  private resolvedCues = new WeakSet<SkillCue>();
   private total = 0;
   constructor(private scene: THREE.Scene) {
     this.sigil = this.makeSigil();
     this.glow = this.makeGlow();
   }
   setReduced(reduced: boolean): void { this.reduced = reduced; }
-  get diagnostics() { return { activeCasts: this.casts.length, maxCasts: 8, totalCasts: this.total, ages: this.casts.map(cast=>cast.age), recentSkills: [...this.history], reduced: this.reduced }; }
+  get diagnostics() {
+    const skills=this.casts.filter(cast=>cast.record);
+    return {activeCasts:skills.length,activeBasic:this.casts.filter(cast=>!cast.record).length,maxCasts:8,totalCasts:this.total,
+      ages:skills.map(cast=>cast.age),recentSkills:[...this.history],reduced:this.reduced,
+      casts:skills.map(({age,cue})=>({heroId:cue.heroId,skillId:cue.skillId,slot:cue.slot,age,duration:cue.duration,impactDelay:cue.impactDelay,impactConfirmed:cue.impactConfirmed,targetIds:[...cue.targetIds??[]],impactTargets:[...cue.impactTargets??[]]})),
+      impacts:this.impacts.map(impact=>({...impact}))};
+  }
 
-  cast(cue: SkillCue): void {
+  cast(cue: SkillCue, record=true): void {
     if (this.casts.length >= 8) this.remove(this.casts.shift()!);
     const group = new THREE.Group(); group.name = `Skill ${cue.heroId}:${cue.skillId}`;
     this.scene.add(group);
@@ -40,7 +54,13 @@ export class SkillVfx {
     const ultimate = cue.slot === 2;
     const support = ['starlight','sanctuary','astral','sunward','icewall','grace','covenant'].includes(cue.skillId);
     const targets = cue.targets.length ? cue.targets : [cue.origin];
-    const impact = SKILL_IMPACT_DELAY;
+    const impact = cue.impactDelay;
+    const starter=cue.heroId==='kael'||cue.heroId==='lyra';
+    if(starter){
+      addStarterEffects(cue,group,updates,{sigil:this.sigil,glow:this.glow,reduced:this.reduced});
+      this.finishCast(cue,group,updates,Math.max(cue.duration,impact+.95)+.05,record);
+      return;
+    }
     this.circle(group, updates, cue.origin, color, ultimate ? 1.15 : .75, 0, .62, true);
     this.aura(group, updates, cue.origin.clone().add(new THREE.Vector3(0, 1, 0)), color, .9, 0, .34);
     if (support) {
@@ -67,7 +87,7 @@ export class SkillVfx {
         }
         updates.push(age => { const t = Math.min(age / impact, 1); wings.position.copy(center).add(new THREE.Vector3(0, 4 * (1 - t) + .45, 0)); wings.rotation.z = -.25 * (1 - t); wings.scale.setScalar(.4 + t * .7); });
       } else {
-        this.projectile(group, updates, cue.origin, center, color, core, cue.slot === 1 ? .45 : .25);
+        this.projectile(group, updates, cue.origin, center, color, core, cue.slot === 1 ? .45 : .25,impact);
       }
       for (const target of targets) {
         this.flames(group, updates, target, impact, ultimate ? 3.2 : 1.9);
@@ -90,7 +110,7 @@ export class SkillVfx {
     } else if (cue.heroId === 'nova') {
       for (const target of targets) {
         this.vortex(group, updates, target, color, core, impact, ultimate ? 2.5 : 1.6);
-        this.projectile(group, updates, cue.origin, target, color, core, .15);
+        this.projectile(group, updates, cue.origin, target, color, core, .15,impact);
       }
     } else if (cue.heroId === 'lyra' || cue.heroId === 'lucien') {
       for (const target of targets) this.pillar(group, updates, target, color, core, impact, 2.7);
@@ -98,7 +118,7 @@ export class SkillVfx {
       for (const target of targets) {
         // Knight: a forward crescent. Abyss warrior: crossed blades and a dark eclipse.
         this.slash(group, updates, target, color, core, impact, ultimate ? 1.8 : 1.2, cue.heroId === 'riven');
-        this.projectile(group, updates, cue.origin, target, color, core, .13);
+        this.projectile(group, updates, cue.origin, target, color, core, .13,impact);
         if (cue.heroId === 'riven' && ultimate) this.eclipse(group, updates, target, color, impact);
       }
     }
@@ -106,14 +126,31 @@ export class SkillVfx {
       this.aura(group, updates, target.clone().add(new THREE.Vector3(0, 1.1, 0)), core, ultimate ? 1.5 : 1, impact, .4);
       this.particles(group, updates, target, color, core, impact, support, ultimate);
     }
-    const cast: Cast = { group, age: 0, duration: 1.6, update: age => updates.forEach(update => update(age)) };
-    cast.update(0); this.casts.push(cast);
-    this.total++; this.history.push(`${cue.heroId}:${cue.skillId}`); if (this.history.length > 32) this.history.shift();
+    this.finishCast(cue,group,updates,Math.max(cue.duration,impact+1.2),record);
+  }
+  private finishCast(cue:SkillCue,group:THREE.Group,updates:Updater[],duration:number,record:boolean):void {
+    const cast:Cast={group,age:cue.clock?.()??cue.elapsed??0,duration,record,valid:cue.valid,clock:cue.clock,cue,update:age=>{group.visible=cue.impactConfirmed!==false||age<cue.impactDelay;updates.forEach(update=>update(age));}};
+    cast.update(cast.age);this.casts.push(cast);
+    if(record&&!cue.restored){this.total++;this.history.push(`${cue.heroId}:${cue.skillId}`);if(this.history.length>32)this.history.shift();}
+  }
+  resolveImpact(cue:SkillCue):void {
+    if(!this.resolvedCues.has(cue)){
+      this.resolvedCues.add(cue);
+      this.impacts.push({heroId:cue.heroId,skillId:cue.skillId,slot:cue.slot,age:cue.clock?.()??cue.elapsed??cue.impactDelay,impactDelay:cue.impactDelay,targetCount:cue.impactTargets?.length??0});
+      if(this.impacts.length>32)this.impacts.shift();
+    }
+    if(cue.heroId==='kael'||cue.heroId==='lyra')return;
+    const index=this.casts.findIndex(cast=>cast.cue===cue);if(index<0)return;
+    const previous=this.casts[index],points=cue.targetPositions?.()??cue.targets;
+    const resolved=points.filter((_,i)=>!cue.targetIds||cue.impactTargets?.includes(cue.targetIds[i]));
+    if(resolved.length)cue.targets=resolved;
+    this.remove(previous);this.casts.splice(index,1);
+    const restored=cue.restored;cue.restored=true;this.cast(cue,previous.record);cue.restored=restored;
   }
   update(dt: number): void {
     for (let i = this.casts.length - 1; i >= 0; i--) {
-      const cast = this.casts[i]; cast.age += dt; cast.update(cast.age);
-      if (cast.age >= cast.duration) { this.remove(cast); this.casts.splice(i, 1); }
+      const cast = this.casts[i]; cast.age=cast.clock?cast.clock():cast.age+dt; cast.update(cast.age);
+      if (cast.age >= cast.duration || cast.valid?.()===false) { this.remove(cast); this.casts.splice(i, 1); }
     }
   }
   clear(): void { this.casts.forEach(cast => this.remove(cast)); this.casts = []; }
@@ -121,7 +158,7 @@ export class SkillVfx {
   private remove(cast: Cast): void {
     this.scene.remove(cast.group);
     cast.group.traverse(node => {
-      if (node instanceof THREE.Mesh || node instanceof THREE.Points || node instanceof THREE.Sprite) {
+      if (node instanceof THREE.Mesh || node instanceof THREE.Points || node instanceof THREE.Sprite || node instanceof THREE.Line) {
         // THREE.Sprite owns a shared geometry; only dispose per-cast geometry.
         if (!(node instanceof THREE.Sprite)) node.geometry.dispose();
         for (const material of Array.isArray(node.material) ? node.material : [node.material]) material.dispose();
@@ -168,14 +205,14 @@ export class SkillVfx {
     const material = this.material(color); const mesh = new THREE.Mesh(geometry, material); group.add(mesh);
     this.animate(mesh, material, updates, start, duration, () => {}, .85); return mesh;
   }
-  private projectile(group: THREE.Group, updates: Updater[], origin: THREE.Vector3, target: THREE.Vector3, color: number, core: number, width: number): void {
+  private projectile(group: THREE.Group, updates: Updater[], origin: THREE.Vector3, target: THREE.Vector3, color: number, core: number, width: number,impact:number): void {
     const a = origin.clone().add(new THREE.Vector3(0, 1.15, 0)), b = target.clone().add(new THREE.Vector3(0, 1.05, 0));
     const middle = a.clone().lerp(b, .5).add(new THREE.Vector3(0, .4, 0));
     this.ribbon(group, updates, [a, middle, b], color, width, .1, .35);
     this.ribbon(group, updates, [a, middle, b], core, width * .24, .13, .28);
     const material = new THREE.SpriteMaterial({ map: this.glow, color: core, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false });
     const orb = new THREE.Sprite(material); group.add(orb);
-    this.animate(orb, material, updates, .06, SKILL_IMPACT_DELAY, t => { orb.position.copy(a).lerp(b, t); orb.position.y += Math.sin(t * Math.PI) * .4; orb.scale.setScalar(width * 4); });
+    this.animate(orb, material, updates, .06, Math.max(.04,impact-.06), t => { orb.position.copy(a).lerp(b, t); orb.position.y += Math.sin(t * Math.PI) * .4; orb.scale.setScalar(width * 4); });
   }
   private slash(group: THREE.Group, updates: Updater[], target: THREE.Vector3, color: number, core: number, start: number, radius: number, crossed: boolean): void {
     const slash = new THREE.Group(); slash.position.copy(target).add(new THREE.Vector3(0, 1, 0)); group.add(slash);
