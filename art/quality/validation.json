@@ -1,0 +1,112 @@
+{
+  "knight": {
+    "bytes": 10501744,
+    "sha256": "ad5497e2654e34d4596e847541816115ffe255ee054f304697cec6a32b334524",
+    "triangles": 121987,
+    "vertices": 148711,
+    "skinJoints": 30,
+    "normalLength": [
+      0.9999999064907472,
+      1.0000001166067671
+    ],
+    "maxWeightError": 1.3783574104309082e-7,
+    "images": [
+      {
+        "mime": "image/jpeg",
+        "bytes": 718198,
+        "dimensions": [
+          2048,
+          2048
+        ]
+      },
+      {
+        "mime": "image/jpeg",
+        "bytes": 194805,
+        "dimensions": [
+          2048,
+          2048
+        ]
+      }
+    ],
+    "animations": {
+      "Attack_01": 0.9333333373069763,
+      "Attack_02": 1.0666667222976685,
+      "Death": 1.4166666269302368,
+      "Hit": 0.46666666865348816,
+      "Idle": 2.4166667461395264,
+      "Run": 0.7333333492279053,
+      "Skill_01": 1.1666666269302368,
+      "Skill_02": 1.4166666269302368,
+      "Skill_03": 1.8666666746139526,
+      "Victory": 2.0166666507720947
+    },
+    "materials": [
+      {
+        "name": "Material_0",
+        "pbrMetallicRoughness": {
+          "baseColorTexture": {
+            "index": 0
+          },
+          "metallicRoughnessTexture": {
+            "index": 1
+          }
+        }
+      }
+    ]
+  },
+  "priestess": {
+    "bytes": 9841404,
+    "sha256": "412dd15f20fbe7f67ec6f407ad94cd51999f4f26932d111b7e96b9ff767da34a",
+    "triangles": 121638,
+    "vertices": 134219,
+    "skinJoints": 30,
+    "normalLength": [
+      0.9999999138153266,
+      1.000000117183233
+    ],
+    "maxWeightError": 1.471489667892456e-7,
+    "images": [
+      {
+        "mime": "image/jpeg",
+        "bytes": 647262,
+        "dimensions": [
+          2048,
+          2048
+        ]
+      },
+      {
+        "mime": "image/jpeg",
+        "bytes": 390203,
+        "dimensions": [
+          2048,
+          2048
+        ]
+      }
+    ],
+    "animations": {
+      "Attack_01": 1.1166666746139526,
+      "Attack_02": 1.2166666984558105,
+      "Death": 1.4166666269302368,
+      "Hit": 0.46666666865348816,
+      "Idle": 2.4166667461395264,
+      "Run": 0.8500000238418579,
+      "Skill_01": 1.3166667222976685,
+      "Skill_02": 1.5166666507720947,
+      "Skill_03": 1.8166667222976685,
+      "Victory": 2.0166666507720947
+    },
+    "materials": [
+      {
+        "name": "Material_0",
+        "pbrMetallicRoughness": {
+          "baseColorTexture": {
+            "index": 0
+          },
+          "metallicRoughnessTexture": {
+            "index": 1
+          }
+        }
+      }
+    ]
+  }
+}

@@ -2,6 +2,8 @@
 
 A playable 3D fantasy party RPG foundation built for mobile browsers. Thai controls, a four-hero party, real-time combat, direct hero recruitment with gems, equipment-only summons, progression and local saves.
 
+The isolated [combat presentation study](quality-review.html) is being used to review the next visual direction. It includes repaired starter surface shading, revised knight contact poses, a closer camera, new staging and skill effects. It is a short choreography preview, not a replacement campaign. See [scope and provenance](art/QUALITY-REVIEW.md).
+
 ## Playable loop
 
 Sanctuary → choose a story chapter → automatic basic attacks / manual or automatic skills → defeat three waves → receive equipment and currency → recruit story companions → improve the party → save and continue.
@@ -51,7 +53,7 @@ The runtime uses **16 distinct, rigged, textured user-provided GLB models**: eig
 
 The eight heroes include a human knight, human priestess, phoenix, abyss warrior, crystal titan, lightning wolf, monkey king and radiant lion. The owner approved playable beasts and spirits. Existing hero IDs, purchases and saves are preserved. See [STARTER-HEROES.md](docs/STARTER-HEROES.md), [ART-DIRECTION.md](docs/ART-DIRECTION.md) and [ATTRIBUTION.md](public/assets/ATTRIBUTION.md).
 
-Play privately at [Aetheria Chronicles](https://aetheria-chronicles.taemongkichi.chatgpt.site), signed in with the owner's ChatGPT account. The Site uses project ID appgprj_6ac77409fc0c8191be01432cf67726ae; reuse that Site when publishing updates.
+Play at [Aetheria Chronicles](https://aetheria-chronicles.taemongkichi.chatgpt.site). The Site uses project ID appgprj_6ac77409fc0c8191be01432cf67726ae; reuse that Site and preserve its current audience when publishing updates.
 
 ## Project map
 
