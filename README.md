@@ -1,7 +1,9 @@
 # Emberfall Chronicles
 
-Offline Chibi fantasy RPG: sword, archer and mage, nine skills, ten maps, expanded 72×68 town, six NPC service districts. Native Canvas2D, no runtime CDN or build dependency.
+Play: https://taearoha-web.github.io/aetheria-chronicles/
 
-Deployment through the GitHub Pages workflow. Open in iPhone Safari, add to Home Screen and wait for the offline-ready message before disconnecting. Physical iPhone validation is outstanding.
+Three classes, nine skills, a separate safe town and ten combat stages. Six original animated NPC workers use their own sprites. A wooden perimeter blocks movement, with a north gate leading to stage one and return portals back to town.
 
-Original generated game art; no MU Online assets imported.
+iPhone: open in Safari, Add to Home Screen and wait for the offline-ready message. Native Canvas2D, no runtime CDN/build dependency. Previous saves migrate while retaining progress and items.
+
+Read README_TH.md and PROGRESS.md for controls, QA scope and physical-iPhone limitations. Original generated art; no MU Online assets imported.

@@ -1,3 +1,4 @@
+import {townBoundaryBlocked,atTownGate,fencePanels} from './town.js';
 import {CLASS,SKILLS,maps,mapById,xpNext,equipmentName,RARITIES,TOWN} from './data.js';
 export const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 export const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
@@ -9,7 +10,7 @@ export const OLD_SAVE='emberfall-save-v1';
 const state=(a,next)=>{if(a.state!==next){a.state=next;a.anim=0;}};
 export function fresh(classId='sword',name='นักเดินทาง'){
  if(!CLASS[classId])throw Error('ไม่พบอาชีพ');
- const p={schema:2,townLayout:TOWN.layout,name:String(name).slice(0,20)||'นักเดินทาง',classId,level:1,xp:0,gold:80,materials:0,potions:{hp:8,mp:5},stats:{strength:5,agility:5,spirit:5,vitality:5},statPoints:0,map:'dawn',x:TOWN.spawn.x,y:TOWN.spawn.y,hp:1,mp:1,inventory:[],stash:[],equipment:{weapon:null,armor:null,ring:null},fields:{},nextItem:1,ground:{},cooldowns:{},options:{sound:true,music:.15,sfx:.3},deaths:0};
+ const p={schema:2,townLayout:TOWN.layout,name:String(name).slice(0,20)||'นักเดินทาง',classId,level:1,xp:0,gold:80,materials:0,potions:{hp:8,mp:5},stats:{strength:5,agility:5,spirit:5,vitality:5},statPoints:0,map:'town',x:TOWN.spawn.x,y:TOWN.spawn.y,hp:1,mp:1,inventory:[],stash:[],equipment:{weapon:null,armor:null,ring:null},fields:{},nextItem:1,ground:{},cooldowns:{},options:{sound:true,music:.15,sfx:.3},deaths:0};
  const weapon=item(p,'weapon',0,'common');p.inventory.push(weapon);p.equipment.weapon=weapon.id;const l=limits(p);p.hp=l.hp;p.mp=l.mp;return p;
 }
 export function item(p,slot,tier,rarity='common'){return {id:p.nextItem++,slot,classId:slot==='weapon'?p.classId:'all',tier:clamp(tier,0,9),rarity,upgrade:0,name:equipmentName(slot,p.classId,clamp(tier,0,9)),locked:false};}
@@ -25,7 +26,11 @@ export function withdraw(p,id){const i=p.stash.find(i=>i.id===id);if(!i||p.inven
 export function addItem(p,i){(p.inventory.length<50?p.inventory:p.stash).push(i);}
 export function validate(p){
  if(!p||p.schema!==2||!CLASS[p.classId]||!mapById[p.map]||typeof p.name!=='string')throw Error('รูปแบบเซฟไม่ถูกต้อง');
- if(p.townLayout!==TOWN.layout){if(p.map==='dawn'){p.x=TOWN.spawn.x;p.y=TOWN.spawn.y;}if(p.ground?.dawn)for(const [i,d]of p.ground.dawn.entries()){d.x=TOWN.spawn.x+(i%3-1)*.3;d.y=TOWN.spawn.y+.4+Math.floor(i/3)*.03;}p.townLayout=TOWN.layout;}
+ if(p.townLayout!==TOWN.layout){
+  if(p.map==='dawn'||p.map==='town'){p.map='town';p.x=TOWN.spawn.x;p.y=TOWN.spawn.y;}
+  if(p.ground?.dawn){const drops=p.ground.dawn;for(const [i,d]of drops.entries()){d.x=TOWN.spawn.x+(i%3-1)*.3;d.y=TOWN.spawn.y+.4+Math.floor(i/3)*.03;}p.ground.town=[...(p.ground.town||[]),...drops];delete p.ground.dawn;}
+  p.townLayout=TOWN.layout;
+ }
  if(!['level','xp','gold','materials','statPoints','nextItem','deaths'].every(k=>Number.isInteger(p[k])&&p[k]>=0)||p.level<1||p.level>30||p.nextItem<1||!Number.isFinite(p.x)||!Number.isFinite(p.y)||p.x<1||p.y<1||p.x>mapById[p.map].width-1||p.y>mapById[p.map].height-1)throw Error('เลเวลหรือตำแหน่งไม่ถูกต้อง');
  if(!p.stats||!['strength','agility','spirit','vitality'].every(k=>Number.isInteger(p.stats[k])&&p.stats[k]>=5)||Object.values(p.stats).reduce((a,b)=>a+b,0)+p.statPoints>20+(p.level-1)*3)throw Error('แต้มสเตตัสไม่ถูกต้อง');
  if(!p.potions||!['hp','mp'].every(k=>Number.isInteger(p.potions[k])&&p.potions[k]>=0)||!Array.isArray(p.inventory)||p.inventory.length>50||!Array.isArray(p.stash)||p.stash.length>600)throw Error('ไอเทมไม่ถูกต้อง');
@@ -38,28 +43,28 @@ export function validate(p){
 export function migrate(old){if(!old||old.schema!==1||!Number.isFinite(old.level))throw Error('เซฟเดิมไม่ถูกต้อง');const p=fresh();p.level=clamp(Math.floor(old.level),1,20);p.statPoints=(p.level-1)*3;p.gold=Math.max(0,Math.floor(old.gold||0));p.potions.hp=clamp(Math.floor(old.potions||5),0,999);const l=limits(p);p.hp=l.hp;p.mp=l.mp;p.name='นักเดินทาง';return p;}
 export function field(p,id=p.map){return p.fields[id]??=( {shrines:[],boss:false,chest:false,questClaimed:false,kills:0});}
 function segmentDistance(x,y,a,b){const dx=b.x-a.x,dy=b.y-a.y,t=clamp(((x-a.x)*dx+(y-a.y)*dy)/(dx*dx+dy*dy||1),0,1);return Math.hypot(x-a.x-t*dx,y-a.y-t*dy);}
-export function onPath(m,x,y){if(segmentDistance(x,y,m.exit,m.spawn)<1.2)return true;if(m.index===0){if(dist({x,y},TOWN.plaza)<8.5||TOWN.services.some(n=>dist({x,y},n)<4.5))return true;for(const road of TOWN.streets)for(let i=1;i<road.length;i++)if(segmentDistance(x,y,road[i-1],road[i])<1.8)return true;}const nodes=[m.spawn,...m.shrines,m.arena];for(let i=1;i<nodes.length;i++)if(segmentDistance(x,y,nodes[i-1],nodes[i])<1.1)return true;return segmentDistance(x,y,m.spawn,m.chest)<.8;}
+export function onPath(m,x,y){if(segmentDistance(x,y,m.exit,m.spawn)<1.2)return true;if(m.isTown){if(dist({x,y},TOWN.plaza)<8.5||TOWN.services.some(n=>dist({x,y},n)<4.5))return true;for(const road of TOWN.streets)for(let i=1;i<road.length;i++)if(segmentDistance(x,y,road[i-1],road[i])<1.8)return true;}const nodes=[m.spawn,...m.shrines,m.arena];for(let i=1;i<nodes.length;i++)if(segmentDistance(x,y,nodes[i-1],nodes[i])<1.1)return true;return segmentDistance(x,y,m.spawn,m.chest)<.8;}
 export function water(m,x,y){if(m.biome==='coast')return y>25-Math.sin(x*.35)*2;if(m.biome==='forest')return Math.abs(x-13-Math.sin(y*.25)*2)<.9&&y<19;if(m.biome==='desert')return Math.hypot(x-14,y-10)<2.8;if(m.biome==='marsh')return Math.sin(x*.55)+Math.cos(y*.5)>1.0;if(m.biome==='snow')return Math.abs(x-16-Math.sin(y*.3)*2)<1;if(m.biome==='lava')return Math.abs(x-14-Math.sin(y*.3)*2)<1.3||y<5&&x<21;if(m.biome==='sky'){const nodes=[m.spawn,...m.shrines,m.arena];return !nodes.some(n=>Math.hypot(n.x-x,n.y-y)<3.8)&&!onPath(m,x,y);}return false;}
 export function makeWorld(m){const props=[],add=(kind,x,y,radius=0,scale=1)=>props.push({id:props.length,kind,x,y,radius,scale});
- if(m.index===0){
+ if(m.isTown){
   add('fountain',TOWN.plaza.x,TOWN.plaza.y,2.2,1.05);
   for(const n of TOWN.services){add(n.building,n.x-3,n.y-3,n.building==='arch'?.6:2.1,n.building==='arch'?1.05:1);add('sign',n.x+2,n.y+2,.15,.9);props.at(-1).label=n.district;props.at(-1).icon=n.icon;props.at(-1).color=n.color;add('lamp',n.x-2,n.y+2,.15,1);add('bench',n.x+3,n.y-2,.35,1);}
   for(const [x,y]of [[27,42],[40,27],[47,41],[34,49]])add('pink',x,y,.4,.65);
   for(const [x,y]of [[29,43],[40,29],[45,42],[35,47]])add('bench',x,y,.35,1);
   for(const [x,y]of [[30,42],[40,30],[44,43],[34,46]])add('lamp',x,y,.15,1);
-  add('arch',TOWN.gate.x,TOWN.gate.y,.5,1.2);
-  for(let x=8;x<66;x+=6)if(Math.abs(x-TOWN.gate.x)>6)add('hedge',x,17,.5,1);
+  for(const panel of fencePanels())props.push({...panel,id:props.length});
+  add('town-gate',TOWN.gate.x,TOWN.gate.y,0,1);
  }
 
  if(m.biome==='crypt'||m.biome==='castle')for(let i=0;i<6;i++)add('arch',7+i*4,10+(i%2)*6,.5,.7);
  if(m.biome==='sky')for(const [x,y]of [[8,9],[20,19],[28,11]])add('temple',x,y,1.1,.7);
- add('arch',m.arena.x,m.arena.y+2,.5,1);for(let i=0;i<(m.index===0?170:85);i++){const x=2+rand(i*3+m.index*67)*(m.width-4),y=2+rand(i*3+10+m.index*91)*(m.height-5);if(onPath(m,x,y)||water(m,x,y)||dist({x,y},m.spawn)<4||dist({x,y},m.arena)<3||m.shrines.some(n=>dist(n,{x,y})<2.6)||m.spawns.some(n=>dist(n,{x,y})<2)||props.some(p=>dist(p,{x,y})<2.7)||m.index===0&&(dist({x,y},TOWN.plaza)<12||TOWN.services.some(n=>dist({x,y},n)<7)))continue;add(i%5===0?m.decor:m.tree,x,y,.4,.6+rand(i+52)*.3);}
- return {props,block:(x,y)=>x<1||x>m.width-1||y<2||y>m.height-1||(water(m,x,y)&&!onPath(m,x,y)&&m.biome!=='snow')||props.some(p=>p.radius&&Math.hypot(x-p.x,y-p.y)<p.radius+.18)};
+ if(!m.isTown)add('arch',m.arena.x,m.arena.y+2,.5,1);for(let i=0;i<(m.isTown?170:85);i++){const x=2+rand(i*3+m.index*67)*(m.width-4),y=2+rand(i*3+10+m.index*91)*(m.height-5);if(onPath(m,x,y)||water(m,x,y)||dist({x,y},m.spawn)<4||dist({x,y},m.arena)<3||m.shrines.some(n=>dist(n,{x,y})<2.6)||m.spawns.some(n=>dist(n,{x,y})<2)||props.some(p=>dist(p,{x,y})<2.7)||m.isTown&&(dist({x,y},TOWN.plaza)<12||TOWN.services.some(n=>dist({x,y},n)<7)))continue;add(i%5===0?m.decor:m.tree,x,y,.4,.6+rand(i+52)*.3);}
+ return {props,block:(x,y)=>x<1||x>m.width-1||y<2||y>m.height-1||(m.isTown&&townBoundaryBlocked(x,y))||(water(m,x,y)&&!onPath(m,x,y)&&m.biome!=='snow')||props.some(p=>p.radius&&Math.hypot(x-p.x,y-p.y)<p.radius+.18)};
 }
 export function session(p){const s={p,map:mapById[p.map],world:null,x:p.x,y:p.y,dir:2,time:0,hero:{state:'idle',anim:0,inv:0,attack:0,dash:0,dashX:0,dashY:0,strike:null,cooldowns:{},shield:0,shieldTime:0},enemies:[],npcs:[],projectiles:[],effects:[],particles:[],texts:[],drops:[],hazards:[],events:[],nextId:1,notice:'',ended:false,hitstop:0};setup(s);if(p.cooldowns)for(const [id,v]of Object.entries(p.cooldowns))if((id==='dash'||SKILLS[id]?.classId===p.classId)&&Number.isFinite(v))s.hero.cooldowns[id]=clamp(v,0,30);return s;}
 export function setup(s){const m=s.map,c=s.p;s.world=makeWorld(m);s.enemies=[];s.npcs=[];s.projectiles=[];s.effects=[];s.hazards=[];s.drops=[];s.hero.strike=null;s.hero.attack=0;s.hero.dash=0;s.hero.shield=0;s.hero.cooldowns={};
- if(m.index===0)s.npcs=TOWN.services.map((n,i)=>({...n,home:{x:n.x,y:n.y},state:'idle',anim:i*.3,dir:2,timer:2+i}));
- m.spawns.forEach((n,k)=>{for(let i=0;i<2;i++){const kind=m.mobs[(k+i)%2];s.enemies.push(enemy(s,kind,n.x+(i?-.9:.2),n.y+(i?.4:0),false,k*2+i));}});s.enemies.push(enemy(s,m.boss,m.arena.x,m.arena.y,true,99));if(field(c).boss){const boss=s.enemies.at(-1);boss.hp=0;boss.dead=true;boss.anim=3;boss.state='death';}s.drops=structuredClone(c.ground?.[m.id]||[]);s.nextId=Math.max(s.nextId,1,...s.drops.map(d=>d.id+1));if(s.world.block(s.x,s.y)){s.x=m.spawn.x;s.y=m.spawn.y;}c.x=s.x;c.y=s.y;
+ if(m.isTown)s.npcs=TOWN.services.map((n,i)=>({...n,home:{x:n.x,y:n.y},state:'work',anim:i*.3,workTime:i*.31,greeting:0,dir:2,timer:2+i}));
+ if(!m.isTown){m.spawns.forEach((n,k)=>{for(let i=0;i<2;i++){const kind=m.mobs[(k+i)%2];s.enemies.push(enemy(s,kind,n.x+(i?-.9:.2),n.y+(i?.4:0),false,k*2+i));}});s.enemies.push(enemy(s,m.boss,m.arena.x,m.arena.y,true,99));if(field(c).boss){const boss=s.enemies.at(-1);boss.hp=0;boss.dead=true;boss.anim=3;boss.state='death';}}s.drops=structuredClone(c.ground?.[m.id]||[]);s.nextId=Math.max(s.nextId,1,...s.drops.map(d=>d.id+1));if(s.world.block(s.x,s.y)){s.x=m.spawn.x;s.y=m.spawn.y;}c.x=s.x;c.y=s.y;
 }
 function enemy(s,kind,x,y,boss,id){const clear=(x,y)=>!s.world.block(x,y)&&!s.world.block(x+.18,y)&&!s.world.block(x-.18,y)&&!s.world.block(x,y+.18)&&!s.world.block(x,y-.18);if(!clear(x,y)){let found=false;for(let r=.25;r<4&&!found;r+=.25)for(let j=0;j<20;j++){const a=j/20*Math.PI*2,nx=x+Math.cos(a)*r,ny=y+Math.sin(a)*r;if(clear(nx,ny)){x=nx;y=ny;found=true;break;}}if(!found){x=s.map.spawn.x;y=s.map.spawn.y;}}const i=s.map.index;const hp=boss?170+i*76:34+i*14+(kind==='wolf'?10:kind==='golem'?30:0);return {id:s.nextId++,kind,x,y,home:{x,y},hp,maxHp:hp,boss,dead:false,state:'idle',anim:id*.1,phase:'wander',timer:1+id*.13,aim:{x,y},facing:0,hit:0,respawn:0,pattern:0,phaseTier:0,slow:0,root:0,spawnId:id};}
 export function canTravel(p,id){const m=mapById[id];if(!m)return 'ไม่พบแผนที่';return m.index>0&&!p.fields[maps[m.index-1].id]?.boss?'ผ่านบอสแมพก่อนหน้าก่อน':null;}
@@ -69,7 +74,7 @@ export function effect(s,kind,x=s.x,y=s.y,extra={}){s.effects.push({id:s.nextId+
 export function text(s,value,x=s.x,y=s.y,color='#ffe6a5'){s.texts.push({id:s.nextId++,value:String(value),x,y,age:0,color});if(s.texts.length>50)s.texts.shift();}
 export function event(s,type,extra={}){s.events.push({type,...extra});if(s.events.length>30)s.events.shift();}
 export function target(s,range){return s.enemies.filter(e=>!e.dead&&(!e.boss||field(s.p).shrines.length===3)&&dist(e,s)<=range).sort((a,b)=>dist(a,s)-dist(b,s))[0];}
-export function safe(s){return s.map.index===0&&s.y>=17;}
+export function safe(s){return !!s.map.isTown;}
 export function cast(s,id='basic'){
  const p=s.p,h=s.hero,c=CLASS[p.classId],d=id==='basic'?null:SKILLS[id];if(p.hp<=0||h.strike||h.attack>0||h.dash>0)return 'กำลังเคลื่อนไหว';if(d&&d.classId!==p.classId)return 'คนละอาชีพ';if(id!=='basic'&&!d)return 'ไม่พบสกิล';if(d&&p.level<d.level)return `ต้องการ Lv${d.level}`;if(d&&h.cooldowns[id]>0)return 'รอคูลดาวน์';if(d&&p.mp<d.mp)return 'มานาไม่พอ';
  const range=d?.range||c.range,t=target(s,range);if(!t&&d?.shape!=='shield'){s.notice='ไม่มีเป้าหมายในระยะ';return s.notice;}
@@ -97,9 +102,10 @@ function release(s,a){const p=s.p,l=limits(p),d=a.skill,base=l.attack*(d?.power|
  const point=e?{x:e.x,y:e.y}:{x:s.x+vec.x*3,y:s.y+vec.y*3};effect(s,d.shape,point.x,point.y,{element,radius:d.shape==='frost'?2.4:2});for(const t of valid)if(dist(t,point)<2.5){damage(s,t,base,element);t.slow=d.shape==='frost'?5:0;t.root=d.shape==='trap'?2.4:0;}s.hazards.push({id:s.nextId++,friendly:true,kind:d.shape,x:point.x,y:point.y,radius:2.2,time:5,tick:1,damage:base*.18,element});
 }
 function dot(s,t,v){const n=dist(s,t)||1;return ((t.x-s.x)*v.x+(t.y-s.y)*v.y)/n;}
-export function interact(s){const p=s.p,m=s.map,f=field(p);for(let i=0;i<3;i++)if(dist(s,m.shrines[i])<1.35){if(!f.shrines.includes(i)){f.shrines.push(i);effect(s,'shrine',m.shrines[i].x,m.shrines[i].y,{element:'holy'});gainXP(s,20+m.index*15);s.notice=f.shrines.length===3?'ผนึกบอสเปิดแล้ว':'ปลุกศิลา '+f.shrines.length+'/3';event(s,'shrine',{index:i});}return 'shrine';}
+export function interact(s){const p=s.p,m=s.map,f=field(p);for(let i=0;i<m.shrines.length;i++)if(dist(s,m.shrines[i])<1.35){if(!f.shrines.includes(i)){f.shrines.push(i);effect(s,'shrine',m.shrines[i].x,m.shrines[i].y,{element:'holy'});gainXP(s,20+m.index*15);s.notice=f.shrines.length===3?'ผนึกบอสเปิดแล้ว':'ปลุกศิลา '+f.shrines.length+'/3';event(s,'shrine',{index:i});}return 'shrine';}
  if(dist(s,m.chest)<1.3&&!f.chest){f.chest=true;p.gold+=30+m.index*15;p.materials+=2;const a=item(p,'ring',m.index,'rare');addItem(p,a);event(s,'loot',{message:a.name,rarity:a.rarity});return 'chest';}
- if(dist(s,m.spawn)<1.5){const l=limits(p);p.hp=l.hp;p.mp=l.mp;effect(s,'heal');s.notice='พักฟื้นและบันทึกแล้ว';return 'rest';}if(dist(s,m.exit)<1.4)return 'portal';const npc=s.npcs.find(n=>dist(n,s)<2.8);if(npc)return npc.id;return null;
+ if(m.isTown&&dist(s,TOWN.gate)<2.3)return 'field-gate';
+ if(dist(s,m.spawn)<1.5){const l=limits(p);p.hp=l.hp;p.mp=l.mp;effect(s,'heal');s.notice='พักฟื้นและบันทึกแล้ว';return 'rest';}if(dist(s,m.exit)<1.4)return m.isTown?'portal':'town-return';const npc=s.npcs.find(n=>dist(n,s)<2.8);if(npc){npc.greeting=1.2;return npc.id;};return null;
 }
 export function claimQuest(s,id){const f=s.p.fields[id],m=mapById[id];if(!f?.boss||f.questClaimed)return 'ยังไม่มีรางวัล';f.questClaimed=true;s.p.gold+=80+m.index*35;s.p.materials+=5+m.index;gainXP(s,80+m.index*45);return null;}
 export function revive(s){s.p.gold=Math.max(0,s.p.gold-Math.ceil(s.p.gold*.05));const l=limits(s.p);s.p.hp=l.hp;s.p.mp=l.mp;s.x=s.map.spawn.x;s.y=s.map.spawn.y;setup(s);s.hero.inv=2;s.hero.state='idle';s.hero.anim=0;s.notice='กลับมาพร้อมออกเดินทาง';}
@@ -120,6 +126,6 @@ export function tick(s,dt,dx=0,dy=0){dt=clamp(dt,0,.05);s.time+=dt;const p=s.p,h
   else{e.phase='wander';if(e.timer<=0){e.wander={x:e.home.x+(rand(e.id+Math.floor(s.time))*2-1),y:e.home.y+(rand(e.id+Math.floor(s.time)+5)*2-1)};e.timer=3+rand(e.id+s.time)*3;}if(e.wander&&dist(e,e.wander)>.12){const dd=dist(e,e.wander),vx=(e.wander.x-e.x)/dd,vy=(e.wander.y-e.y)/dd;move(s,e,vx*dt*.4,vy*dt*.4);const q=iso(vx,vy);e.facing=direction(q.x,q.y);state(e,'walk');}else state(e,'idle');}
  }
  for(const z of s.hazards){z.time-=dt;z.tick-=dt;if(z.tick<=0){z.tick=1;if(z.friendly){for(const e of s.enemies)if(!e.dead&&dist(z,e)<z.radius){damage(s,e,z.damage,z.element);e.slow=1.5;}}else if(dist(s,z)<z.radius)hurtHero(s,z.damage);}}s.hazards=s.hazards.filter(z=>z.time>0);
- for(const n of s.npcs){n.anim+=dt;n.timer-=dt;if(dist(n,s)<3.4){const q=iso(s.x-n.x,s.y-n.y);n.dir=direction(q.x,q.y);state(n,'idle');continue;}if(n.timer<=0){n.target={x:n.home.x+(rand(n.x+s.time)-.5)*.7,y:n.home.y+(rand(n.y+s.time)-.5)*.7};n.timer=4;}if(n.target&&dist(n,n.target)>.08){const d=dist(n,n.target),vx=(n.target.x-n.x)/d,vy=(n.target.y-n.y)/d;move(s,n,vx*dt*.25,vy*dt*.25);const q=iso(vx,vy);n.dir=direction(q.x,q.y);state(n,'walk');}else state(n,'idle');}
- pickup(s);p.x=s.x;p.y=s.y;
+ for(const n of s.npcs){n.anim+=dt;n.workTime+=dt;n.greeting=Math.max(0,n.greeting-dt);n.state=n.greeting>0?'greet':'work';if(dist(n,s)<4.5){const q=iso(s.x-n.x,s.y-n.y);n.dir=direction(q.x,q.y);}}
+ pickup(s);p.x=s.x;p.y=s.y;if(m.isTown&&atTownGate(s.x,s.y)){travel(s,'dawn');event(s,'travel',{map:'dawn'});}
 }

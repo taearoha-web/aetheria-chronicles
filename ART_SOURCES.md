@@ -1,19 +1,15 @@
-# Art provenance — Emberfall Chronicles v3
+# Art provenance — Emberfall Chronicles v4
 
-The current game uses original generated Chibi fantasy / painted-pixel sprite art. No MU Online or Seraph Fall artwork, maps, sprites, UI files, logos, music or code was imported. References guided the general mood and genre. There are no third-party downloaded NPC or monster packs requiring attribution in this build.
+Original chibi fantasy / painted-pixel art. No MU Online or Seraph Fall assets, logos, maps, UI files, music or code were imported. References guided mood and genre. No third-party NPC packs are used.
 
-Six RGBA PNG atlases were generated using the platform image_gen tool and imported into assets/production/. Environment separation/repacking was performed through image_gen. tools/inspect-atlas.py reads alpha bounds and produces crop metadata; it does not repaint images. Runtime Canvas rendering samples/composites these atlases. Detailed pixels and painted shading are generated art, not a claim that every pixel was placed manually.
+New NPCs: assets/production/npcs.png contains six independently designed workers and six occupational poses per worker. Luna the elderly map reader, Bo the portly apothecary, Akra the dwarf smith, Aeren the healer, Serin the fox quartermaster and Orin the gate warden use no player atlas. A single whole-atlas image_gen generation was followed by one image_gen repack to restore gutters/headroom. Original generated sources are retained under /workspace/generated_images. Source SHA256 and all frames are in review/npc-v4/npc-art-inspection.json.
 
-- sword.png / archer.png / mage.png: 6×5 frames per class, idle/run/attack/cast/death.
-- back.png: rear movement and attack/cast rows for the three classes; row boundaries are recorded in src/art.js.
-- monsters.png: 12 archetypes in idle/active poses plus six elite masters. Ghost reuses the lich appearance. Reaction, breathing, travel bob, strike, fading and death transforms are composed in the renderer.
-- environment.png: 12 separated buildings, trees, fountain, arch, crystal and volcanic props. Source rectangles and SHA256 inspection are in QA/art-inspection.json.
-- Terrain, shore foam, paths, benches, lamps, atmospheric particles, skill VFX and SVG icons are implemented in the game source. Optional sound/music uses WebAudio synthesis.
+tools/inspect-npcs.py reads alpha gutters and produces src/npc-atlas.js. Runtime crops/anchors align feet with one shared scale per role; the PNG is copied unchanged. Stationary occupational animation and mirroring are provided, not individually painted eight-direction walking sets. Occupational gestures come from the six sprite poses; greeting bubbles and some sparks/glows are composed at runtime.
 
-NPCs share the class sprite wardrobe with independent names and services. Equipping items changes stats and aura; it does not load a separately drawn clothing set for every item.
+Existing sword/archer/mage PNGs each have30front frames (idle/run/attack/cast/death). back.png provides rear locomotion/attack masters with mirrored directions and runtime transforms. monsters.png provides12archetypes with idle/active masters and6elite masters; reactions, movement bob, death and hazards are composed in runtime. These are not full hand-drawn animation sets for every state/direction. environment.png has12separated props. All existing source PNGs are retained.
 
-No asset purchases or Meshy/Tripo credits were used. Image generation is a platform capability; this is not a statement that no ChatGPT credits or usage were consumed.
+Wooden fences, hinges/gate opening, signs, benches, lamps, terrain, ambient particles, skill VFX and SVG icons are authored in runtime code. Equipment changes stats/aura; a separate costume sprite for every item is not provided. WebAudio synthesizes optional sound/music.
 
-Runtime: native Canvas2D, DOM, LocalStorage, WebAudio, Service Worker; no CDN dependency. esbuild and Playwright are development tools (MIT / Apache-2.0 respectively); they are not included as runtime libraries. Pillow is used for inspection and ffmpeg for recording conversion. Original v1 assets/scripts and its immutable archive are retained separately and do not describe the current art pipeline.
+No asset purchases or Meshy/Tripo credits were used. New NPC art uses platform image_gen and is not a claim that no ChatGPT usage/credits were consumed, or that every pixel was manually placed.
 
-Town revision v3 reuses the exact six atlases. No additional generation/provider call was made for this town revision. Signs, hedges, station placements and wider streets are runtime-authored changes.
+Runtime uses nativeCanvas2D/DOM/LocalStorage/WebAudio/ServiceWorker without a CDN. esbuild(MIT) and Playwright(Apache2) are development tools; Pillow reads atlas bounds and ffmpeg encodes captures. No third-party engine is added. Prior immutable deliveries/receipts remain under review/v2 and review/town-v3.

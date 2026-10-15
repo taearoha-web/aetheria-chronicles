@@ -1,5 +1,6 @@
+import {npcAtlas} from './npc-atlas.js';
 import {environmentFrames} from './atlas.js';
-export const files={environment:'assets/production/environment.png',sword:'assets/production/sword.png',archer:'assets/production/archer.png',mage:'assets/production/mage.png',monsters:'assets/production/monsters.png',back:'assets/production/back.png'};
+export const files={environment:'assets/production/environment.png',sword:'assets/production/sword.png',archer:'assets/production/archer.png',mage:'assets/production/mage.png',monsters:'assets/production/monsters.png',back:'assets/production/back.png',npcs:'assets/production/npcs.png'};
 export const PROPS={manor:0,shop:1,temple:2,inn:3,green:4,pink:5,fountain:6,arch:7,palm:8,snow:9,crystal:10,volcano:11};
 const sizes={manor:[148,148],shop:[126,126],temple:[138,148],inn:[130,135],green:[120,118],pink:[119,114],fountain:[146,125],arch:[98,117],palm:[103,126],snow:[112,127],crystal:[84,85],volcano:[98,102]};
 const monsterCells={slime:[0,6],wolf:[1,7],mushroom:[2,8],treant:[3,9],crab:[4,10],skeleton:[5,11],scarab:[12,18],scorpion:[13,19],golem:[14,20],spider:[15,21],imp:[16,22],dragon:[17,23],lich:[24,24],icewolf:[25,25],wisp:[26,26],guardian:[27,27],demon:[28,28],elemental:[29,29],ghost:[24,24]};
@@ -12,6 +13,14 @@ export function drawCharacter(ctx,images,classId,action,time,x,y,dir=2,opts={}){
  const flip=[3,4,5].includes(dir),dh=rear?size*ch/cw:size;ctx.save();ctx.translate(Math.round(x),Math.round(y));if(flip)ctx.scale(-1,1);if(action==='hit'){ctx.translate(-2,1);ctx.rotate(-.08);}if(action==='dodge'){ctx.rotate(flip?-.18:.18);ctx.scale(1,.88);}if(opts.alpha!==undefined)ctx.globalAlpha=opts.alpha;
  ctx.drawImage(im,Math.round(frame*cw),Math.round(sourceY),Math.floor(cw),Math.floor(ch),-size*.5,-dh*.94,size,dh);
  if(opts.glow){ctx.globalCompositeOperation='screen';ctx.globalAlpha=.12;ctx.drawImage(im,Math.round(frame*cw),Math.round(sourceY),Math.floor(cw),Math.floor(ch),-size*.5,-dh*.94,size,dh);}ctx.restore();
+}
+
+export function npcFrame(n,time=n.workTime||0){return Math.floor(time/n.cycle*6)%6;}
+export function drawNPC(ctx,images,n,x,y,time=n.workTime||0){
+ const row=npcAtlas[n.atlasRow],im=images.npcs;if(!row||!im)throw Error('ไม่พบสไปรต์ NPC '+n.id);
+ const frame=npcFrame(n,time),f=row.frames[frame],scale=(n.size||72)/row.height;
+ ctx.save();ctx.translate(Math.round(x),Math.round(y));if([3,4,5].includes(n.dir))ctx.scale(-1,1);
+ ctx.drawImage(im,f.x,f.y,f.w,f.h,Math.round((f.x-f.anchorX)*scale),Math.round((f.y-f.footY)*scale),Math.round(f.w*scale),Math.round(f.h*scale));ctx.restore();return frame;
 }
 
 export function drawMonster(ctx,images,e,x,y){const im=images.monsters,[a,b]=monsterCells[e.kind]||monsterCells.slime,active=e.phase==='strike'||e.state==='hit'||e.phase==='chase'&&Math.floor(e.anim*7)%2,cell=active?b:a,cw=im.width/6,ch=im.height/5,row=Math.floor(cell/6),col=cell%6;const size=e.boss?104:e.kind==='slime'?47:e.kind==='dragon'?76:61;const dead=e.dead,alpha=dead?Math.max(0,1-e.anim*.8):1,flip=[3,4,5].includes(e.facing);ctx.save();ctx.translate(Math.round(x),Math.round(y));if(flip)ctx.scale(-1,1);ctx.globalAlpha=alpha;if(dead){ctx.rotate(Math.min(1,e.anim)*.7);ctx.scale(1,Math.max(.3,1-e.anim*.5));}else{const bob=Math.sin(e.anim*(e.phase==='chase'?12:3));ctx.translate(0,e.phase==='chase'?-Math.abs(bob)*2:bob*.4);if(e.phase==='windup')ctx.rotate(-.04);if(e.phase==='strike')ctx.translate(3,-1);}
