@@ -1,0 +1,21 @@
+{
+  "artifact": "emberfall-chronicles.html",
+  "bytes": 38012463,
+  "sha256": "ec33302f04e53cf638d47fcc0f7231f7603e428a0b9130cb5bf4023a67933e56",
+  "embeddedAtlases": [
+    "poses_sword",
+    "poses_archer",
+    "poses_mage",
+    "skills_sword",
+    "skills_archer",
+    "skills_mage",
+    "environment",
+    "sword",
+    "archer",
+    "mage",
+    "monsters",
+    "back",
+    "npcs"
+  ],
+  "target": "Safari 16 syntax; real Safari compatibility unverified"
+}

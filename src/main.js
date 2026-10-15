@@ -14,7 +14,10 @@ const heading = (title) => `<div class="panel-heading"><h2>${title}</h2>${button
 async function boot() {
   const images = await loadArt(), renderer = new Renderer($("game"), images);
   let p = fresh(), s = session(p), mode = "title", selected = "sword", panelKind = "", endingShown = false, ready = false, saveTimer = 0, hudTimer = 0, toastTimer = 0, last = performance.now(), frames = 0, heldAttack = false, waypoints = [], autoTarget = null, routeAt = 0, filtered = "all";
-  let skillPage=0,reviewFrozen=false;
+  let skillPage=0,reviewFrozen=false,orientationBlocked=false;
+  const resetSkillInputs=[];
+  const landscape=matchMedia("(orientation: landscape)");
+  const portraitTouch=matchMedia("(orientation: portrait) and (pointer: coarse) and (max-width: 1024px)");
   const keys = /* @__PURE__ */ new Set(), stick = { x: 0, y: 0, id: null };
   const logs = [];
   let audio = null, music = null, backgrounded = false;
@@ -35,7 +38,7 @@ async function boot() {
     };
   };
   function syncMusic() {
-    music?.update(s.map.id, p.options, { menu: mode !== "play", title: mode === "title", hidden: document.hidden || backgrounded });
+    music?.update(s.map.id, p.options, { menu: mode !== "play", title: mode === "title", hidden: document.hidden || backgrounded || orientationBlocked });
   }
   function initAudio() {
     try {
@@ -51,6 +54,7 @@ async function boot() {
     }
   }
   function resetInput() {
+    resetSkillInputs.forEach(clear=>clear());
     s.aim=null;
     keys.clear();
     stick.x = stick.y = 0;
@@ -110,6 +114,7 @@ async function boot() {
     resetInput();
     $("panel-content").innerHTML = html;
     if (!$("panel").open) $("panel").showModal();
+    if(orientationBlocked){$("rotate-screen").close();$("rotate-screen").showModal();}
   }
   function close() {
     if (p.hp <= 0) {
@@ -159,15 +164,16 @@ async function boot() {
     $('mp-potion').innerHTML=iconSVG('potion')+'<small>MP · R</small><em></em>';
     $('dash').innerHTML=iconSVG('dash')+'<small>หลบ</small><i class="cd"></i>';
     $('attack').innerHTML=iconSVG(c.id==='sword'?'sword':c.id==='archer'?'arrow':'star')+'<small>'+c.basic+'</small>';
-    const visible=skillPage?[0,1,4,5]:[0,1,2,3];
-    loadout(p).forEach((id,i)=>{const sk=SKILLS[id],el=$('skill-'+i),position=visible.indexOf(i);el.hidden=position<0;el.style.gridColumn=position%2+1;el.style.gridRow=Math.floor(position/2)+2;
+    const visible=landscape.matches?[0,1,2,3,4,5]:skillPage?[0,1,4,5]:[0,1,2,3];
+    $("skill-switch").hidden=landscape.matches;
+    loadout(p).forEach((id,i)=>{const sk=SKILLS[id],el=$('skill-'+i),position=visible.indexOf(i);el.hidden=position<0;el.style.gridColumn=position%(landscape.matches?3:2)+1;el.style.gridRow=Math.floor(position/(landscape.matches?3:2))+(landscape.matches?1:2);
       el.innerHTML=`<img src="${skillIcon(images,sk)}" alt=""><small>${i+1} ${sk.name}</small><i class="cd"></i>`;el.title=`${sk.name} · MP ${sk.mp} · Lv ${sk.level}`;el.setAttribute('aria-label',sk.name);
     });
     $('skill-switch').innerHTML=`<b>⇄ ${skillPage?'5–6':'3–4'}</b><small>สลับชุด</small><em></em>`;
   }
   function skill(index,aim=null){const sk=SKILLS[loadout(p)[index]];if(!sk)return;const err=cast(s,sk.id,aim);if(err)notify(err);}
   function attack() {
-    if (mode !== "play") return;
+    if (mode !== "play" || orientationBlocked) return;
     const err = cast(s);
     if (err === "ไม่มีเป้าหมายในระยะ") notify(err);
   }
@@ -220,7 +226,7 @@ async function boot() {
   }
   function help() {
     const before = mode;
-    modal(`${heading("คู่มือนักเดินทาง")}<p class="speech">จอยซ้ายหรือ WASD เดิน \xB7 แตะพื้นเพื่อหาทางเดิน<br>แตะมอนสเตอร์เพื่อเข้าระยะและโจมตี หรือกด J<br>1–6 ใช้สกิลตามเลเวล \xB7 Space หลบ \xB7 Q/R ยา HP/MP<br>ใกล้ศิลา NPC หรือหีบ กด E / สำรวจ<br>ของบนพื้นมีชื่อและสี เดินใกล้เพื่อเก็บ แล้วเปิดกระเป๋าสวมใส่</p><p><b>ติดตั้งบน iPhone:</b> เปิดลิงก์ HTTPS ใน Safari<br>แชร์ → เพิ่มไปยังหน้าจอโฮม<br>รอข้อความ “พร้อมเล่นออฟไลน์” ก่อนปิดเครือข่าย<br>ส่งออกเซฟสำรองเป็นระยะ เพราะ iOS อาจล้างข้อมูลเว็บไซต์</p>${button(before === "title" ? "title" : "resume", "เข้าใจแล้ว", false, "primary")}`, "help");
+    modal(`${heading("คู่มือนักเดินทาง")}<p class="speech">จอยซ้ายหรือ WASD เดิน \xB7 แตะพื้นเพื่อหาทางเดิน<br>แตะมอนสเตอร์เพื่อเข้าระยะและโจมตี หรือกด J<br>1–6 ใช้สกิลตามเลเวล \xB7 Space หลบ \xB7 Q/R ยา HP/MP<br>ใกล้ศิลา NPC หรือหีบ กด E / สำรวจ<br>ของบนพื้นมีชื่อและสี เดินใกล้เพื่อเก็บ แล้วเปิดกระเป๋าสวมใส่</p><p><b>เล่นแนวนอน:</b> หมุนเครื่องและปิดล็อกแนวตั้งของ iPhone<br>จอยซ้ายเดิน · ปุ่มขวาโจมตี/หลบ · สกิล 6 ช่องกดได้ทันที<br>หมุนกลับแนวตั้งแล้วเกมจะพักอัตโนมัติ</p><p><b>ติดตั้งบน iPhone:</b> เปิดลิงก์ HTTPS ใน Safari<br>แชร์ → เพิ่มไปยังหน้าจอโฮม<br>รอข้อความ “พร้อมเล่นออฟไลน์” ก่อนปิดเครือข่าย<br>ส่งออกเซฟสำรองเป็นระยะ เพราะ iOS อาจล้างข้อมูลเว็บไซต์</p>${button(before === "title" ? "title" : "resume", "เข้าใจแล้ว", false, "primary")}`, "help");
   }
   function deathPanel() {
     modal(`<div class="eyebrow">THE EMBER STILL GLOWS</div><h2>แสงของคุณยังไม่ดับ</h2><p>ฟื้นที่จุดพักของแผนที่นี้ เสียเหรียญ5%<br>รักษาเลเวล อุปกรณ์ และแสงศิลาไว้</p>${button("revive", "กลับมาออกเดินทาง", false, "primary")}`, "dead");
@@ -237,7 +243,7 @@ async function boot() {
     else if (panelKind === "merchant") merchant();
   }
   function interactAction() {
-    if (mode !== "play") return;
+    if (mode !== "play" || orientationBlocked) return;
     const action2 = interact(s);
     if (action2 === "field-gate" || action2 === "town-return") {
       travel(s, action2 === "field-gate" ? "dawn" : "town");
@@ -443,6 +449,7 @@ async function boot() {
     if (b && !b.disabled) Promise.resolve(action(b.dataset.action)).catch((err) => notify(err.message));
   });
   document.addEventListener("keydown", (e) => {
+    if(orientationBlocked)return;
     if ((e.code === "Enter" || e.code === "Space") && e.target.matches(".class-card")) {
       e.preventDefault();
       action(e.target.dataset.action);
@@ -477,7 +484,7 @@ async function boot() {
     $("thumb").style.transform = `translate(${dx * k}px,${dy * k}px)`;
   }
   joy.onpointerdown = (e) => {
-    if (mode !== "play") return;
+    if (mode !== "play" || orientationBlocked) return;
     e.preventDefault();
     stick.id = e.pointerId;
     joy.setPointerCapture(e.pointerId);
@@ -499,7 +506,7 @@ async function boot() {
   function bind(id, fn, hold = false) {
     const el = $(id);
     el.onpointerdown = (e) => {
-      if (mode !== "play") return;
+      if (mode !== "play" || orientationBlocked) return;
       e.preventDefault();
       initAudio();
       if (hold) {
@@ -513,7 +520,8 @@ async function boot() {
   bind("attack", attack, true);
   for(let i=0;i<6;i++){
     const el=$('skill-'+i);let start=null;
-    el.onpointerdown=e=>{if(mode!=='play')return;e.preventDefault();initAudio();el.setPointerCapture(e.pointerId);start={x:e.clientX,y:e.clientY,t:performance.now()};const d=SKILLS[loadout(p)[i]],q=skillPoint(s,d,null,target(s,d.range));s.aim={id:d.id,...q};};
+    resetSkillInputs.push(()=>{start=null;});
+    el.onpointerdown=e=>{if(mode!=='play'||orientationBlocked)return;e.preventDefault();initAudio();el.setPointerCapture(e.pointerId);start={x:e.clientX,y:e.clientY,t:performance.now()};const d=SKILLS[loadout(p)[i]],q=skillPoint(s,d,null,target(s,d.range));s.aim={id:d.id,...q};};
     el.onpointermove=e=>{if(!start)return;const dx=e.clientX-start.x,dy=e.clientY-start.y,n=Math.hypot(dx,dy);if(n<12)return;const d=SKILLS[loadout(p)[i]],v={x:(dx+dy*2)/2,y:(dy*2-dx)/2},length=Math.hypot(v.x,v.y)||1;s.aim={id:d.id,x:s.x+v.x/length*d.range*Math.min(1,n/80),y:s.y+v.y/length*d.range*Math.min(1,n/80)};};
     el.onpointerup=e=>{if(!start)return;const moved=Math.hypot(e.clientX-start.x,e.clientY-start.y),elapsed=performance.now()-start.t,aim=moved>12?s.aim:null;start=null;if(!(elapsed>350&&moved<12))skill(i,aim);s.aim=null;};
     el.onpointercancel=el.onlostpointercapture=()=>{start=null;s.aim=null;};
@@ -533,6 +541,7 @@ async function boot() {
   });
   bind("interact", interactAction);
   document.addEventListener("keydown", (e) => {
+    if(orientationBlocked)return;
     if (mode !== "play") {
       if (e.code === "Escape" && !["title", "dead", "confirm-new"].includes(mode)) close();
       return;
@@ -557,7 +566,7 @@ async function boot() {
   });
   document.addEventListener("keyup", (e) => keys.delete(e.code));
   $("game").onpointerdown = (e) => {
-    if (mode !== "play") return;
+    if (mode !== "play" || orientationBlocked) return;
     const r = $("game").getBoundingClientRect(), x = (e.clientX - r.left) / r.width * renderer.width, y = (e.clientY - r.top) / r.height * renderer.height;
     const foe = s.enemies.filter((e2) => !e2.dead && (!e2.boss || field(p).shrines.length === 3)).find((e2) => {
       const p2 = renderer.screen(e2.x, e2.y);
@@ -604,7 +613,23 @@ async function boot() {
   document.addEventListener("keydown", () => {
     if (mode === "play" && !document.hidden && (backgrounded || audio?.state !== "running")) initAudio();
   });
-  window.addEventListener("resize", () => renderer.resize());
+  function syncOrientation(){
+    const blocked=portraitTouch.matches;
+    if(blocked!==orientationBlocked){
+      orientationBlocked=blocked;
+      resetInput();
+      if(blocked&&mode!=="title")persist();
+      syncMusic();
+    }
+    const gate=$("rotate-screen");
+    if(blocked&&!gate.open)gate.showModal();
+    if(!blocked&&gate.open)gate.close();
+    renderer.resize();
+  }
+  $("rotate-screen").addEventListener("cancel",e=>e.preventDefault());
+  landscape.addEventListener("change",()=>{renderActions();syncOrientation();});
+  portraitTouch.addEventListener("change",syncOrientation);
+  window.addEventListener("resize",syncOrientation);
   function contextual() {
     const n = s.npcs.find((n2) => dist(n2, s) < 2.8);
     if (n) return n.name;
@@ -715,6 +740,7 @@ async function boot() {
     let dt = Math.min(0.04, (now - last) / 1e3);
     last = now;
     frames++;
+    if(orientationBlocked){renderer.draw(s,0);requestAnimationFrame(frame);return;}
     if(reviewFrozen){renderer.draw(s,0);requestAnimationFrame(frame);return;}
     if (mode === "play") {
       let sx = stick.x + (keys.has("KeyD") || keys.has("ArrowRight") ? 1 : 0) - (keys.has("KeyA") || keys.has("ArrowLeft") ? 1 : 0), sy = stick.y + (keys.has("KeyS") || keys.has("ArrowDown") ? 1 : 0) - (keys.has("KeyW") || keys.has("ArrowUp") ? 1 : 0), dx = (sx + sy * 2) / 2, dy = (sy * 2 - sx) / 2;
@@ -776,6 +802,7 @@ async function boot() {
   renderer.center(s);
   $("loading").hidden = true;
   title();
+  syncOrientation();
   requestAnimationFrame(frame);
   if ("serviceWorker" in navigator && !globalThis.EMBER_ART && location.protocol !== "file:") {
     navigator.serviceWorker.addEventListener("message", (e) => {
@@ -787,7 +814,7 @@ async function boot() {
     navigator.serviceWorker.register("sw.js").then(() => navigator.serviceWorker.ready).then((r) => r.active?.postMessage("VERIFY_OFFLINE")).catch(() => $("offline-state").textContent = "ยังไม่พร้อมออฟไลน์ \xB7 ต้องใช้ HTTPS");
     navigator.serviceWorker.addEventListener("controllerchange", () => navigator.serviceWorker.controller?.postMessage("VERIFY_OFFLINE"));
   } else $("offline-state").textContent = "ตัวอย่างไฟล์เดียว \xB7 ติดตั้ง iPhone ต้องเปิดผ่าน HTTPS";
-  if (new URLSearchParams(location.search).has("debug")) globalThis.__emberV2 = { state: () => structuredClone({ mode, p, music: music?.snapshot() || null, s: { map: s.map.id, mapInfo: { isTown: !!s.map.isTown, width: s.map.width, height: s.map.height, stage: s.map.index }, x: s.x, y: s.y, time: s.time, hero: s.hero, enemies: s.enemies, npcs: s.npcs, drops: s.drops, projectiles: s.projectiles, hazards: s.hazards, effects: s.effects, world: s.world.props }, frames, ready, waypoints }), start: (data) => start(validate(data)), action, cast: (id,aim) => cast(s, id,aim), freeze:(value)=>{reviewFrozen=!!value;},step:(dt)=>{tick(s,dt);events();hud();renderer.draw(s,0);}, renderer:()=>renderer, dash: () => dash(s), interact: interactAction, persist, resume: close, teleport: (x, y) => {
+  if (new URLSearchParams(location.search).has("debug")) globalThis.__emberV2 = { state: () => structuredClone({ mode, orientationBlocked, p, music: music?.snapshot() || null, s: { map: s.map.id, mapInfo: { isTown: !!s.map.isTown, width: s.map.width, height: s.map.height, stage: s.map.index }, x: s.x, y: s.y, time: s.time, hero: s.hero, enemies: s.enemies, npcs: s.npcs, drops: s.drops, projectiles: s.projectiles, hazards: s.hazards, effects: s.effects, world: s.world.props }, frames, ready, waypoints }), start: (data) => start(validate(data)), action, cast: (id,aim) => cast(s, id,aim), freeze:(value)=>{reviewFrozen=!!value;},step:(dt)=>{tick(s,dt);events();hud();renderer.draw(s,0);}, renderer:()=>renderer, dash: () => dash(s), interact: interactAction, persist, resume: close, teleport: (x, y) => {
     if (!s.world.block(x, y)) {
       s.x = x;
       s.y = y;

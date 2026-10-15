@@ -18,7 +18,7 @@ class Renderer {
   }
   resize() {
     const rect = this.canvas.getBoundingClientRect();
-    this.ratio = rect.width > 1600 ? 2.5 : rect.width < 500 ? 1.65 : 2;
+    this.ratio = rect.width > rect.height && rect.height <= 430 ? (rect.height <= 350 ? 1.25 : 1.5) : rect.width > 1600 ? 2.5 : rect.width < 500 ? 1.65 : 2;
     this.width = Math.ceil(rect.width / this.ratio);
     this.height = Math.ceil(rect.height / this.ratio);
     this.canvas.width = this.width;

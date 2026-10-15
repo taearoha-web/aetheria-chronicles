@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "scope": "Real v6 app and cache; native v6 starter archer save upgraded to landscape v6.1 with network disabled. Tap Continue unlocks new town score, while class, gold, equipment, music volume and NPCs are preserved. No injected save, XP, or position fixture. All six skills visible after update.",
+  "beforeCache": "emberfall-chronicles-skills-v6-1",
+  "afterCache": "emberfall-chronicles-landscape-v6-2",
+  "music": {
+    "track": "town",
+    "title": "แสงไฟที่บ้าน",
+    "bpm": 78,
+    "context": "running",
+    "volume": 0.3,
+    "voices": 7,
+    "retiring": 0,
+    "clock": true,
+    "scheduled": 7,
+    "transitions": 1
+  },
+  "errors": []
+}
