@@ -17,3 +17,6 @@ Runtime uses nativeCanvas2D/DOM/LocalStorage/WebAudio/ServiceWorker without a CD
 ## Original background music v5
 
 Eleven original procedural compositions and local synthesis patches in src/music.js. No third-party music samples, soundfonts, provider jobs, or MU audio. See MUSIC.md for per-scene themes and verification.
+
+## v6 skill art — 2026-10-15
+Original generated VFX and character action sheets commissioned in this conversation from the user's approved Emberfall concept sheets and existing original character sprites. No external game sprites were downloaded. Six new production atlases: skills-{sword,archer,mage}.png (20 motifs each), poses-{sword,archer,mage}.png (4 action families × 6 frames each). Raw outputs retained in /workspace/generated_images; normalization recipes in tools/normalize-skill-{vfx,poses}.py and manifests in review/skills-v6. Runtime layers and procedural audio are original code. Concept posters are review references, not substituted for gameplay captures.

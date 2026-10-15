@@ -1,0 +1,2407 @@
+{
+  "passed": true,
+  "skillDirectionCases": 480,
+  "results": [
+    {
+      "id": "cleave",
+      "dir": 0,
+      "damage": 1221
+    },
+    {
+      "id": "cleave",
+      "dir": 1,
+      "damage": 1221
+    },
+    {
+      "id": "cleave",
+      "dir": 2,
+      "damage": 1221
+    },
+    {
+      "id": "cleave",
+      "dir": 3,
+      "damage": 1221
+    },
+    {
+      "id": "cleave",
+      "dir": 4,
+      "damage": 1221
+    },
+    {
+      "id": "cleave",
+      "dir": 5,
+      "damage": 1221
+    },
+    {
+      "id": "cleave",
+      "dir": 6,
+      "damage": 1221
+    },
+    {
+      "id": "cleave",
+      "dir": 7,
+      "damage": 1221
+    },
+    {
+      "id": "nova",
+      "dir": 0,
+      "damage": 1899
+    },
+    {
+      "id": "nova",
+      "dir": 1,
+      "damage": 1899
+    },
+    {
+      "id": "nova",
+      "dir": 2,
+      "damage": 1899
+    },
+    {
+      "id": "nova",
+      "dir": 3,
+      "damage": 1899
+    },
+    {
+      "id": "nova",
+      "dir": 4,
+      "damage": 1899
+    },
+    {
+      "id": "nova",
+      "dir": 5,
+      "damage": 1899
+    },
+    {
+      "id": "nova",
+      "dir": 6,
+      "damage": 1899
+    },
+    {
+      "id": "nova",
+      "dir": 7,
+      "damage": 1899
+    },
+    {
+      "id": "aegis",
+      "dir": 0,
+      "damage": 0
+    },
+    {
+      "id": "aegis",
+      "dir": 1,
+      "damage": 0
+    },
+    {
+      "id": "aegis",
+      "dir": 2,
+      "damage": 0
+    },
+    {
+      "id": "aegis",
+      "dir": 3,
+      "damage": 0
+    },
+    {
+      "id": "aegis",
+      "dir": 4,
+      "damage": 0
+    },
+    {
+      "id": "aegis",
+      "dir": 5,
+      "damage": 0
+    },
+    {
+      "id": "aegis",
+      "dir": 6,
+      "damage": 0
+    },
+    {
+      "id": "aegis",
+      "dir": 7,
+      "damage": 0
+    },
+    {
+      "id": "lunge",
+      "dir": 0,
+      "damage": 1425
+    },
+    {
+      "id": "lunge",
+      "dir": 1,
+      "damage": 1425
+    },
+    {
+      "id": "lunge",
+      "dir": 2,
+      "damage": 1425
+    },
+    {
+      "id": "lunge",
+      "dir": 3,
+      "damage": 1425
+    },
+    {
+      "id": "lunge",
+      "dir": 4,
+      "damage": 1425
+    },
+    {
+      "id": "lunge",
+      "dir": 5,
+      "damage": 1425
+    },
+    {
+      "id": "lunge",
+      "dir": 6,
+      "damage": 1425
+    },
+    {
+      "id": "lunge",
+      "dir": 7,
+      "damage": 1425
+    },
+    {
+      "id": "fangs",
+      "dir": 0,
+      "damage": 1764
+    },
+    {
+      "id": "fangs",
+      "dir": 1,
+      "damage": 1764
+    },
+    {
+      "id": "fangs",
+      "dir": 2,
+      "damage": 1764
+    },
+    {
+      "id": "fangs",
+      "dir": 3,
+      "damage": 1764
+    },
+    {
+      "id": "fangs",
+      "dir": 4,
+      "damage": 1764
+    },
+    {
+      "id": "fangs",
+      "dir": 5,
+      "damage": 1764
+    },
+    {
+      "id": "fangs",
+      "dir": 6,
+      "damage": 1764
+    },
+    {
+      "id": "fangs",
+      "dir": 7,
+      "damage": 1764
+    },
+    {
+      "id": "riposte",
+      "dir": 0,
+      "damage": 0
+    },
+    {
+      "id": "riposte",
+      "dir": 1,
+      "damage": 0
+    },
+    {
+      "id": "riposte",
+      "dir": 2,
+      "damage": 0
+    },
+    {
+      "id": "riposte",
+      "dir": 3,
+      "damage": 0
+    },
+    {
+      "id": "riposte",
+      "dir": 4,
+      "damage": 0
+    },
+    {
+      "id": "riposte",
+      "dir": 5,
+      "damage": 0
+    },
+    {
+      "id": "riposte",
+      "dir": 6,
+      "damage": 0
+    },
+    {
+      "id": "riposte",
+      "dir": 7,
+      "damage": 0
+    },
+    {
+      "id": "wave",
+      "dir": 0,
+      "damage": 1626
+    },
+    {
+      "id": "wave",
+      "dir": 1,
+      "damage": 1626
+    },
+    {
+      "id": "wave",
+      "dir": 2,
+      "damage": 1626
+    },
+    {
+      "id": "wave",
+      "dir": 3,
+      "damage": 1626
+    },
+    {
+      "id": "wave",
+      "dir": 4,
+      "damage": 1626
+    },
+    {
+      "id": "wave",
+      "dir": 5,
+      "damage": 1626
+    },
+    {
+      "id": "wave",
+      "dir": 6,
+      "damage": 1626
+    },
+    {
+      "id": "wave",
+      "dir": 7,
+      "damage": 1626
+    },
+    {
+      "id": "sunder",
+      "dir": 0,
+      "damage": 2169
+    },
+    {
+      "id": "sunder",
+      "dir": 1,
+      "damage": 2169
+    },
+    {
+      "id": "sunder",
+      "dir": 2,
+      "damage": 2169
+    },
+    {
+      "id": "sunder",
+      "dir": 3,
+      "damage": 2169
+    },
+    {
+      "id": "sunder",
+      "dir": 4,
+      "damage": 2169
+    },
+    {
+      "id": "sunder",
+      "dir": 5,
+      "damage": 2169
+    },
+    {
+      "id": "sunder",
+      "dir": 6,
+      "damage": 2169
+    },
+    {
+      "id": "sunder",
+      "dir": 7,
+      "damage": 2169
+    },
+    {
+      "id": "warcry",
+      "dir": 0,
+      "damage": 0
+    },
+    {
+      "id": "warcry",
+      "dir": 1,
+      "damage": 0
+    },
+    {
+      "id": "warcry",
+      "dir": 2,
+      "damage": 0
+    },
+    {
+      "id": "warcry",
+      "dir": 3,
+      "damage": 0
+    },
+    {
+      "id": "warcry",
+      "dir": 4,
+      "damage": 0
+    },
+    {
+      "id": "warcry",
+      "dir": 5,
+      "damage": 0
+    },
+    {
+      "id": "warcry",
+      "dir": 6,
+      "damage": 0
+    },
+    {
+      "id": "warcry",
+      "dir": 7,
+      "damage": 0
+    },
+    {
+      "id": "tricut",
+      "dir": 0,
+      "damage": 2646
+    },
+    {
+      "id": "tricut",
+      "dir": 1,
+      "damage": 2646
+    },
+    {
+      "id": "tricut",
+      "dir": 2,
+      "damage": 2646
+    },
+    {
+      "id": "tricut",
+      "dir": 3,
+      "damage": 2646
+    },
+    {
+      "id": "tricut",
+      "dir": 4,
+      "damage": 2646
+    },
+    {
+      "id": "tricut",
+      "dir": 5,
+      "damage": 2646
+    },
+    {
+      "id": "tricut",
+      "dir": 6,
+      "damage": 2646
+    },
+    {
+      "id": "tricut",
+      "dir": 7,
+      "damage": 2646
+    },
+    {
+      "id": "rift",
+      "dir": 0,
+      "damage": 2304
+    },
+    {
+      "id": "rift",
+      "dir": 1,
+      "damage": 2304
+    },
+    {
+      "id": "rift",
+      "dir": 2,
+      "damage": 2304
+    },
+    {
+      "id": "rift",
+      "dir": 3,
+      "damage": 2304
+    },
+    {
+      "id": "rift",
+      "dir": 4,
+      "damage": 2304
+    },
+    {
+      "id": "rift",
+      "dir": 5,
+      "damage": 2304
+    },
+    {
+      "id": "rift",
+      "dir": 6,
+      "damage": 2304
+    },
+    {
+      "id": "rift",
+      "dir": 7,
+      "damage": 2304
+    },
+    {
+      "id": "rising",
+      "dir": 0,
+      "damage": 1899
+    },
+    {
+      "id": "rising",
+      "dir": 1,
+      "damage": 1899
+    },
+    {
+      "id": "rising",
+      "dir": 2,
+      "damage": 1899
+    },
+    {
+      "id": "rising",
+      "dir": 3,
+      "damage": 1899
+    },
+    {
+      "id": "rising",
+      "dir": 4,
+      "damage": 1899
+    },
+    {
+      "id": "rising",
+      "dir": 5,
+      "damage": 1899
+    },
+    {
+      "id": "rising",
+      "dir": 6,
+      "damage": 1899
+    },
+    {
+      "id": "rising",
+      "dir": 7,
+      "damage": 1899
+    },
+    {
+      "id": "fortress",
+      "dir": 0,
+      "damage": 0
+    },
+    {
+      "id": "fortress",
+      "dir": 1,
+      "damage": 0
+    },
+    {
+      "id": "fortress",
+      "dir": 2,
+      "damage": 0
+    },
+    {
+      "id": "fortress",
+      "dir": 3,
+      "damage": 0
+    },
+    {
+      "id": "fortress",
+      "dir": 4,
+      "damage": 0
+    },
+    {
+      "id": "fortress",
+      "dir": 5,
+      "damage": 0
+    },
+    {
+      "id": "fortress",
+      "dir": 6,
+      "damage": 0
+    },
+    {
+      "id": "fortress",
+      "dir": 7,
+      "damage": 0
+    },
+    {
+      "id": "blades",
+      "dir": 0,
+      "damage": 2850
+    },
+    {
+      "id": "blades",
+      "dir": 1,
+      "damage": 2850
+    },
+    {
+      "id": "blades",
+      "dir": 2,
+      "damage": 2850
+    },
+    {
+      "id": "blades",
+      "dir": 3,
+      "damage": 2850
+    },
+    {
+      "id": "blades",
+      "dir": 4,
+      "damage": 2850
+    },
+    {
+      "id": "blades",
+      "dir": 5,
+      "damage": 2850
+    },
+    {
+      "id": "blades",
+      "dir": 6,
+      "damage": 2850
+    },
+    {
+      "id": "blades",
+      "dir": 7,
+      "damage": 2850
+    },
+    {
+      "id": "phantom",
+      "dir": 0,
+      "damage": 2442
+    },
+    {
+      "id": "phantom",
+      "dir": 1,
+      "damage": 2442
+    },
+    {
+      "id": "phantom",
+      "dir": 2,
+      "damage": 2442
+    },
+    {
+      "id": "phantom",
+      "dir": 3,
+      "damage": 2442
+    },
+    {
+      "id": "phantom",
+      "dir": 4,
+      "damage": 2442
+    },
+    {
+      "id": "phantom",
+      "dir": 5,
+      "damage": 2442
+    },
+    {
+      "id": "phantom",
+      "dir": 6,
+      "damage": 2442
+    },
+    {
+      "id": "phantom",
+      "dir": 7,
+      "damage": 2442
+    },
+    {
+      "id": "reaver",
+      "dir": 0,
+      "damage": 2169
+    },
+    {
+      "id": "reaver",
+      "dir": 1,
+      "damage": 2169
+    },
+    {
+      "id": "reaver",
+      "dir": 2,
+      "damage": 2169
+    },
+    {
+      "id": "reaver",
+      "dir": 3,
+      "damage": 2169
+    },
+    {
+      "id": "reaver",
+      "dir": 4,
+      "damage": 2169
+    },
+    {
+      "id": "reaver",
+      "dir": 5,
+      "damage": 2169
+    },
+    {
+      "id": "reaver",
+      "dir": 6,
+      "damage": 2169
+    },
+    {
+      "id": "reaver",
+      "dir": 7,
+      "damage": 2169
+    },
+    {
+      "id": "judgment",
+      "dir": 0,
+      "damage": 2781
+    },
+    {
+      "id": "judgment",
+      "dir": 1,
+      "damage": 2781
+    },
+    {
+      "id": "judgment",
+      "dir": 2,
+      "damage": 2781
+    },
+    {
+      "id": "judgment",
+      "dir": 3,
+      "damage": 2781
+    },
+    {
+      "id": "judgment",
+      "dir": 4,
+      "damage": 2781
+    },
+    {
+      "id": "judgment",
+      "dir": 5,
+      "damage": 2781
+    },
+    {
+      "id": "judgment",
+      "dir": 6,
+      "damage": 2781
+    },
+    {
+      "id": "judgment",
+      "dir": 7,
+      "damage": 2781
+    },
+    {
+      "id": "seven",
+      "dir": 0,
+      "damage": 1309
+    },
+    {
+      "id": "seven",
+      "dir": 1,
+      "damage": 1309
+    },
+    {
+      "id": "seven",
+      "dir": 2,
+      "damage": 1309
+    },
+    {
+      "id": "seven",
+      "dir": 3,
+      "damage": 1309
+    },
+    {
+      "id": "seven",
+      "dir": 4,
+      "damage": 1309
+    },
+    {
+      "id": "seven",
+      "dir": 5,
+      "damage": 1309
+    },
+    {
+      "id": "seven",
+      "dir": 6,
+      "damage": 1309
+    },
+    {
+      "id": "seven",
+      "dir": 7,
+      "damage": 1309
+    },
+    {
+      "id": "dragonblade",
+      "dir": 0,
+      "damage": 5427
+    },
+    {
+      "id": "dragonblade",
+      "dir": 1,
+      "damage": 5427
+    },
+    {
+      "id": "dragonblade",
+      "dir": 2,
+      "damage": 5427
+    },
+    {
+      "id": "dragonblade",
+      "dir": 3,
+      "damage": 5427
+    },
+    {
+      "id": "dragonblade",
+      "dir": 4,
+      "damage": 5427
+    },
+    {
+      "id": "dragonblade",
+      "dir": 5,
+      "damage": 5427
+    },
+    {
+      "id": "dragonblade",
+      "dir": 6,
+      "damage": 5427
+    },
+    {
+      "id": "dragonblade",
+      "dir": 7,
+      "damage": 5427
+    },
+    {
+      "id": "dawnverdict",
+      "dir": 0,
+      "damage": 6777
+    },
+    {
+      "id": "dawnverdict",
+      "dir": 1,
+      "damage": 6777
+    },
+    {
+      "id": "dawnverdict",
+      "dir": 2,
+      "damage": 6777
+    },
+    {
+      "id": "dawnverdict",
+      "dir": 3,
+      "damage": 6777
+    },
+    {
+      "id": "dawnverdict",
+      "dir": 4,
+      "damage": 6777
+    },
+    {
+      "id": "dawnverdict",
+      "dir": 5,
+      "damage": 6777
+    },
+    {
+      "id": "dawnverdict",
+      "dir": 6,
+      "damage": 6777
+    },
+    {
+      "id": "dawnverdict",
+      "dir": 7,
+      "damage": 6777
+    },
+    {
+      "id": "volley",
+      "dir": 0,
+      "damage": 540
+    },
+    {
+      "id": "volley",
+      "dir": 1,
+      "damage": 540
+    },
+    {
+      "id": "volley",
+      "dir": 2,
+      "damage": 540
+    },
+    {
+      "id": "volley",
+      "dir": 3,
+      "damage": 540
+    },
+    {
+      "id": "volley",
+      "dir": 4,
+      "damage": 540
+    },
+    {
+      "id": "volley",
+      "dir": 5,
+      "damage": 540
+    },
+    {
+      "id": "volley",
+      "dir": 6,
+      "damage": 540
+    },
+    {
+      "id": "volley",
+      "dir": 7,
+      "damage": 540
+    },
+    {
+      "id": "pierce",
+      "dir": 0,
+      "damage": 1689
+    },
+    {
+      "id": "pierce",
+      "dir": 1,
+      "damage": 1689
+    },
+    {
+      "id": "pierce",
+      "dir": 2,
+      "damage": 1689
+    },
+    {
+      "id": "pierce",
+      "dir": 3,
+      "damage": 1689
+    },
+    {
+      "id": "pierce",
+      "dir": 4,
+      "damage": 1689
+    },
+    {
+      "id": "pierce",
+      "dir": 5,
+      "damage": 1689
+    },
+    {
+      "id": "pierce",
+      "dir": 6,
+      "damage": 1689
+    },
+    {
+      "id": "pierce",
+      "dir": 7,
+      "damage": 1689
+    },
+    {
+      "id": "snare",
+      "dir": 0,
+      "damage": 1008
+    },
+    {
+      "id": "snare",
+      "dir": 1,
+      "damage": 1008
+    },
+    {
+      "id": "snare",
+      "dir": 2,
+      "damage": 1008
+    },
+    {
+      "id": "snare",
+      "dir": 3,
+      "damage": 1008
+    },
+    {
+      "id": "snare",
+      "dir": 4,
+      "damage": 1008
+    },
+    {
+      "id": "snare",
+      "dir": 5,
+      "damage": 1008
+    },
+    {
+      "id": "snare",
+      "dir": 6,
+      "damage": 1008
+    },
+    {
+      "id": "snare",
+      "dir": 7,
+      "damage": 1008
+    },
+    {
+      "id": "windstep",
+      "dir": 0,
+      "damage": 405
+    },
+    {
+      "id": "windstep",
+      "dir": 1,
+      "damage": 405
+    },
+    {
+      "id": "windstep",
+      "dir": 2,
+      "damage": 405
+    },
+    {
+      "id": "windstep",
+      "dir": 3,
+      "damage": 405
+    },
+    {
+      "id": "windstep",
+      "dir": 4,
+      "damage": 405
+    },
+    {
+      "id": "windstep",
+      "dir": 5,
+      "damage": 405
+    },
+    {
+      "id": "windstep",
+      "dir": 6,
+      "damage": 405
+    },
+    {
+      "id": "windstep",
+      "dir": 7,
+      "damage": 405
+    },
+    {
+      "id": "rain",
+      "dir": 0,
+      "damage": 2565
+    },
+    {
+      "id": "rain",
+      "dir": 1,
+      "damage": 2565
+    },
+    {
+      "id": "rain",
+      "dir": 2,
+      "damage": 2565
+    },
+    {
+      "id": "rain",
+      "dir": 3,
+      "damage": 2565
+    },
+    {
+      "id": "rain",
+      "dir": 4,
+      "damage": 2565
+    },
+    {
+      "id": "rain",
+      "dir": 5,
+      "damage": 2565
+    },
+    {
+      "id": "rain",
+      "dir": 6,
+      "damage": 2565
+    },
+    {
+      "id": "rain",
+      "dir": 7,
+      "damage": 2565
+    },
+    {
+      "id": "mark",
+      "dir": 0,
+      "damage": 0
+    },
+    {
+      "id": "mark",
+      "dir": 1,
+      "damage": 0
+    },
+    {
+      "id": "mark",
+      "dir": 2,
+      "damage": 0
+    },
+    {
+      "id": "mark",
+      "dir": 3,
+      "damage": 0
+    },
+    {
+      "id": "mark",
+      "dir": 4,
+      "damage": 0
+    },
+    {
+      "id": "mark",
+      "dir": 5,
+      "damage": 0
+    },
+    {
+      "id": "mark",
+      "dir": 6,
+      "damage": 0
+    },
+    {
+      "id": "mark",
+      "dir": 7,
+      "damage": 0
+    },
+    {
+      "id": "venom",
+      "dir": 0,
+      "damage": 1554
+    },
+    {
+      "id": "venom",
+      "dir": 1,
+      "damage": 1554
+    },
+    {
+      "id": "venom",
+      "dir": 2,
+      "damage": 1554
+    },
+    {
+      "id": "venom",
+      "dir": 3,
+      "damage": 1554
+    },
+    {
+      "id": "venom",
+      "dir": 4,
+      "damage": 1554
+    },
+    {
+      "id": "venom",
+      "dir": 5,
+      "damage": 1554
+    },
+    {
+      "id": "venom",
+      "dir": 6,
+      "damage": 1554
+    },
+    {
+      "id": "venom",
+      "dir": 7,
+      "damage": 1554
+    },
+    {
+      "id": "burstarrow",
+      "dir": 0,
+      "damage": 2025
+    },
+    {
+      "id": "burstarrow",
+      "dir": 1,
+      "damage": 2025
+    },
+    {
+      "id": "burstarrow",
+      "dir": 2,
+      "damage": 2025
+    },
+    {
+      "id": "burstarrow",
+      "dir": 3,
+      "damage": 2025
+    },
+    {
+      "id": "burstarrow",
+      "dir": 4,
+      "damage": 2025
+    },
+    {
+      "id": "burstarrow",
+      "dir": 5,
+      "damage": 2025
+    },
+    {
+      "id": "burstarrow",
+      "dir": 6,
+      "damage": 2025
+    },
+    {
+      "id": "burstarrow",
+      "dir": 7,
+      "damage": 2025
+    },
+    {
+      "id": "icearrow",
+      "dir": 0,
+      "damage": 1689
+    },
+    {
+      "id": "icearrow",
+      "dir": 1,
+      "damage": 1689
+    },
+    {
+      "id": "icearrow",
+      "dir": 2,
+      "damage": 1689
+    },
+    {
+      "id": "icearrow",
+      "dir": 3,
+      "damage": 1689
+    },
+    {
+      "id": "icearrow",
+      "dir": 4,
+      "damage": 1689
+    },
+    {
+      "id": "icearrow",
+      "dir": 5,
+      "damage": 1689
+    },
+    {
+      "id": "icearrow",
+      "dir": 6,
+      "damage": 1689
+    },
+    {
+      "id": "icearrow",
+      "dir": 7,
+      "damage": 1689
+    },
+    {
+      "id": "moonfan",
+      "dir": 0,
+      "damage": 900
+    },
+    {
+      "id": "moonfan",
+      "dir": 1,
+      "damage": 900
+    },
+    {
+      "id": "moonfan",
+      "dir": 2,
+      "damage": 900
+    },
+    {
+      "id": "moonfan",
+      "dir": 3,
+      "damage": 900
+    },
+    {
+      "id": "moonfan",
+      "dir": 4,
+      "damage": 900
+    },
+    {
+      "id": "moonfan",
+      "dir": 5,
+      "damage": 900
+    },
+    {
+      "id": "moonfan",
+      "dir": 6,
+      "damage": 900
+    },
+    {
+      "id": "moonfan",
+      "dir": 7,
+      "damage": 900
+    },
+    {
+      "id": "hawk",
+      "dir": 0,
+      "damage": 1015
+    },
+    {
+      "id": "hawk",
+      "dir": 1,
+      "damage": 1015
+    },
+    {
+      "id": "hawk",
+      "dir": 2,
+      "damage": 1015
+    },
+    {
+      "id": "hawk",
+      "dir": 3,
+      "damage": 1015
+    },
+    {
+      "id": "hawk",
+      "dir": 4,
+      "damage": 1015
+    },
+    {
+      "id": "hawk",
+      "dir": 5,
+      "damage": 1015
+    },
+    {
+      "id": "hawk",
+      "dir": 6,
+      "damage": 1015
+    },
+    {
+      "id": "hawk",
+      "dir": 7,
+      "damage": 1015
+    },
+    {
+      "id": "ricochet",
+      "dir": 0,
+      "damage": 609
+    },
+    {
+      "id": "ricochet",
+      "dir": 1,
+      "damage": 609
+    },
+    {
+      "id": "ricochet",
+      "dir": 2,
+      "damage": 609
+    },
+    {
+      "id": "ricochet",
+      "dir": 3,
+      "damage": 609
+    },
+    {
+      "id": "ricochet",
+      "dir": 4,
+      "damage": 609
+    },
+    {
+      "id": "ricochet",
+      "dir": 5,
+      "damage": 609
+    },
+    {
+      "id": "ricochet",
+      "dir": 6,
+      "damage": 609
+    },
+    {
+      "id": "ricochet",
+      "dir": 7,
+      "damage": 609
+    },
+    {
+      "id": "rootmines",
+      "dir": 0,
+      "damage": 879
+    },
+    {
+      "id": "rootmines",
+      "dir": 1,
+      "damage": 879
+    },
+    {
+      "id": "rootmines",
+      "dir": 2,
+      "damage": 879
+    },
+    {
+      "id": "rootmines",
+      "dir": 3,
+      "damage": 879
+    },
+    {
+      "id": "rootmines",
+      "dir": 4,
+      "damage": 879
+    },
+    {
+      "id": "rootmines",
+      "dir": 5,
+      "damage": 879
+    },
+    {
+      "id": "rootmines",
+      "dir": 6,
+      "damage": 879
+    },
+    {
+      "id": "rootmines",
+      "dir": 7,
+      "damage": 879
+    },
+    {
+      "id": "vaultshot",
+      "dir": 0,
+      "damage": 630
+    },
+    {
+      "id": "vaultshot",
+      "dir": 1,
+      "damage": 630
+    },
+    {
+      "id": "vaultshot",
+      "dir": 2,
+      "damage": 630
+    },
+    {
+      "id": "vaultshot",
+      "dir": 3,
+      "damage": 630
+    },
+    {
+      "id": "vaultshot",
+      "dir": 4,
+      "damage": 630
+    },
+    {
+      "id": "vaultshot",
+      "dir": 5,
+      "damage": 630
+    },
+    {
+      "id": "vaultshot",
+      "dir": 6,
+      "damage": 630
+    },
+    {
+      "id": "vaultshot",
+      "dir": 7,
+      "damage": 630
+    },
+    {
+      "id": "rapid",
+      "dir": 0,
+      "damage": 1248
+    },
+    {
+      "id": "rapid",
+      "dir": 1,
+      "damage": 1248
+    },
+    {
+      "id": "rapid",
+      "dir": 2,
+      "damage": 1248
+    },
+    {
+      "id": "rapid",
+      "dir": 3,
+      "damage": 1248
+    },
+    {
+      "id": "rapid",
+      "dir": 4,
+      "damage": 1248
+    },
+    {
+      "id": "rapid",
+      "dir": 5,
+      "damage": 1248
+    },
+    {
+      "id": "rapid",
+      "dir": 6,
+      "damage": 1248
+    },
+    {
+      "id": "rapid",
+      "dir": 7,
+      "damage": 1248
+    },
+    {
+      "id": "thunderarrow",
+      "dir": 0,
+      "damage": 777
+    },
+    {
+      "id": "thunderarrow",
+      "dir": 1,
+      "damage": 777
+    },
+    {
+      "id": "thunderarrow",
+      "dir": 2,
+      "damage": 777
+    },
+    {
+      "id": "thunderarrow",
+      "dir": 3,
+      "damage": 777
+    },
+    {
+      "id": "thunderarrow",
+      "dir": 4,
+      "damage": 777
+    },
+    {
+      "id": "thunderarrow",
+      "dir": 5,
+      "damage": 777
+    },
+    {
+      "id": "thunderarrow",
+      "dir": 6,
+      "damage": 777
+    },
+    {
+      "id": "thunderarrow",
+      "dir": 7,
+      "damage": 777
+    },
+    {
+      "id": "windvortex",
+      "dir": 0,
+      "damage": 2025
+    },
+    {
+      "id": "windvortex",
+      "dir": 1,
+      "damage": 2025
+    },
+    {
+      "id": "windvortex",
+      "dir": 2,
+      "damage": 2025
+    },
+    {
+      "id": "windvortex",
+      "dir": 3,
+      "damage": 2025
+    },
+    {
+      "id": "windvortex",
+      "dir": 4,
+      "damage": 2025
+    },
+    {
+      "id": "windvortex",
+      "dir": 5,
+      "damage": 2025
+    },
+    {
+      "id": "windvortex",
+      "dir": 6,
+      "damage": 2025
+    },
+    {
+      "id": "windvortex",
+      "dir": 7,
+      "damage": 2025
+    },
+    {
+      "id": "spiritbow",
+      "dir": 0,
+      "damage": 0
+    },
+    {
+      "id": "spiritbow",
+      "dir": 1,
+      "damage": 0
+    },
+    {
+      "id": "spiritbow",
+      "dir": 2,
+      "damage": 0
+    },
+    {
+      "id": "spiritbow",
+      "dir": 3,
+      "damage": 0
+    },
+    {
+      "id": "spiritbow",
+      "dir": 4,
+      "damage": 0
+    },
+    {
+      "id": "spiritbow",
+      "dir": 5,
+      "damage": 0
+    },
+    {
+      "id": "spiritbow",
+      "dir": 6,
+      "damage": 0
+    },
+    {
+      "id": "spiritbow",
+      "dir": 7,
+      "damage": 0
+    },
+    {
+      "id": "skypiercer",
+      "dir": 0,
+      "damage": 5739
+    },
+    {
+      "id": "skypiercer",
+      "dir": 1,
+      "damage": 5739
+    },
+    {
+      "id": "skypiercer",
+      "dir": 2,
+      "damage": 5739
+    },
+    {
+      "id": "skypiercer",
+      "dir": 3,
+      "damage": 5739
+    },
+    {
+      "id": "skypiercer",
+      "dir": 4,
+      "damage": 5739
+    },
+    {
+      "id": "skypiercer",
+      "dir": 5,
+      "damage": 5739
+    },
+    {
+      "id": "skypiercer",
+      "dir": 6,
+      "damage": 5739
+    },
+    {
+      "id": "skypiercer",
+      "dir": 7,
+      "damage": 5739
+    },
+    {
+      "id": "phoenix",
+      "dir": 0,
+      "damage": 6750
+    },
+    {
+      "id": "phoenix",
+      "dir": 1,
+      "damage": 6750
+    },
+    {
+      "id": "phoenix",
+      "dir": 2,
+      "damage": 6750
+    },
+    {
+      "id": "phoenix",
+      "dir": 3,
+      "damage": 6750
+    },
+    {
+      "id": "phoenix",
+      "dir": 4,
+      "damage": 6750
+    },
+    {
+      "id": "phoenix",
+      "dir": 5,
+      "damage": 6750
+    },
+    {
+      "id": "phoenix",
+      "dir": 6,
+      "damage": 6750
+    },
+    {
+      "id": "phoenix",
+      "dir": 7,
+      "damage": 6750
+    },
+    {
+      "id": "fireball",
+      "dir": 0,
+      "damage": 1368
+    },
+    {
+      "id": "fireball",
+      "dir": 1,
+      "damage": 1368
+    },
+    {
+      "id": "fireball",
+      "dir": 2,
+      "damage": 1368
+    },
+    {
+      "id": "fireball",
+      "dir": 3,
+      "damage": 1368
+    },
+    {
+      "id": "fireball",
+      "dir": 4,
+      "damage": 1368
+    },
+    {
+      "id": "fireball",
+      "dir": 5,
+      "damage": 1368
+    },
+    {
+      "id": "fireball",
+      "dir": 6,
+      "damage": 1368
+    },
+    {
+      "id": "fireball",
+      "dir": 7,
+      "damage": 1368
+    },
+    {
+      "id": "frost",
+      "dir": 0,
+      "damage": 1506
+    },
+    {
+      "id": "frost",
+      "dir": 1,
+      "damage": 1506
+    },
+    {
+      "id": "frost",
+      "dir": 2,
+      "damage": 1506
+    },
+    {
+      "id": "frost",
+      "dir": 3,
+      "damage": 1506
+    },
+    {
+      "id": "frost",
+      "dir": 4,
+      "damage": 1506
+    },
+    {
+      "id": "frost",
+      "dir": 5,
+      "damage": 1506
+    },
+    {
+      "id": "frost",
+      "dir": 6,
+      "damage": 1506
+    },
+    {
+      "id": "frost",
+      "dir": 7,
+      "damage": 1506
+    },
+    {
+      "id": "storm",
+      "dir": 0,
+      "damage": 600
+    },
+    {
+      "id": "storm",
+      "dir": 1,
+      "damage": 600
+    },
+    {
+      "id": "storm",
+      "dir": 2,
+      "damage": 600
+    },
+    {
+      "id": "storm",
+      "dir": 3,
+      "damage": 600
+    },
+    {
+      "id": "storm",
+      "dir": 4,
+      "damage": 600
+    },
+    {
+      "id": "storm",
+      "dir": 5,
+      "damage": 600
+    },
+    {
+      "id": "storm",
+      "dir": 6,
+      "damage": 600
+    },
+    {
+      "id": "storm",
+      "dir": 7,
+      "damage": 600
+    },
+    {
+      "id": "blink",
+      "dir": 0,
+      "damage": 0
+    },
+    {
+      "id": "blink",
+      "dir": 1,
+      "damage": 0
+    },
+    {
+      "id": "blink",
+      "dir": 2,
+      "damage": 0
+    },
+    {
+      "id": "blink",
+      "dir": 3,
+      "damage": 0
+    },
+    {
+      "id": "blink",
+      "dir": 4,
+      "damage": 0
+    },
+    {
+      "id": "blink",
+      "dir": 5,
+      "damage": 0
+    },
+    {
+      "id": "blink",
+      "dir": 6,
+      "damage": 0
+    },
+    {
+      "id": "blink",
+      "dir": 7,
+      "damage": 0
+    },
+    {
+      "id": "arcarmor",
+      "dir": 0,
+      "damage": 0
+    },
+    {
+      "id": "arcarmor",
+      "dir": 1,
+      "damage": 0
+    },
+    {
+      "id": "arcarmor",
+      "dir": 2,
+      "damage": 0
+    },
+    {
+      "id": "arcarmor",
+      "dir": 3,
+      "damage": 0
+    },
+    {
+      "id": "arcarmor",
+      "dir": 4,
+      "damage": 0
+    },
+    {
+      "id": "arcarmor",
+      "dir": 5,
+      "damage": 0
+    },
+    {
+      "id": "arcarmor",
+      "dir": 6,
+      "damage": 0
+    },
+    {
+      "id": "arcarmor",
+      "dir": 7,
+      "damage": 0
+    },
+    {
+      "id": "icelance",
+      "dir": 0,
+      "damage": 2052
+    },
+    {
+      "id": "icelance",
+      "dir": 1,
+      "damage": 2052
+    },
+    {
+      "id": "icelance",
+      "dir": 2,
+      "damage": 2052
+    },
+    {
+      "id": "icelance",
+      "dir": 3,
+      "damage": 2052
+    },
+    {
+      "id": "icelance",
+      "dir": 4,
+      "damage": 2052
+    },
+    {
+      "id": "icelance",
+      "dir": 5,
+      "damage": 2052
+    },
+    {
+      "id": "icelance",
+      "dir": 6,
+      "damage": 2052
+    },
+    {
+      "id": "icelance",
+      "dir": 7,
+      "damage": 2052
+    },
+    {
+      "id": "firewall",
+      "dir": 0,
+      "damage": 3075
+    },
+    {
+      "id": "firewall",
+      "dir": 1,
+      "damage": 3075
+    },
+    {
+      "id": "firewall",
+      "dir": 2,
+      "damage": 3075
+    },
+    {
+      "id": "firewall",
+      "dir": 3,
+      "damage": 3075
+    },
+    {
+      "id": "firewall",
+      "dir": 4,
+      "damage": 3075
+    },
+    {
+      "id": "firewall",
+      "dir": 5,
+      "damage": 3075
+    },
+    {
+      "id": "firewall",
+      "dir": 6,
+      "damage": 3075
+    },
+    {
+      "id": "firewall",
+      "dir": 7,
+      "damage": 3075
+    },
+    {
+      "id": "vortex",
+      "dir": 0,
+      "damage": 2328
+    },
+    {
+      "id": "vortex",
+      "dir": 1,
+      "damage": 2328
+    },
+    {
+      "id": "vortex",
+      "dir": 2,
+      "damage": 2328
+    },
+    {
+      "id": "vortex",
+      "dir": 3,
+      "damage": 2328
+    },
+    {
+      "id": "vortex",
+      "dir": 4,
+      "damage": 2328
+    },
+    {
+      "id": "vortex",
+      "dir": 5,
+      "damage": 2328
+    },
+    {
+      "id": "vortex",
+      "dir": 6,
+      "damage": 2328
+    },
+    {
+      "id": "vortex",
+      "dir": 7,
+      "damage": 2328
+    },
+    {
+      "id": "manastream",
+      "dir": 0,
+      "damage": 0
+    },
+    {
+      "id": "manastream",
+      "dir": 1,
+      "damage": 0
+    },
+    {
+      "id": "manastream",
+      "dir": 2,
+      "damage": 0
+    },
+    {
+      "id": "manastream",
+      "dir": 3,
+      "damage": 0
+    },
+    {
+      "id": "manastream",
+      "dir": 4,
+      "damage": 0
+    },
+    {
+      "id": "manastream",
+      "dir": 5,
+      "damage": 0
+    },
+    {
+      "id": "manastream",
+      "dir": 6,
+      "damage": 0
+    },
+    {
+      "id": "manastream",
+      "dir": 7,
+      "damage": 0
+    },
+    {
+      "id": "comets",
+      "dir": 0,
+      "damage": 1095
+    },
+    {
+      "id": "comets",
+      "dir": 1,
+      "damage": 1095
+    },
+    {
+      "id": "comets",
+      "dir": 2,
+      "damage": 1095
+    },
+    {
+      "id": "comets",
+      "dir": 3,
+      "damage": 1095
+    },
+    {
+      "id": "comets",
+      "dir": 4,
+      "damage": 1095
+    },
+    {
+      "id": "comets",
+      "dir": 5,
+      "damage": 1095
+    },
+    {
+      "id": "comets",
+      "dir": 6,
+      "damage": 1095
+    },
+    {
+      "id": "comets",
+      "dir": 7,
+      "damage": 1095
+    },
+    {
+      "id": "thunderring",
+      "dir": 0,
+      "damage": 2598
+    },
+    {
+      "id": "thunderring",
+      "dir": 1,
+      "damage": 2598
+    },
+    {
+      "id": "thunderring",
+      "dir": 2,
+      "damage": 2598
+    },
+    {
+      "id": "thunderring",
+      "dir": 3,
+      "damage": 2598
+    },
+    {
+      "id": "thunderring",
+      "dir": 4,
+      "damage": 2598
+    },
+    {
+      "id": "thunderring",
+      "dir": 5,
+      "damage": 2598
+    },
+    {
+      "id": "thunderring",
+      "dir": 6,
+      "damage": 2598
+    },
+    {
+      "id": "thunderring",
+      "dir": 7,
+      "damage": 2598
+    },
+    {
+      "id": "icefield",
+      "dir": 0,
+      "damage": 2880
+    },
+    {
+      "id": "icefield",
+      "dir": 1,
+      "damage": 2880
+    },
+    {
+      "id": "icefield",
+      "dir": 2,
+      "damage": 2880
+    },
+    {
+      "id": "icefield",
+      "dir": 3,
+      "damage": 2880
+    },
+    {
+      "id": "icefield",
+      "dir": 4,
+      "damage": 2880
+    },
+    {
+      "id": "icefield",
+      "dir": 5,
+      "damage": 2880
+    },
+    {
+      "id": "icefield",
+      "dir": 6,
+      "damage": 2880
+    },
+    {
+      "id": "icefield",
+      "dir": 7,
+      "damage": 2880
+    },
+    {
+      "id": "flames",
+      "dir": 0,
+      "damage": 1140
+    },
+    {
+      "id": "flames",
+      "dir": 1,
+      "damage": 1140
+    },
+    {
+      "id": "flames",
+      "dir": 2,
+      "damage": 1140
+    },
+    {
+      "id": "flames",
+      "dir": 3,
+      "damage": 1140
+    },
+    {
+      "id": "flames",
+      "dir": 4,
+      "damage": 1140
+    },
+    {
+      "id": "flames",
+      "dir": 5,
+      "damage": 1140
+    },
+    {
+      "id": "flames",
+      "dir": 6,
+      "damage": 1140
+    },
+    {
+      "id": "flames",
+      "dir": 7,
+      "damage": 1140
+    },
+    {
+      "id": "time",
+      "dir": 0,
+      "damage": 816
+    },
+    {
+      "id": "time",
+      "dir": 1,
+      "damage": 816
+    },
+    {
+      "id": "time",
+      "dir": 2,
+      "damage": 816
+    },
+    {
+      "id": "time",
+      "dir": 3,
+      "damage": 816
+    },
+    {
+      "id": "time",
+      "dir": 4,
+      "damage": 816
+    },
+    {
+      "id": "time",
+      "dir": 5,
+      "damage": 816
+    },
+    {
+      "id": "time",
+      "dir": 6,
+      "damage": 816
+    },
+    {
+      "id": "time",
+      "dir": 7,
+      "damage": 816
+    },
+    {
+      "id": "mirage",
+      "dir": 0,
+      "damage": 0
+    },
+    {
+      "id": "mirage",
+      "dir": 1,
+      "damage": 0
+    },
+    {
+      "id": "mirage",
+      "dir": 2,
+      "damage": 0
+    },
+    {
+      "id": "mirage",
+      "dir": 3,
+      "damage": 0
+    },
+    {
+      "id": "mirage",
+      "dir": 4,
+      "damage": 0
+    },
+    {
+      "id": "mirage",
+      "dir": 5,
+      "damage": 0
+    },
+    {
+      "id": "mirage",
+      "dir": 6,
+      "damage": 0
+    },
+    {
+      "id": "mirage",
+      "dir": 7,
+      "damage": 0
+    },
+    {
+      "id": "thunderpillar",
+      "dir": 0,
+      "damage": 3216
+    },
+    {
+      "id": "thunderpillar",
+      "dir": 1,
+      "damage": 3216
+    },
+    {
+      "id": "thunderpillar",
+      "dir": 2,
+      "damage": 3216
+    },
+    {
+      "id": "thunderpillar",
+      "dir": 3,
+      "damage": 3216
+    },
+    {
+      "id": "thunderpillar",
+      "dir": 4,
+      "damage": 3216
+    },
+    {
+      "id": "thunderpillar",
+      "dir": 5,
+      "damage": 3216
+    },
+    {
+      "id": "thunderpillar",
+      "dir": 6,
+      "damage": 3216
+    },
+    {
+      "id": "thunderpillar",
+      "dir": 7,
+      "damage": 3216
+    },
+    {
+      "id": "meteor",
+      "dir": 0,
+      "damage": 4104
+    },
+    {
+      "id": "meteor",
+      "dir": 1,
+      "damage": 4104
+    },
+    {
+      "id": "meteor",
+      "dir": 2,
+      "damage": 4104
+    },
+    {
+      "id": "meteor",
+      "dir": 3,
+      "damage": 4104
+    },
+    {
+      "id": "meteor",
+      "dir": 4,
+      "damage": 4104
+    },
+    {
+      "id": "meteor",
+      "dir": 5,
+      "damage": 4104
+    },
+    {
+      "id": "meteor",
+      "dir": 6,
+      "damage": 4104
+    },
+    {
+      "id": "meteor",
+      "dir": 7,
+      "damage": 4104
+    },
+    {
+      "id": "elements",
+      "dir": 0,
+      "damage": 0
+    },
+    {
+      "id": "elements",
+      "dir": 1,
+      "damage": 0
+    },
+    {
+      "id": "elements",
+      "dir": 2,
+      "damage": 0
+    },
+    {
+      "id": "elements",
+      "dir": 3,
+      "damage": 0
+    },
+    {
+      "id": "elements",
+      "dir": 4,
+      "damage": 0
+    },
+    {
+      "id": "elements",
+      "dir": 5,
+      "damage": 0
+    },
+    {
+      "id": "elements",
+      "dir": 6,
+      "damage": 0
+    },
+    {
+      "id": "elements",
+      "dir": 7,
+      "damage": 0
+    },
+    {
+      "id": "blizzard",
+      "dir": 0,
+      "damage": 6156
+    },
+    {
+      "id": "blizzard",
+      "dir": 1,
+      "damage": 6156
+    },
+    {
+      "id": "blizzard",
+      "dir": 2,
+      "damage": 6156
+    },
+    {
+      "id": "blizzard",
+      "dir": 3,
+      "damage": 6156
+    },
+    {
+      "id": "blizzard",
+      "dir": 4,
+      "damage": 6156
+    },
+    {
+      "id": "blizzard",
+      "dir": 5,
+      "damage": 6156
+    },
+    {
+      "id": "blizzard",
+      "dir": 6,
+      "damage": 6156
+    },
+    {
+      "id": "blizzard",
+      "dir": 7,
+      "damage": 6156
+    },
+    {
+      "id": "astral",
+      "dir": 0,
+      "damage": 7524
+    },
+    {
+      "id": "astral",
+      "dir": 1,
+      "damage": 7524
+    },
+    {
+      "id": "astral",
+      "dir": 2,
+      "damage": 7524
+    },
+    {
+      "id": "astral",
+      "dir": 3,
+      "damage": 7524
+    },
+    {
+      "id": "astral",
+      "dir": 4,
+      "damage": 7524
+    },
+    {
+      "id": "astral",
+      "dir": 5,
+      "damage": 7524
+    },
+    {
+      "id": "astral",
+      "dir": 6,
+      "damage": 7524
+    },
+    {
+      "id": "astral",
+      "dir": 7,
+      "damage": 7524
+    }
+  ],
+  "scope": "Isolated deterministic simulation fixtures; durable targets and invulnerability isolate each skill. This is not an end-to-end campaign or physical-device test."
+}

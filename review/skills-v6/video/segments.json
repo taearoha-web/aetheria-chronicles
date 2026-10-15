@@ -1,0 +1,305 @@
+{
+  "scope": "Actual live Canvas2D gameplay with legal Lv100/class/map/position fixtures for independent skill review. Skill labels are review annotations. No concept poster used as gameplay. Video has no captured audio.",
+  "segments": [
+    {
+      "classId": "sword",
+      "id": "cleave",
+      "seconds": 0.598
+    },
+    {
+      "classId": "sword",
+      "id": "nova",
+      "seconds": 2.466
+    },
+    {
+      "classId": "sword",
+      "id": "aegis",
+      "seconds": 6.169
+    },
+    {
+      "classId": "sword",
+      "id": "lunge",
+      "seconds": 8.436
+    },
+    {
+      "classId": "sword",
+      "id": "fangs",
+      "seconds": 13.943
+    },
+    {
+      "classId": "sword",
+      "id": "riposte",
+      "seconds": 15.857
+    },
+    {
+      "classId": "sword",
+      "id": "wave",
+      "seconds": 18.657
+    },
+    {
+      "classId": "sword",
+      "id": "sunder",
+      "seconds": 22.492
+    },
+    {
+      "classId": "sword",
+      "id": "warcry",
+      "seconds": 25.584
+    },
+    {
+      "classId": "sword",
+      "id": "tricut",
+      "seconds": 36.312
+    },
+    {
+      "classId": "sword",
+      "id": "rift",
+      "seconds": 41.541
+    },
+    {
+      "classId": "sword",
+      "id": "rising",
+      "seconds": 44.715
+    },
+    {
+      "classId": "sword",
+      "id": "fortress",
+      "seconds": 50.165
+    },
+    {
+      "classId": "sword",
+      "id": "blades",
+      "seconds": 60.056
+    },
+    {
+      "classId": "sword",
+      "id": "phantom",
+      "seconds": 62.149
+    },
+    {
+      "classId": "sword",
+      "id": "reaver",
+      "seconds": 65.063
+    },
+    {
+      "classId": "sword",
+      "id": "judgment",
+      "seconds": 67.161
+    },
+    {
+      "classId": "sword",
+      "id": "seven",
+      "seconds": 69.126
+    },
+    {
+      "classId": "sword",
+      "id": "dragonblade",
+      "seconds": 71.111
+    },
+    {
+      "classId": "sword",
+      "id": "dawnverdict",
+      "seconds": 74.278
+    },
+    {
+      "classId": "archer",
+      "id": "volley",
+      "seconds": 0.988
+    },
+    {
+      "classId": "archer",
+      "id": "pierce",
+      "seconds": 2.902
+    },
+    {
+      "classId": "archer",
+      "id": "snare",
+      "seconds": 4.752
+    },
+    {
+      "classId": "archer",
+      "id": "windstep",
+      "seconds": 6.594
+    },
+    {
+      "classId": "archer",
+      "id": "rain",
+      "seconds": 8.45
+    },
+    {
+      "classId": "archer",
+      "id": "mark",
+      "seconds": 10.338
+    },
+    {
+      "classId": "archer",
+      "id": "venom",
+      "seconds": 12.627
+    },
+    {
+      "classId": "archer",
+      "id": "burstarrow",
+      "seconds": 14.492
+    },
+    {
+      "classId": "archer",
+      "id": "icearrow",
+      "seconds": 16.352
+    },
+    {
+      "classId": "archer",
+      "id": "moonfan",
+      "seconds": 18.253
+    },
+    {
+      "classId": "archer",
+      "id": "hawk",
+      "seconds": 20.116
+    },
+    {
+      "classId": "archer",
+      "id": "ricochet",
+      "seconds": 22.085
+    },
+    {
+      "classId": "archer",
+      "id": "rootmines",
+      "seconds": 24.116
+    },
+    {
+      "classId": "archer",
+      "id": "vaultshot",
+      "seconds": 26.054
+    },
+    {
+      "classId": "archer",
+      "id": "rapid",
+      "seconds": 27.912
+    },
+    {
+      "classId": "archer",
+      "id": "thunderarrow",
+      "seconds": 29.756
+    },
+    {
+      "classId": "archer",
+      "id": "windvortex",
+      "seconds": 31.613
+    },
+    {
+      "classId": "archer",
+      "id": "spiritbow",
+      "seconds": 33.468
+    },
+    {
+      "classId": "archer",
+      "id": "skypiercer",
+      "seconds": 35.323
+    },
+    {
+      "classId": "archer",
+      "id": "phoenix",
+      "seconds": 38.417
+    },
+    {
+      "classId": "mage",
+      "id": "fireball",
+      "seconds": 0.399
+    },
+    {
+      "classId": "mage",
+      "id": "frost",
+      "seconds": 2.283
+    },
+    {
+      "classId": "mage",
+      "id": "storm",
+      "seconds": 4.126
+    },
+    {
+      "classId": "mage",
+      "id": "blink",
+      "seconds": 5.989
+    },
+    {
+      "classId": "mage",
+      "id": "arcarmor",
+      "seconds": 7.858
+    },
+    {
+      "classId": "mage",
+      "id": "icelance",
+      "seconds": 9.731
+    },
+    {
+      "classId": "mage",
+      "id": "firewall",
+      "seconds": 11.6
+    },
+    {
+      "classId": "mage",
+      "id": "vortex",
+      "seconds": 13.459
+    },
+    {
+      "classId": "mage",
+      "id": "manastream",
+      "seconds": 15.318
+    },
+    {
+      "classId": "mage",
+      "id": "comets",
+      "seconds": 18.719
+    },
+    {
+      "classId": "mage",
+      "id": "thunderring",
+      "seconds": 20.553
+    },
+    {
+      "classId": "mage",
+      "id": "icefield",
+      "seconds": 22.411
+    },
+    {
+      "classId": "mage",
+      "id": "flames",
+      "seconds": 24.263
+    },
+    {
+      "classId": "mage",
+      "id": "time",
+      "seconds": 26.164
+    },
+    {
+      "classId": "mage",
+      "id": "mirage",
+      "seconds": 28.037
+    },
+    {
+      "classId": "mage",
+      "id": "thunderpillar",
+      "seconds": 29.91
+    },
+    {
+      "classId": "mage",
+      "id": "meteor",
+      "seconds": 31.824
+    },
+    {
+      "classId": "mage",
+      "id": "elements",
+      "seconds": 33.716
+    },
+    {
+      "classId": "mage",
+      "id": "blizzard",
+      "seconds": 35.578
+    },
+    {
+      "classId": "mage",
+      "id": "astral",
+      "seconds": 38.706
+    }
+  ]
+}

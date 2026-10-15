@@ -1,3 +1,5 @@
+import {skillSets,LEVEL_CAP} from './skill-data.js';
+export {LEVEL_CAP};
 // Three original classes and ten distinct connected fields. All data is used by the live simulation.
 export const CLASS={
  sword:{id:'sword',name:'นักดาบ',title:'อัศวินแห่งอรุณ',color:'#b5d7e4',hp:150,mp:70,attack:19,defense:3,range:1.8,rate:.68,role:'ประชิด • ฟันกวาด • เกราะป้องกัน',basic:'ฟันดาบ',skills:[
@@ -13,6 +15,7 @@ export const CLASS={
  {id:'frost',name:'บุปผาเหมันต์',level:4,mp:25,cd:7,cast:1,release:.54,power:1.9,range:6,shape:'frost',element:'ice',icon:'ice'},
  {id:'storm',name:'อัสนีดารา',level:8,mp:30,cd:10,cast:1.1,release:.58,power:3,range:7,shape:'chain',element:'arcane',icon:'star'}]}
 };
+for(const c of Object.values(CLASS))c.skills=skillSets[c.id];
 const MAPS=[
  ['dawn','ทุ่งศิลาอรุณ','ด่าน 1 • ชายป่านอกประตูเมือง','meadow',1,['#8caa69','#a0b578','#b2c58c'],'#c4c2ac','green','pink','slime','mushroom','skeleton','ผู้เฝ้าสวนศิลา',[[14,12],[20,15],[25,10]],[[8,11],[17,10],[23,10],[26,7]], [27,6]],
  ['grove','พงไพรกระซิบ','ป่าลึก • ปลุกแท่นรากไม้','forest',3,['#436b44','#4e794a','#5c824f'],'#a9976b','green','green','wolf','mushroom','treant','ราชันรากไม้',[[7,11],[18,13],[24,8]],[[9,19],[15,17],[22,15],[24,9]],[26,5]],
@@ -37,11 +40,11 @@ export const TOWN={
  ],
  streets:[[{x:21,y:43},{x:36,y:38},{x:58,y:40}],[{x:17,y:24},{x:32,y:28},{x:36,y:38},{x:32,y:21}],[{x:47,y:23},{x:36,y:25},{x:32,y:28}],[{x:21,y:43},{x:33,y:55},{x:32,y:21},{x:58,y:40},{x:47,y:23}],[{x:36,y:38},{x:37,y:16},{x:37,y:9}]]
 };
-export const maps=MAPS.map((d,i)=>({id:d[0],index:i,name:d[1],subtitle:d[2],biome:d[3],level:d[4],floor:d[5],path:d[6],tree:d[7],decor:d[8],mobs:[d[9],d[10]],boss:d[11],bossName:d[12],shrines:d[13].map(([x,y])=>({x,y})),spawns:d[14].map(([x,y])=>({x,y})),arena:{x:d[15][0],y:d[15][1]},spawn:{x:5,y:24},exit:{x:3,y:25},chest:{x:27,y:22},width:32,height:30,isTown:false}));
+export const maps=MAPS.map((d,i)=>({id:d[0],index:i,name:d[1],subtitle:d[2],biome:d[3],level:i*10+1,floor:d[5],path:d[6],tree:d[7],decor:d[8],mobs:[d[9],d[10]],boss:d[11],bossName:d[12],shrines:d[13].map(([x,y])=>({x,y})),spawns:d[14].map(([x,y])=>({x,y})),arena:{x:d[15][0],y:d[15][1]},spawn:{x:5,y:24},exit:{x:3,y:25},chest:{x:27,y:22},width:32,height:30,isTown:false}));
 export const city={id:'town',index:-1,isTown:true,name:'นครแสงอรุณ',subtitle:'เมืองปลอดภัย • หกย่านบริการ',biome:'town',level:1,floor:['#8caa69','#a0b578','#b2c58c'],path:'#c4c2ac',tree:'green',decor:'pink',mobs:[],boss:null,bossName:'',shrines:[],spawns:[],arena:{...TOWN.gate},spawn:{...TOWN.spawn},exit:{x:51,y:56},chest:{...TOWN.chest},width:TOWN.width,height:TOWN.height};
 export const mapById=Object.fromEntries([city,...maps].map(m=>[m.id,m]));
 export const monsterNames={slime:'สไลม์อำพัน',mushroom:'เห็ดจอมซน',wolf:'หมาป่าพงไพร',treant:'ผู้เฝ้ารากไม้',crab:'ปูมุก',skeleton:'อัศวินกระดูก',ghost:'วิญญาณจันทรา',lich:'จอมเวทอาฆาต',scarab:'ด้วงเกราะทราย',scorpion:'แมงป่องอำพัน',golem:'โกเลมโบราณ',icewolf:'หมาป่าเหมันต์',elemental:'ภูตธาตุ',spider:'แมงมุมมรกต',imp:'อิมป์เถ้าถ่าน',dragon:'มังกรเพลิง',wisp:'ภูตดาว',guardian:'องครักษ์ปีกเงิน',demon:'ราชันอุปราคา'};
-export const ELEMENTS={silver:'#d9f3ff',gold:'#ffe8a0',holy:'#fff0b3',nature:'#a7f5a8',wind:'#9ae8dc',fire:'#ffb36a',ice:'#a0eeff',arcane:'#d1b7ff'};
+export const ELEMENTS={silver:'#d9f3ff',gold:'#ffe8a0',holy:'#fff0b3',nature:'#a7f5a8',wind:'#9ae8dc',fire:'#ffb36a',ice:'#a0eeff',arcane:'#d1b7ff',blood:'#ff6684',lightning:'#9feaff'};
 export const SKILLS=Object.fromEntries(Object.values(CLASS).flatMap(c=>c.skills.map(s=>[s.id,{...s,classId:c.id}])));
 export const xpNext=l=>70+30*l+5*l*l;
 export const equipmentName=(slot,cls,tier)=>`${({weapon:{sword:'ดาบ',archer:'ธนู',mage:'ไม้เท้า'}[cls],armor:'เกราะ',ring:'แหวน'})[slot]}${['แห่งอรุณ','พงไพร','มุกคราม','จันทรา','ราชาทราย','เหมันต์','มรกต','เพลิง','ดารา','อุปราคา'][tier]}`;

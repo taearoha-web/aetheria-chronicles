@@ -1,0 +1,607 @@
+{
+  "passed": true,
+  "checks": [
+    "boot, user starts new game, full offline cache",
+    "all 60 production skill visuals captured after actual timed casts",
+    "skillbook 20 entries, equip ultimate slot 6, switch and keyboard cast",
+    "offline reload preserves Lv100, loadout, long ultimate cooldown and all assets",
+    "iPhone-size touch taps cast; 4 visible skill slots; all controls >=44px",
+    "touch drag aim and landscape render"
+  ],
+  "captures": [
+    {
+      "id": "cleave",
+      "code": "S01",
+      "name": "คมดาบจันทรา",
+      "classId": "sword",
+      "level": 1,
+      "effects": 5,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "nova",
+      "code": "S02",
+      "name": "พายุดาบ",
+      "classId": "sword",
+      "level": 4,
+      "effects": 5,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "aegis",
+      "code": "S03",
+      "name": "โล่แห่งรุ่งอรุณ",
+      "classId": "sword",
+      "level": 8,
+      "effects": 1,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "lunge",
+      "code": "S04",
+      "name": "พุ่งแทงทะลวง",
+      "classId": "sword",
+      "level": 10,
+      "effects": 5,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "fangs",
+      "code": "S05",
+      "name": "เขี้ยวดาบคู่",
+      "classId": "sword",
+      "level": 15,
+      "effects": 5,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "riposte",
+      "code": "S06",
+      "name": "สวนคมพิฆาต",
+      "classId": "sword",
+      "level": 20,
+      "effects": 1,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "wave",
+      "code": "S07",
+      "name": "คลื่นคมดาบ",
+      "classId": "sword",
+      "level": 25,
+      "effects": 5,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "sunder",
+      "code": "S08",
+      "name": "กระโดดผ่าปฐพี",
+      "classId": "sword",
+      "level": 30,
+      "effects": 5,
+      "heroFrame": 0.8000000000000004
+    },
+    {
+      "id": "warcry",
+      "code": "S09",
+      "name": "คำรามนักรบ",
+      "classId": "sword",
+      "level": 35,
+      "effects": 1,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "tricut",
+      "code": "S10",
+      "name": "สามคมต่อเนื่อง",
+      "classId": "sword",
+      "level": 40,
+      "effects": 5,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "rift",
+      "code": "S11",
+      "name": "ผ่ารอยแยก",
+      "classId": "sword",
+      "level": 45,
+      "effects": 5,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "rising",
+      "code": "S12",
+      "name": "คมทะยาน",
+      "classId": "sword",
+      "level": 50,
+      "effects": 5,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "fortress",
+      "code": "S13",
+      "name": "ป้อมปราการเหล็ก",
+      "classId": "sword",
+      "level": 55,
+      "effects": 1,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "blades",
+      "code": "S14",
+      "name": "วงจักรพิทักษ์",
+      "classId": "sword",
+      "level": 60,
+      "effects": 5,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "phantom",
+      "code": "S15",
+      "name": "เงาดาบวูบไหว",
+      "classId": "sword",
+      "level": 65,
+      "effects": 5,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "reaver",
+      "code": "S16",
+      "name": "คมชุบชีวิต",
+      "classId": "sword",
+      "level": 70,
+      "effects": 5,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "judgment",
+      "code": "S17",
+      "name": "ดาบพิพากษา",
+      "classId": "sword",
+      "level": 75,
+      "effects": 5,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "seven",
+      "code": "S18",
+      "name": "เจ็ดคมดารา",
+      "classId": "sword",
+      "level": 80,
+      "effects": 1,
+      "heroFrame": 0.5400000000000001
+    },
+    {
+      "id": "dragonblade",
+      "code": "S19",
+      "name": "มังกรคมดาบ",
+      "classId": "sword",
+      "level": 90,
+      "effects": 5,
+      "heroFrame": 0.9800000000000005
+    },
+    {
+      "id": "dawnverdict",
+      "code": "S20",
+      "name": "พิพากษารุ่งอรุณ",
+      "classId": "sword",
+      "level": 100,
+      "effects": 3,
+      "heroFrame": null
+    },
+    {
+      "id": "volley",
+      "code": "A01",
+      "name": "ศรสามประกาย",
+      "classId": "archer",
+      "level": 1,
+      "effects": 2,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "pierce",
+      "code": "A02",
+      "name": "ศรทะลวงพายุ",
+      "classId": "archer",
+      "level": 4,
+      "effects": 3,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "snare",
+      "code": "A03",
+      "name": "เถาวัลย์พิทักษ์",
+      "classId": "archer",
+      "level": 8,
+      "effects": 5,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "windstep",
+      "code": "A04",
+      "name": "ก้าวสายลม",
+      "classId": "archer",
+      "level": 10,
+      "effects": 1,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "rain",
+      "code": "A05",
+      "name": "ฝนศร",
+      "classId": "archer",
+      "level": 15,
+      "effects": 5,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "mark",
+      "code": "A06",
+      "name": "ตรานักล่า",
+      "classId": "archer",
+      "level": 20,
+      "effects": 1,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "venom",
+      "code": "A07",
+      "name": "ศรพิษมรกต",
+      "classId": "archer",
+      "level": 25,
+      "effects": 1,
+      "heroFrame": 0.5400000000000001
+    },
+    {
+      "id": "burstarrow",
+      "code": "A08",
+      "name": "ศรระเบิด",
+      "classId": "archer",
+      "level": 30,
+      "effects": 1,
+      "heroFrame": 0.5400000000000001
+    },
+    {
+      "id": "icearrow",
+      "code": "A09",
+      "name": "ศรเยือกแข็ง",
+      "classId": "archer",
+      "level": 35,
+      "effects": 1,
+      "heroFrame": 0.5400000000000001
+    },
+    {
+      "id": "moonfan",
+      "code": "A10",
+      "name": "พัดศรจันทรา",
+      "classId": "archer",
+      "level": 40,
+      "effects": 2,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "hawk",
+      "code": "A11",
+      "name": "เหยี่ยวพิทักษ์",
+      "classId": "archer",
+      "level": 45,
+      "effects": 4,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "ricochet",
+      "code": "A12",
+      "name": "ศรสะท้อน",
+      "classId": "archer",
+      "level": 50,
+      "effects": 6,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "rootmines",
+      "code": "A13",
+      "name": "กับดักระเบิดราก",
+      "classId": "archer",
+      "level": 55,
+      "effects": 6,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "vaultshot",
+      "code": "A14",
+      "name": "พลิกหลบยิงสวน",
+      "classId": "archer",
+      "level": 60,
+      "effects": 1,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "rapid",
+      "code": "A15",
+      "name": "ศรสังหารต่อเนื่อง",
+      "classId": "archer",
+      "level": 65,
+      "effects": 1,
+      "heroFrame": 0.5400000000000001
+    },
+    {
+      "id": "thunderarrow",
+      "code": "A16",
+      "name": "ศรอัสนี",
+      "classId": "archer",
+      "level": 70,
+      "effects": 6,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "windvortex",
+      "code": "A17",
+      "name": "วังวนสายลม",
+      "classId": "archer",
+      "level": 75,
+      "effects": 5,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "spiritbow",
+      "code": "A18",
+      "name": "ธนูวิญญาณ",
+      "classId": "archer",
+      "level": 80,
+      "effects": 1,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "skypiercer",
+      "code": "A19",
+      "name": "ศรทะลวงนภา",
+      "classId": "archer",
+      "level": 90,
+      "effects": 5,
+      "heroFrame": 0.9800000000000005
+    },
+    {
+      "id": "phoenix",
+      "code": "A20",
+      "name": "ฝนศรฟีนิกซ์",
+      "classId": "archer",
+      "level": 100,
+      "effects": 1,
+      "heroFrame": 0.9800000000000005
+    },
+    {
+      "id": "fireball",
+      "code": "M01",
+      "name": "ลูกไฟสุริยัน",
+      "classId": "mage",
+      "level": 1,
+      "effects": 1,
+      "heroFrame": 0.5400000000000001
+    },
+    {
+      "id": "frost",
+      "code": "M02",
+      "name": "บุปผาเหมันต์",
+      "classId": "mage",
+      "level": 4,
+      "effects": 5,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "storm",
+      "code": "M03",
+      "name": "อัสนีดารา",
+      "classId": "mage",
+      "level": 8,
+      "effects": 6,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "blink",
+      "code": "M04",
+      "name": "ก้าวพริบตา",
+      "classId": "mage",
+      "level": 10,
+      "effects": 2,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "arcarmor",
+      "code": "M05",
+      "name": "เกราะอาร์เคน",
+      "classId": "mage",
+      "level": 15,
+      "effects": 1,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "icelance",
+      "code": "M06",
+      "name": "หอกน้ำแข็ง",
+      "classId": "mage",
+      "level": 20,
+      "effects": 3,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "firewall",
+      "code": "M07",
+      "name": "กำแพงเพลิง",
+      "classId": "mage",
+      "level": 25,
+      "effects": 5,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "vortex",
+      "code": "M08",
+      "name": "วังวนอาร์เคน",
+      "classId": "mage",
+      "level": 30,
+      "effects": 5,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "manastream",
+      "code": "M09",
+      "name": "ธารมานา",
+      "classId": "mage",
+      "level": 35,
+      "effects": 1,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "comets",
+      "code": "M10",
+      "name": "ดาวหางสามดวง",
+      "classId": "mage",
+      "level": 40,
+      "effects": 1,
+      "heroFrame": 0.5400000000000001
+    },
+    {
+      "id": "thunderring",
+      "code": "M11",
+      "name": "วงแหวนอัสนี",
+      "classId": "mage",
+      "level": 45,
+      "effects": 7,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "icefield",
+      "code": "M12",
+      "name": "ทุ่งเหมันต์",
+      "classId": "mage",
+      "level": 50,
+      "effects": 5,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "flames",
+      "code": "M13",
+      "name": "ดวงไฟพิทักษ์",
+      "classId": "mage",
+      "level": 55,
+      "effects": 4,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "time",
+      "code": "M14",
+      "name": "ผนึกกาลเวลา",
+      "classId": "mage",
+      "level": 60,
+      "effects": 5,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "mirage",
+      "code": "M15",
+      "name": "เงามายา",
+      "classId": "mage",
+      "level": 65,
+      "effects": 1,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "thunderpillar",
+      "code": "M16",
+      "name": "เสาอัสนี",
+      "classId": "mage",
+      "level": 70,
+      "effects": 5,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "meteor",
+      "code": "M17",
+      "name": "อุกกาบาต",
+      "classId": "mage",
+      "level": 75,
+      "effects": 5,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "elements",
+      "code": "M18",
+      "name": "จตุธาตุปลุกพลัง",
+      "classId": "mage",
+      "level": 80,
+      "effects": 1,
+      "heroFrame": 0.6000000000000002
+    },
+    {
+      "id": "blizzard",
+      "code": "M19",
+      "name": "มหาพายุเหมันต์",
+      "classId": "mage",
+      "level": 90,
+      "effects": 5,
+      "heroFrame": 0.9800000000000005
+    },
+    {
+      "id": "astral",
+      "code": "M20",
+      "name": "มหาพิพากษาดารา",
+      "classId": "mage",
+      "level": 100,
+      "effects": 1,
+      "heroFrame": 0.9800000000000005
+    }
+  ],
+  "errors": [],
+  "touchTargets": [
+    {
+      "id": "hp-potion",
+      "w": 44,
+      "h": 44
+    },
+    {
+      "id": "mp-potion",
+      "w": 44,
+      "h": 44
+    },
+    {
+      "id": "dash",
+      "w": 44,
+      "h": 44
+    },
+    {
+      "id": "skill-0",
+      "w": 44,
+      "h": 46
+    },
+    {
+      "id": "skill-1",
+      "w": 44,
+      "h": 46
+    },
+    {
+      "id": "skill-2",
+      "w": 44,
+      "h": 46
+    },
+    {
+      "id": "skill-3",
+      "w": 44,
+      "h": 46
+    },
+    {
+      "id": "skill-switch",
+      "w": 44,
+      "h": 46
+    },
+    {
+      "id": "skill-book",
+      "w": 44,
+      "h": 46
+    },
+    {
+      "id": "attack",
+      "w": 65,
+      "h": 65
+    }
+  ],
+  "scope": "Chromium desktop and emulated iPhone viewport/touch. High-level legal fixtures isolate visuals; production simulation advances in 20ms steps and is frozen only for capture. Physical iPhone/Safari not tested."
+}

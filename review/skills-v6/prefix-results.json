@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "scope": "http://127.0.0.1:5186/aetheria-chronicles/",
+  "errors": [],
+  "checks": [
+    "Repository subpath assets and modules",
+    "Native service-worker scope",
+    "20 skillbook entries",
+    "Offline reload and actual starter skill"
+  ],
+  "limitation": "Local deployment-prefix verification, not direct public-site access."
+}

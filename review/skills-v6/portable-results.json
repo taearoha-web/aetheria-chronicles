@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "htmlSHA256": "1b0106fa3563447a0c4511b018d78cc363a69ad768a49d0cf4db85e965c7fe70",
+  "directFile": false,
+  "directFileBlock": "page.goto: net::ERR_BLOCKED_BY_ADMINISTRATOR at file:///workspace/emberfall-pixel/review/skills-v6/emberfall-chronicles.html?debug",
+  "additionalAssetRequests": [],
+  "scope": "Exact embedded HTML boots and moves without external requests. If the cloud policy blocks file://, identical HTML is injected into an intercepted blank local-origin page with all other requests aborted. This does not verify a desktop double-click or iPhone file opening."
+}

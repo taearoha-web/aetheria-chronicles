@@ -1,0 +1,271 @@
+{
+  "complete": true,
+  "scope": "Lv1 to Lv100 all ten maps using real collision/pathfinding, earned loot, XP, purchases, six-slot loadouts and normal town/field travel. No XP, damage, kill, gear, position or resource grants. Automated simulation player, not manual Safari play.",
+  "totalTicks": 74093,
+  "results": [
+    {
+      "classId": "sword",
+      "level": 100,
+      "deaths": 0,
+      "simulatedSeconds": 1321.6499999993457,
+      "milestones": [
+        {
+          "map": "dawn",
+          "level": 10,
+          "kills": 33,
+          "farmRuns": 3,
+          "simulatedSeconds": 114,
+          "gold": 251
+        },
+        {
+          "map": "grove",
+          "level": 20,
+          "kills": 41,
+          "farmRuns": 4,
+          "simulatedSeconds": 230,
+          "gold": 961
+        },
+        {
+          "map": "coast",
+          "level": 30,
+          "kills": 33,
+          "farmRuns": 3,
+          "simulatedSeconds": 338,
+          "gold": 1768
+        },
+        {
+          "map": "crypt",
+          "level": 40,
+          "kills": 41,
+          "farmRuns": 4,
+          "simulatedSeconds": 498,
+          "gold": 2928
+        },
+        {
+          "map": "dunes",
+          "level": 50,
+          "kills": 33,
+          "farmRuns": 3,
+          "simulatedSeconds": 597,
+          "gold": 4121
+        },
+        {
+          "map": "frost",
+          "level": 60,
+          "kills": 33,
+          "farmRuns": 3,
+          "simulatedSeconds": 738,
+          "gold": 5507
+        },
+        {
+          "map": "marsh",
+          "level": 70,
+          "kills": 41,
+          "farmRuns": 4,
+          "simulatedSeconds": 873,
+          "gold": 7342
+        },
+        {
+          "map": "ember",
+          "level": 80,
+          "kills": 33,
+          "farmRuns": 3,
+          "simulatedSeconds": 998,
+          "gold": 9114
+        },
+        {
+          "map": "sky",
+          "level": 91,
+          "kills": 41,
+          "farmRuns": 4,
+          "simulatedSeconds": 1179,
+          "gold": 11399
+        },
+        {
+          "map": "eclipse",
+          "level": 100,
+          "kills": 33,
+          "farmRuns": 3,
+          "simulatedSeconds": 1322,
+          "gold": 13557
+        }
+      ]
+    },
+    {
+      "classId": "archer",
+      "level": 100,
+      "deaths": 0,
+      "simulatedSeconds": 1163.6499999994894,
+      "milestones": [
+        {
+          "map": "dawn",
+          "level": 10,
+          "kills": 33,
+          "farmRuns": 3,
+          "simulatedSeconds": 119,
+          "gold": 221
+        },
+        {
+          "map": "grove",
+          "level": 20,
+          "kills": 41,
+          "farmRuns": 4,
+          "simulatedSeconds": 248,
+          "gold": 931
+        },
+        {
+          "map": "coast",
+          "level": 30,
+          "kills": 33,
+          "farmRuns": 3,
+          "simulatedSeconds": 351,
+          "gold": 1738
+        },
+        {
+          "map": "crypt",
+          "level": 40,
+          "kills": 41,
+          "farmRuns": 4,
+          "simulatedSeconds": 471,
+          "gold": 2898
+        },
+        {
+          "map": "dunes",
+          "level": 50,
+          "kills": 33,
+          "farmRuns": 3,
+          "simulatedSeconds": 574,
+          "gold": 4091
+        },
+        {
+          "map": "frost",
+          "level": 60,
+          "kills": 33,
+          "farmRuns": 3,
+          "simulatedSeconds": 680,
+          "gold": 5477
+        },
+        {
+          "map": "marsh",
+          "level": 70,
+          "kills": 41,
+          "farmRuns": 4,
+          "simulatedSeconds": 802,
+          "gold": 7312
+        },
+        {
+          "map": "ember",
+          "level": 80,
+          "kills": 33,
+          "farmRuns": 3,
+          "simulatedSeconds": 914,
+          "gold": 9084
+        },
+        {
+          "map": "sky",
+          "level": 91,
+          "kills": 41,
+          "farmRuns": 4,
+          "simulatedSeconds": 1047,
+          "gold": 11369
+        },
+        {
+          "map": "eclipse",
+          "level": 100,
+          "kills": 33,
+          "farmRuns": 3,
+          "simulatedSeconds": 1164,
+          "gold": 13527
+        }
+      ]
+    },
+    {
+      "classId": "mage",
+      "level": 100,
+      "deaths": 0,
+      "simulatedSeconds": 1219.3499999994388,
+      "milestones": [
+        {
+          "map": "dawn",
+          "level": 10,
+          "kills": 33,
+          "farmRuns": 3,
+          "simulatedSeconds": 101,
+          "gold": 241
+        },
+        {
+          "map": "grove",
+          "level": 20,
+          "kills": 41,
+          "farmRuns": 4,
+          "simulatedSeconds": 223,
+          "gold": 951
+        },
+        {
+          "map": "coast",
+          "level": 30,
+          "kills": 33,
+          "farmRuns": 3,
+          "simulatedSeconds": 326,
+          "gold": 1758
+        },
+        {
+          "map": "crypt",
+          "level": 40,
+          "kills": 41,
+          "farmRuns": 4,
+          "simulatedSeconds": 450,
+          "gold": 2918
+        },
+        {
+          "map": "dunes",
+          "level": 50,
+          "kills": 33,
+          "farmRuns": 3,
+          "simulatedSeconds": 567,
+          "gold": 4111
+        },
+        {
+          "map": "frost",
+          "level": 60,
+          "kills": 33,
+          "farmRuns": 3,
+          "simulatedSeconds": 691,
+          "gold": 5497
+        },
+        {
+          "map": "marsh",
+          "level": 70,
+          "kills": 41,
+          "farmRuns": 4,
+          "simulatedSeconds": 833,
+          "gold": 7332
+        },
+        {
+          "map": "ember",
+          "level": 80,
+          "kills": 33,
+          "farmRuns": 3,
+          "simulatedSeconds": 955,
+          "gold": 9104
+        },
+        {
+          "map": "sky",
+          "level": 91,
+          "kills": 41,
+          "farmRuns": 4,
+          "simulatedSeconds": 1100,
+          "gold": 11389
+        },
+        {
+          "map": "eclipse",
+          "level": 100,
+          "kills": 33,
+          "farmRuns": 3,
+          "simulatedSeconds": 1219,
+          "gold": 13547
+        }
+      ]
+    }
+  ]
+}

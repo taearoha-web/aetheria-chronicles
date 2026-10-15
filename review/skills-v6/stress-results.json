@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "frames": 351,
+  "medianDrawMs": 0.699999988079071,
+  "p95DrawMs": 1.800000011920929,
+  "effects": 2,
+  "projectiles": 0,
+  "heroHP": 1172,
+  "cleanup": true,
+  "errors": [],
+  "scope": "Measured production renderer draw duration in headless Chromium at 844x390 during summon + blizzard + astral casts. This is cloud desktop rendering, not a physical iPhone FPS/battery/thermal measurement."
+}
