@@ -1,0 +1,9 @@
+{
+  "status": "success",
+  "commit": "cc79b003570d4233e8a05801c1b50faec8caac99",
+  "workflow": "https://github.com/taearoha-web/aetheria-chronicles/actions/runs/38706570982",
+  "game": "https://taearoha-web.github.io/aetheria-chronicles/",
+  "gallery": "https://taearoha-web.github.io/aetheria-chronicles/review/skills-v6/",
+  "observedUTC": "2026-10-15T08:35:40.684758+00:00",
+  "evidence": "GitHub Actions run HTML matches commit and reports Status Success / completed successfully. Repository URL prefix and offline tested locally. Public Pages endpoint access not claimed."
+}

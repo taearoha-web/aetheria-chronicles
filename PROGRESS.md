@@ -34,3 +34,9 @@
 ผล browser รอบสุดท้าย: ผ่าน6กลุ่ม รวมภาพครบ60สกิล สมุดสกิล/ติดตั้งอัลติเมต/ปุ่ม1–6 เปลี่ยนชุด ออฟไลน์พร้อมคูลดาวน์ยาว และขนาดปุ่มสัมผัสอย่างน้อย44px ภาพแยกกรณีใช้simulationก้าว20msและหยุดเฉพาะตอนถ่าย ไม่ใช้โปสเตอร์แทนเกม คลิปครบ20ท่าต่ออาชีพเป็นการบันทึกเกมเคลื่อนไหวจริงแบบไม่มีเสียง ใช้fixtureLv100เพื่อเข้าถึงทุกท่า
 
 การทดสอบ render stress ใน Chromium ขนาด844×390: 351เฟรม medianเวลาวาด0.70ms, p95 1.80ms ขณะใช้ผู้ช่วย+พายุหิมะ+อัลติเมต ตรวจเอฟเฟกต์ถูกล้างหลังหมดอายุผ่าน ตัวเลขเป็นเวลาวาดบนcloud ไม่ใช่FPS/ความร้อนของiPhoneจริง
+
+## การเผยแพร่ v6
+
+เผยแพร่สำเร็จ: https://taearoha-web.github.io/aetheria-chronicles/ — commit cc79b003570d4233e8a05801c1b50faec8caac99 / GitHub Actions run38706570982 สถานะSuccess
+ภาพและคลิปจริง: https://taearoha-web.github.io/aetheria-chronicles/review/skills-v6/
+ตรวจหน้าActionsที่ตรงcommitและทดสอบsubpath/offlineภายในแล้ว ไม่อ้างการเปิดpublicPagesจากcloudที่มีข้อจำกัดเครือข่าย หลักฐานอยู่review/skills-v6/deployment-results.json
