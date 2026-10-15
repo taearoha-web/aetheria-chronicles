@@ -13,3 +13,7 @@ Wooden fences, hinges/gate opening, signs, benches, lamps, terrain, ambient part
 No asset purchases or Meshy/Tripo credits were used. New NPC art uses platform image_gen and is not a claim that no ChatGPT usage/credits were consumed, or that every pixel was manually placed.
 
 Runtime uses nativeCanvas2D/DOM/LocalStorage/WebAudio/ServiceWorker without a CDN. esbuild(MIT) and Playwright(Apache2) are development tools; Pillow reads atlas bounds and ffmpeg encodes captures. No third-party engine is added. Prior immutable deliveries/receipts remain under review/v2 and review/town-v3.
+
+## Original background music v5
+
+Eleven original procedural compositions and local synthesis patches in src/music.js. No third-party music samples, soundfonts, provider jobs, or MU audio. See MUSIC.md for per-scene themes and verification.
