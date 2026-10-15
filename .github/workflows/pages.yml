@@ -1,0 +1,41 @@
+name: Publish Emberfall game
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify static game files
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          source = Path('sw.js').read_text()
+          entries = re.search(r'const FILES=\[(.*?)\];', source).group(1)
+          files = re.findall(r"'([^']+)'", entries)
+          for name in files:
+              if name == './':
+                  name = 'index.html'
+              assert Path(name).is_file() and Path(name).stat().st_size > 0, name
+          print('Validated', len(files), 'offline game resources')
+          PY
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - name: Deploy game
+        id: deployment
+        uses: actions/deploy-pages@v4
